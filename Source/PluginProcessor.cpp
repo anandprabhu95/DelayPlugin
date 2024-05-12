@@ -147,6 +147,12 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
         auto* channelData = buffer.getWritePointer (channel);
 
         fillBuffer(channel, bufferSize, delayBufferSize, channelData);
+        readFromBuffer(buffer, delayBuffer, channel, bufferSize, delayBufferSize);
+        
+
+
+
+
     }
 
     DBG("Buffer Size: " << bufferSize);
@@ -177,7 +183,33 @@ void DelayAudioProcessor::fillBuffer(int channel, int bufferSize, int delayBuffe
         delayBuffer.copyFromWithRamp(channel, writePosition, channelData, numSamplesToEnd, 0.1f, 0.1f);
 
         // Copy the rest from the start position of the buffer.
-        delayBuffer.copyFromWithRamp(channel, 0, channelData, numSamplesAtStart, 0.1f, 0.1f);
+        delayBuffer.copyFromWithRamp(channel, 0, channelData + numSamplesToEnd, numSamplesAtStart, 0.1f, 0.1f);
+    }
+}
+
+void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& delayBuffer, 
+                                         int channel, int bufferSize, int delayBufferSize)
+{
+    // Read 1 second of audio in the past from the delay buffer.
+    auto readPosition = writePosition - static_cast<int>(getSampleRate());
+
+    // Wrap around.
+    if (readPosition < 0)
+    {
+        readPosition = delayBufferSize + readPosition;
+    }
+
+    if (readPosition + bufferSize < delayBufferSize)
+    {
+        buffer.addFromWithRamp(channel, 0, delayBuffer.getReadPointer(channel, readPosition), bufferSize, 0.7f, 0.7f);
+    }
+    else
+    {
+        auto numSamplesToEnd = delayBufferSize - readPosition;
+        buffer.addFromWithRamp(channel, 0, delayBuffer.getReadPointer(channel, readPosition), numSamplesToEnd, 0.7f, 0.7f);
+
+        auto numSamplesAtStart = bufferSize - numSamplesToEnd;
+        buffer.addFromWithRamp(channel, numSamplesToEnd, delayBuffer.getReadPointer(channel, 0), numSamplesAtStart, 0.7f, 0.7f);
     }
 }
 
