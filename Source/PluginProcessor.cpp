@@ -135,43 +135,42 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    auto bufferSize = buffer.getNumSamples();
-    auto delayBufferSize = delayBuffer.getNumSamples();
-
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
-        auto* channelData = buffer.getWritePointer (channel);
+        // Copy main buffer to the delay buffer.
+        fillBuffer(buffer, channel);
 
-        fillBuffer(channel, bufferSize, delayBufferSize, channelData);
-        readFromBuffer(buffer, delayBuffer, channel, bufferSize, delayBufferSize);
+        // Read from the past in delay buffer and add it to main buffer 
+        readFromBuffer(buffer, delayBuffer, channel);
         
-
-
-
-
+        // Feedback the main buffer containing the contents of the delay buffer [ y(k) = x(k) + G*x(k-1) ]
+        fillBuffer(buffer, channel);
     }
 
+    // Loop the write position from 0 to delay buffer size.
+    updateWritePositions(buffer, delayBuffer);
+
+    // For debugging, remove later
+    auto bufferSize = buffer.getNumSamples();
+    auto delayBufferSize = delayBuffer.getNumSamples();
     DBG("Buffer Size: " << bufferSize);
     DBG("Delay Buffer Size: " << delayBufferSize);
     DBG("Write Buffer Size: " << writePosition);
-
-    // Loop the write position from 0 to delay buffer size.
-    writePosition += bufferSize;
-    writePosition %= delayBufferSize;
 }
 
-void DelayAudioProcessor::fillBuffer(int channel, int bufferSize, int delayBufferSize, float* channelData)
+void DelayAudioProcessor::fillBuffer(juce::AudioBuffer<float>& buffer, int channel)
 {   
+    auto bufferSize = buffer.getNumSamples();
+    auto delayBufferSize = delayBuffer.getNumSamples();
+
     // Check if main buffer can be copied to delay buffer without wrapping around
     if (delayBufferSize > bufferSize + writePosition)
     {
         // Copy main buffer to delay buffer.
-        delayBuffer.copyFromWithRamp(channel, writePosition, channelData, bufferSize, 0.1f, 0.1f);
-
+        delayBuffer.copyFrom(channel, writePosition, buffer.getWritePointer(channel), bufferSize);
     }
     else
     {
@@ -180,18 +179,20 @@ void DelayAudioProcessor::fillBuffer(int channel, int bufferSize, int delayBuffe
         auto numSamplesAtStart = bufferSize - numSamplesToEnd;
 
         // Copy the samples to the end
-        delayBuffer.copyFromWithRamp(channel, writePosition, channelData, numSamplesToEnd, 0.1f, 0.1f);
+        delayBuffer.copyFrom(channel, writePosition, buffer.getWritePointer(channel), numSamplesToEnd);
 
         // Copy the rest from the start position of the buffer.
-        delayBuffer.copyFromWithRamp(channel, 0, channelData + numSamplesToEnd, numSamplesAtStart, 0.1f, 0.1f);
+        delayBuffer.copyFrom(channel, 0, buffer.getWritePointer(channel, numSamplesToEnd), numSamplesAtStart);
     }
 }
 
-void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& delayBuffer, 
-                                         int channel, int bufferSize, int delayBufferSize)
-{
+void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& delayBuffer, int channel)
+{   
+    auto bufferSize = buffer.getNumSamples();
+    auto delayBufferSize = delayBuffer.getNumSamples();
+
     // Read 1 second of audio in the past from the delay buffer.
-    auto readPosition = writePosition - static_cast<int>(getSampleRate());
+    auto readPosition = writePosition - static_cast<int>(getSampleRate() * 0.5);
 
     // Wrap around.
     if (readPosition < 0)
@@ -212,6 +213,16 @@ void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& buffer, juce:
         buffer.addFromWithRamp(channel, numSamplesToEnd, delayBuffer.getReadPointer(channel, 0), numSamplesAtStart, 0.7f, 0.7f);
     }
 }
+
+void DelayAudioProcessor::updateWritePositions(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& delayBuffer)
+{
+    // Loop the write position from 0 to delay buffer size.
+    auto bufferSize = buffer.getNumSamples();
+    auto delayBufferSize = delayBuffer.getNumSamples();
+    writePosition += bufferSize;
+    writePosition %= delayBufferSize;
+}
+
 
 //==============================================================================
 bool DelayAudioProcessor::hasEditor() const

@@ -54,9 +54,10 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 private:
-    void DelayAudioProcessor::fillBuffer(int channel, int bufferSize, int delayBufferSize, float* channelData);
-    void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& delayBuffer,
-                                             int channel, int bufferSize, int delayBufferSize);
+    void DelayAudioProcessor::fillBuffer(juce::AudioBuffer<float>& buffer, int channel);
+    void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& delayBuffer, int channel);
+    void DelayAudioProcessor::updateWritePositions(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& delayBuffer);
+    
     juce::AudioBuffer<float> delayBuffer;
     int writePosition { 0 };
     int readPosition{ 0 };
