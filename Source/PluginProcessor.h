@@ -56,11 +56,14 @@ public:
 private:
     void DelayAudioProcessor::fillBuffer(juce::AudioBuffer<float>& buffer, int channel);
     void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& delayBuffer, int channel);
-    void DelayAudioProcessor::updateWritePositions(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& delayBuffer);
-    
+    void DelayAudioProcessor::updateWritePositions(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& delayBuffer);   
+    juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createParameters();
+
+
     juce::AudioBuffer<float> delayBuffer;
     int writePosition { 0 };
-    int readPosition{ 0 };
+    int readPosition { 0 };
+    juce::AudioProcessorValueTreeState params;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayAudioProcessor)

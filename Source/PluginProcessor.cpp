@@ -19,7 +19,8 @@ DelayAudioProcessor::DelayAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ), 
+                        params (*this, nullptr, "Parameters", createParameters())
 #endif
 {
 }
@@ -191,8 +192,12 @@ void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& buffer, juce:
     auto bufferSize = buffer.getNumSamples();
     auto delayBufferSize = delayBuffer.getNumSamples();
 
-    // Read 1 second of audio in the past from the delay buffer.
-    auto readPosition = writePosition - static_cast<int>(getSampleRate() * 0.5);
+    auto* delayTime = params.getRawParameterValue("DELAYMS");
+    auto* feedbackGainPointer = params.getRawParameterValue("FEEDBACKGAIN");
+    float feedbackGain = feedbackGainPointer->load();
+
+    // Read "delayTime" seconds of audio in the past from the delay buffer.
+    auto readPosition = writePosition - static_cast<int>(delayTime->load());
 
     // Wrap around.
     if (readPosition < 0)
@@ -202,15 +207,15 @@ void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& buffer, juce:
 
     if (readPosition + bufferSize < delayBufferSize)
     {
-        buffer.addFromWithRamp(channel, 0, delayBuffer.getReadPointer(channel, readPosition), bufferSize, 0.7f, 0.7f);
+        buffer.addFromWithRamp(channel, 0, delayBuffer.getReadPointer(channel, readPosition), bufferSize, feedbackGain, feedbackGain);
     }
     else
     {
         auto numSamplesToEnd = delayBufferSize - readPosition;
-        buffer.addFromWithRamp(channel, 0, delayBuffer.getReadPointer(channel, readPosition), numSamplesToEnd, 0.7f, 0.7f);
+        buffer.addFromWithRamp(channel, 0, delayBuffer.getReadPointer(channel, readPosition), numSamplesToEnd, feedbackGain, feedbackGain);
 
         auto numSamplesAtStart = bufferSize - numSamplesToEnd;
-        buffer.addFromWithRamp(channel, numSamplesToEnd, delayBuffer.getReadPointer(channel, 0), numSamplesAtStart, 0.7f, 0.7f);
+        buffer.addFromWithRamp(channel, numSamplesToEnd, delayBuffer.getReadPointer(channel, 0), numSamplesAtStart, feedbackGain, feedbackGain);
     }
 }
 
@@ -232,7 +237,7 @@ bool DelayAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* DelayAudioProcessor::createEditor()
 {
-    return new DelayAudioProcessorEditor (*this);
+    return new juce::GenericAudioProcessorEditor (*this);
 }
 
 //==============================================================================
@@ -254,4 +259,12 @@ void DelayAudioProcessor::setStateInformation (const void* data, int sizeInBytes
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new DelayAudioProcessor();
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createParameters()
+{
+    std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS", "Delay Ms", 0.0f, 96000.0f, 0.0f));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN", "Feedback Gain", 0.0f, 1.0f, 0.0f));
+    return { parameters.begin(), parameters.end() };
 }
