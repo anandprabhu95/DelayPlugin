@@ -64,6 +64,8 @@ private:
     int writePosition { 0 };
     int readPosition { 0 };
     juce::AudioProcessorValueTreeState params;
+    juce::LinearSmoothedValue<float> feedbackGainInterpolator { 0 };
+    juce::LinearSmoothedValue<float> delayTimeInterpolator { 0 };
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayAudioProcessor)

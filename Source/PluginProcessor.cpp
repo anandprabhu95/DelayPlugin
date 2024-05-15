@@ -96,6 +96,10 @@ void DelayAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     auto delayBufferSize = sampleRate * 2.0; // 2 seconds of audio.
     delayBuffer.setSize(getTotalNumOutputChannels(), static_cast<int>(delayBufferSize));
+
+    // Ramp parameter values to target value at desired rate.
+    feedbackGainInterpolator.reset(sampleRate, 0.0005);
+    delayTimeInterpolator.reset(sampleRate, 0.0001);
 }
 
 void DelayAudioProcessor::releaseResources()
@@ -192,12 +196,16 @@ void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& buffer, juce:
     auto bufferSize = buffer.getNumSamples();
     auto delayBufferSize = delayBuffer.getNumSamples();
 
-    auto* delayTime = params.getRawParameterValue("DELAYMS");
+    auto* delayTimePointer = params.getRawParameterValue("DELAYMS");
+    delayTimeInterpolator.setTargetValue(delayTimePointer->load());
+    float delayTime = delayTimeInterpolator.getNextValue();
+
     auto* feedbackGainPointer = params.getRawParameterValue("FEEDBACKGAIN");
-    float feedbackGain = feedbackGainPointer->load();
+    feedbackGainInterpolator.setTargetValue(feedbackGainPointer->load());
+    float feedbackGain = feedbackGainInterpolator.getNextValue();
 
     // Read "delayTime" seconds of audio in the past from the delay buffer.
-    auto readPosition = writePosition - static_cast<int>(delayTime->load());
+    auto readPosition = writePosition - static_cast<int>(delayTime);
 
     // Wrap around.
     if (readPosition < 0)
