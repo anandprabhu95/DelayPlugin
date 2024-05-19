@@ -53,6 +53,9 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+    //==============================================================================
+    juce::AudioProcessorValueTreeState params;
+
 private:
     void DelayAudioProcessor::fillBuffer(juce::AudioBuffer<float>& buffer, int channel);
     void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& delayBuffer, int channel);
@@ -63,7 +66,6 @@ private:
     juce::AudioBuffer<float> delayBuffer;
     int writePosition { 0 };
     int readPosition { 0 };
-    juce::AudioProcessorValueTreeState params;
     juce::LinearSmoothedValue<float> feedbackGainInterpolator { 0 };
     juce::LinearSmoothedValue<float> delayTimeInterpolator { 0 };
 

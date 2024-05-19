@@ -172,7 +172,7 @@ void DelayAudioProcessor::fillBuffer(juce::AudioBuffer<float>& buffer, int chann
     auto delayBufferSize = delayBuffer.getNumSamples();
 
     // Check if main buffer can be copied to delay buffer without wrapping around
-    if (delayBufferSize > bufferSize + writePosition)
+    if (delayBufferSize >= bufferSize + writePosition)
     {
         // Copy main buffer to delay buffer.
         delayBuffer.copyFrom(channel, writePosition, buffer.getWritePointer(channel), bufferSize);
@@ -245,7 +245,7 @@ bool DelayAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* DelayAudioProcessor::createEditor()
 {
-    return new juce::GenericAudioProcessorEditor (*this);
+    return new DelayAudioProcessorEditor (*this);
 }
 
 //==============================================================================
