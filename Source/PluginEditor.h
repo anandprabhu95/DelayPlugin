@@ -33,6 +33,7 @@ private:
     void DelayAudioProcessorEditor::createGUI();
     void DelayAudioProcessorEditor::destroyGUI();
     void DelayAudioProcessorEditor::resizeGUI();
+    void DelayAudioProcessorEditor::paramAttacher();
     void DelayAudioProcessorEditor::sliderValueChanged(juce::Slider* sliderMoved);
 
     juce::ScopedPointer<juce::Slider> gainSlider, delayMsSlider;

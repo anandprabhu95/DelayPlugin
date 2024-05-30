@@ -63,6 +63,7 @@ private:
     juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createParameters();
 
 
+    juce::AudioBuffer<float> wetBuffer;
     juce::AudioBuffer<float> delayBuffer;
     int writePosition { 0 };
     int readPosition { 0 };

@@ -14,18 +14,11 @@ DelayAudioProcessorEditor::DelayAudioProcessorEditor (DelayAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
     createGUI();
-    // Make sure that before the constructor has finished, you've set the
-    // editor's size to whatever you need it to be.
-    setSize (400, 300);
-    gainParamAttach = new juce::AudioProcessorValueTreeState::SliderAttachment(audioProcessor.params, "FEEDBACKGAIN", *gainSlider);
-    delayMsParamAttach = new juce::AudioProcessorValueTreeState::SliderAttachment(audioProcessor.params, "DELAYMS", *delayMsSlider);
+    paramAttacher();
 }
 
 DelayAudioProcessorEditor::~DelayAudioProcessorEditor()
 {
-    gainParamAttach = nullptr;
-    delayMsParamAttach = nullptr;
-
     destroyGUI();
 }
 
@@ -69,15 +62,21 @@ void DelayAudioProcessorEditor::createGUI()
     delayMsLabel->setEditable(false, false, false);
     delayMsLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
     delayMsLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+
+
+    //=====================================================================================
+    setSize(400, 300);
 }
 
 void DelayAudioProcessorEditor::destroyGUI()
 {
     gainSlider = nullptr;
     gainLabel = nullptr;
+    gainParamAttach = nullptr;
 
     delayMsSlider = nullptr;
     delayMsLabel = nullptr;
+    delayMsParamAttach = nullptr;
 }
 
 void DelayAudioProcessorEditor::resizeGUI()
@@ -89,6 +88,11 @@ void DelayAudioProcessorEditor::resizeGUI()
     delayMsLabel->setBounds(100, 101, 100, 24);
 }
 
+void DelayAudioProcessorEditor::paramAttacher()
+{
+    gainParamAttach = new juce::AudioProcessorValueTreeState::SliderAttachment(audioProcessor.params, "FEEDBACKGAIN", *gainSlider);
+    delayMsParamAttach = new juce::AudioProcessorValueTreeState::SliderAttachment(audioProcessor.params, "DELAYMS", *delayMsSlider);
+}
 void DelayAudioProcessorEditor::sliderValueChanged(juce::Slider* sliderMoved)
 {
     

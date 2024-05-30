@@ -99,7 +99,7 @@ void DelayAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 
     // Ramp parameter values to target value at desired rate.
     feedbackGainInterpolator.reset(sampleRate, 0.0005);
-    delayTimeInterpolator.reset(sampleRate, 0.0001);
+    delayTimeInterpolator.reset(sampleRate, 0.0005);
 }
 
 void DelayAudioProcessor::releaseResources()
@@ -171,11 +171,14 @@ void DelayAudioProcessor::fillBuffer(juce::AudioBuffer<float>& buffer, int chann
     auto bufferSize = buffer.getNumSamples();
     auto delayBufferSize = delayBuffer.getNumSamples();
 
+    wetBuffer.setSize(getTotalNumOutputChannels(), static_cast<int>(bufferSize));
+    wetBuffer.copyFrom(channel, 0, buffer.getWritePointer(channel), bufferSize);
+
     // Check if main buffer can be copied to delay buffer without wrapping around
     if (delayBufferSize >= bufferSize + writePosition)
     {
         // Copy main buffer to delay buffer.
-        delayBuffer.copyFrom(channel, writePosition, buffer.getWritePointer(channel), bufferSize);
+        delayBuffer.copyFrom(channel, writePosition, wetBuffer.getWritePointer(channel), bufferSize);
     }
     else
     {
@@ -184,10 +187,10 @@ void DelayAudioProcessor::fillBuffer(juce::AudioBuffer<float>& buffer, int chann
         auto numSamplesAtStart = bufferSize - numSamplesToEnd;
 
         // Copy the samples to the end
-        delayBuffer.copyFrom(channel, writePosition, buffer.getWritePointer(channel), numSamplesToEnd);
+        delayBuffer.copyFrom(channel, writePosition, wetBuffer.getWritePointer(channel), numSamplesToEnd);
 
         // Copy the rest from the start position of the buffer.
-        delayBuffer.copyFrom(channel, 0, buffer.getWritePointer(channel, numSamplesToEnd), numSamplesAtStart);
+        delayBuffer.copyFrom(channel, 0, wetBuffer.getWritePointer(channel, numSamplesToEnd), numSamplesAtStart);
     }
 }
 
