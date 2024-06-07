@@ -144,7 +144,10 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     auto delayBufferSize = delayBuffer.getNumSamples();
 
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
+    {
+        buffer.clear(i, 0, buffer.getNumSamples());
+        wetBuffer.clear(i, 0, wetBuffer.getNumSamples());
+    }
 
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {   
@@ -293,15 +296,15 @@ void DelayAudioProcessor::mixDryWet(juce::AudioBuffer<float>& buffer, juce::Audi
     float drywetGain = drywetInterpolator.getNextValue();
 
     // Scale dry wet gain from [-1,+1] to [0,+1]
-    float scaledDryWetGain = knobValRangeScaler(drywetGain, -1, 1, 0, 1);
+    float scaledDryWetGain = knobValRangeScaler(drywetGain, -1.0f, 1.0f, 0.0f, 1.0f);
 
     DBG("drywet" << scaledDryWetGain);
 
     buffer.addFromWithRamp(channel, 0, wetBuffer.getReadPointer(channel, 0), buffer.getNumSamples(), scaledDryWetGain, scaledDryWetGain);
 }
 
-float DelayAudioProcessor::knobValRangeScaler(float paramToScale, float knobValMin, float knobValMax, float desiredValMin, float desiredValMax)
+float DelayAudioProcessor::knobValRangeScaler(float paramToScale, float guiSclMin, float guiSclMax, float desiredSclMin, float desiredSclMax)
 {
-    float scaledParam = (desiredValMax - desiredValMin) * (paramToScale - knobValMin) / (knobValMax - knobValMin) + desiredValMin;
+    float scaledParam = (desiredSclMax - desiredSclMin) * (paramToScale - guiSclMin) / (guiSclMax - guiSclMin) + desiredSclMin;
     return scaledParam;
 }

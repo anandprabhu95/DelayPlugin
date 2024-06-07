@@ -62,7 +62,8 @@ private:
     void DelayAudioProcessor::updateWritePositions(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& delayBuffer);
     void DelayAudioProcessor::mixDryWet(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& wetBuffer, int channel);
     juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createParameters();
-    float DelayAudioProcessor::knobValRangeScaler(float paramToScale, float knobValMin, float knobValMax, float desiredValMin, float desiredValMax);
+    float DelayAudioProcessor::knobValRangeScaler(float paramToScale, float knobValMin, float knobValMax, float desiredSclMin, float desiredSclMax);
+
 
 
     juce::AudioBuffer<float> wetBuffer;
