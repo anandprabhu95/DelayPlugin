@@ -1,18 +1,9 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include <JuceHeader.h>
 
 //==============================================================================
-/**
-*/
+
 class DelayAudioProcessor  : public juce::AudioProcessor
 {
 public:
@@ -65,14 +56,13 @@ private:
     float DelayAudioProcessor::knobValRangeScaler(float paramToScale, float knobValMin, float knobValMax, float desiredSclMin, float desiredSclMax);
 
 
-
     juce::AudioBuffer<float> wetBuffer;
     juce::AudioBuffer<float> delayBuffer;
     int writePosition { 0 };
     int readPosition { 0 };
-    juce::LinearSmoothedValue<float> feedbackGainInterpolator { 0 };
-    juce::LinearSmoothedValue<float> delayTimeInterpolator { 0 };
-    juce::LinearSmoothedValue<float> drywetInterpolator{ 0 };
+    juce::LinearSmoothedValue<float> feedbackGainInterpolator { 0.7f };
+    juce::LinearSmoothedValue<float> delayTimeInterpolator { 10000.0f };
+    juce::LinearSmoothedValue<float> drywetInterpolator { 0.0f };
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayAudioProcessor)

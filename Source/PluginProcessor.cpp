@@ -1,11 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
@@ -96,10 +88,12 @@ void DelayAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     auto delayBufferSize = sampleRate * 2.0; // 2 seconds of audio.
     delayBuffer.setSize(getTotalNumOutputChannels(), static_cast<int>(delayBufferSize));
+    wetBuffer.setSize(getTotalNumOutputChannels(), samplesPerBlock);
 
     // Ramp parameter values to target value at desired rate.
     feedbackGainInterpolator.reset(sampleRate, 0.0005);
-    delayTimeInterpolator.reset(sampleRate, 0.0005);
+    delayTimeInterpolator.reset(sampleRate, 0.001);
+    drywetInterpolator.reset(sampleRate, 0.005);
 }
 
 void DelayAudioProcessor::releaseResources()
@@ -151,7 +145,6 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
 
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {   
-        wetBuffer.setSize(getTotalNumOutputChannels(), static_cast<int>(bufferSize));
         wetBuffer.copyFrom(channel, 0, buffer.getWritePointer(channel), bufferSize);
 
         // Copy main buffer to the delay buffer.
@@ -255,7 +248,8 @@ bool DelayAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* DelayAudioProcessor::createEditor()
 {
-    return new DelayAudioProcessorEditor (*this);
+    //return new DelayAudioProcessorEditor (*this);
+    return new juce::GenericAudioProcessorEditor(*this);
 }
 
 //==============================================================================
@@ -300,7 +294,7 @@ void DelayAudioProcessor::mixDryWet(juce::AudioBuffer<float>& buffer, juce::Audi
 
     DBG("drywet" << scaledDryWetGain);
 
-    buffer.addFromWithRamp(channel, 0, wetBuffer.getReadPointer(channel, 0), buffer.getNumSamples(), scaledDryWetGain, scaledDryWetGain);
+    buffer.addFromWithRamp(channel, 0, wetBuffer.getReadPointer(channel, 0), wetBuffer.getNumSamples(), scaledDryWetGain, scaledDryWetGain);
 }
 
 float DelayAudioProcessor::knobValRangeScaler(float paramToScale, float guiSclMin, float guiSclMax, float desiredSclMin, float desiredSclMax)

@@ -1,11 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
@@ -51,7 +43,7 @@ void DelayAudioProcessorEditor::createGUI()
 
     //====================================================================================
     addAndMakeVisible(delayMsSlider = new juce::Slider("delayslider"));
-    delayMsSlider->setRange(0.0f, 80000.0f, 10.f);
+    delayMsSlider->setRange(0.0f, 96000.0f, 10.f);
     delayMsSlider->setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     delayMsSlider->setSliderStyle(juce::Slider::Rotary);
     delayMsSlider->addListener(this);
