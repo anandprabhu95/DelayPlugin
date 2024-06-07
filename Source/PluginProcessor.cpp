@@ -140,39 +140,43 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
+    auto bufferSize = buffer.getNumSamples();
+    auto delayBufferSize = delayBuffer.getNumSamples();
+
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
+    {   
+        wetBuffer.setSize(getTotalNumOutputChannels(), static_cast<int>(bufferSize));
+        wetBuffer.copyFrom(channel, 0, buffer.getWritePointer(channel), bufferSize);
+
         // Copy main buffer to the delay buffer.
-        fillBuffer(buffer, channel);
+        fillBuffer(wetBuffer, channel);
 
         // Read from the past in delay buffer and add it to main buffer 
-        readFromBuffer(buffer, delayBuffer, channel);
+        readFromBuffer(wetBuffer, delayBuffer, channel);
         
         // Feedback the main buffer containing the contents of the delay buffer [ y(k) = x(k) + G*x(k-1) ]
-        fillBuffer(buffer, channel);
+        fillBuffer(wetBuffer, channel);
+
+        // Dry/Wet mix
+        mixDryWet(buffer, wetBuffer, channel);
     }
 
     // Loop the write position from 0 to delay buffer size.
     updateWritePositions(buffer, delayBuffer);
 
     // For debugging, remove later
-    auto bufferSize = buffer.getNumSamples();
-    auto delayBufferSize = delayBuffer.getNumSamples();
     DBG("Buffer Size: " << bufferSize);
     DBG("Delay Buffer Size: " << delayBufferSize);
     DBG("Write Buffer Size: " << writePosition);
 }
 
-void DelayAudioProcessor::fillBuffer(juce::AudioBuffer<float>& buffer, int channel)
+void DelayAudioProcessor::fillBuffer(juce::AudioBuffer<float>& wetBuffer, int channel)
 {   
-    auto bufferSize = buffer.getNumSamples();
+    auto bufferSize = wetBuffer.getNumSamples();
     auto delayBufferSize = delayBuffer.getNumSamples();
-
-    wetBuffer.setSize(getTotalNumOutputChannels(), static_cast<int>(bufferSize));
-    wetBuffer.copyFrom(channel, 0, buffer.getWritePointer(channel), bufferSize);
 
     // Check if main buffer can be copied to delay buffer without wrapping around
     if (delayBufferSize >= bufferSize + writePosition)
@@ -194,9 +198,9 @@ void DelayAudioProcessor::fillBuffer(juce::AudioBuffer<float>& buffer, int chann
     }
 }
 
-void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& delayBuffer, int channel)
+void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& wetBuffer, juce::AudioBuffer<float>& delayBuffer, int channel)
 {   
-    auto bufferSize = buffer.getNumSamples();
+    auto bufferSize = wetBuffer.getNumSamples();
     auto delayBufferSize = delayBuffer.getNumSamples();
 
     auto* delayTimePointer = params.getRawParameterValue("DELAYMS");
@@ -218,15 +222,15 @@ void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& buffer, juce:
 
     if (readPosition + bufferSize < delayBufferSize)
     {
-        buffer.addFromWithRamp(channel, 0, delayBuffer.getReadPointer(channel, readPosition), bufferSize, feedbackGain, feedbackGain);
+        wetBuffer.addFromWithRamp(channel, 0, delayBuffer.getReadPointer(channel, readPosition), bufferSize, feedbackGain, feedbackGain);
     }
     else
     {
         auto numSamplesToEnd = delayBufferSize - readPosition;
-        buffer.addFromWithRamp(channel, 0, delayBuffer.getReadPointer(channel, readPosition), numSamplesToEnd, feedbackGain, feedbackGain);
+        wetBuffer.addFromWithRamp(channel, 0, delayBuffer.getReadPointer(channel, readPosition), numSamplesToEnd, feedbackGain, feedbackGain);
 
         auto numSamplesAtStart = bufferSize - numSamplesToEnd;
-        buffer.addFromWithRamp(channel, numSamplesToEnd, delayBuffer.getReadPointer(channel, 0), numSamplesAtStart, feedbackGain, feedbackGain);
+        wetBuffer.addFromWithRamp(channel, numSamplesToEnd, delayBuffer.getReadPointer(channel, 0), numSamplesAtStart, feedbackGain, feedbackGain);
     }
 }
 
@@ -279,4 +283,25 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createP
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN", "Feedback Gain", 0.0f, 1.0f, 0.7f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DRYWET", "Dry/Wet", -1.0f, 1.0f, 0.0f));
     return { parameters.begin(), parameters.end() };
+}
+
+void DelayAudioProcessor::mixDryWet(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& wetBuffer, int channel)
+{   
+    auto bufferSize = wetBuffer.getNumSamples();
+    auto* drywetPointer = params.getRawParameterValue("DRYWET");
+    drywetInterpolator.setTargetValue(drywetPointer->load());
+    float drywetGain = drywetInterpolator.getNextValue();
+
+    // Scale dry wet gain from [-1,+1] to [0,+1]
+    float scaledDryWetGain = knobValRangeScaler(drywetGain, -1, 1, 0, 1);
+
+    DBG("drywet" << scaledDryWetGain);
+
+    buffer.addFromWithRamp(channel, 0, wetBuffer.getReadPointer(channel, 0), buffer.getNumSamples(), scaledDryWetGain, scaledDryWetGain);
+}
+
+float DelayAudioProcessor::knobValRangeScaler(float paramToScale, float knobValMin, float knobValMax, float desiredValMin, float desiredValMax)
+{
+    float scaledParam = (desiredValMax - desiredValMin) * (paramToScale - knobValMin) / (knobValMax - knobValMin) + desiredValMin;
+    return scaledParam;
 }
