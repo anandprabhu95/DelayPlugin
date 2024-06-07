@@ -17,7 +17,7 @@ DelayAudioProcessorEditor::~DelayAudioProcessorEditor()
 //==============================================================================
 void DelayAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    g.fillAll (juce::Colours::blueviolet);
+    g.fillAll (juce::Colours::black);
 }
 
 void DelayAudioProcessorEditor::resized()
@@ -35,7 +35,7 @@ void DelayAudioProcessorEditor::createGUI()
     gainSlider->addListener(this);
 
     addAndMakeVisible(gainLabel = new juce::Label("gainslider", "Gain"));
-    gainLabel->setFont(juce::Font(15.00f, juce::Font::plain));
+    gainLabel->setFont(juce::Font(10.00f, juce::Font::plain));
     gainLabel->setJustificationType(juce::Justification::centred);
     gainLabel->setEditable(false, false, false);
     gainLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
@@ -49,7 +49,7 @@ void DelayAudioProcessorEditor::createGUI()
     delayMsSlider->addListener(this);
 
     addAndMakeVisible(delayMsLabel = new juce::Label("delayslider", "Delay Ms"));
-    delayMsLabel->setFont(juce::Font(15.00f, juce::Font::plain));
+    delayMsLabel->setFont(juce::Font(10.00f, juce::Font::plain));
     delayMsLabel->setJustificationType(juce::Justification::centred);
     delayMsLabel->setEditable(false, false, false);
     delayMsLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
@@ -63,7 +63,7 @@ void DelayAudioProcessorEditor::createGUI()
     drywetSlider->addListener(this);
 
     addAndMakeVisible(drywetLabel = new juce::Label("drywetslider", "Dry/Wet"));
-    drywetLabel->setFont(juce::Font(15.00f, juce::Font::plain));
+    drywetLabel->setFont(juce::Font(10.00f, juce::Font::plain));
     drywetLabel->setJustificationType(juce::Justification::centred);
     drywetLabel->setEditable(false, false, false);
     drywetLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
@@ -90,15 +90,17 @@ void DelayAudioProcessorEditor::destroyGUI()
 }
 
 void DelayAudioProcessorEditor::resizeGUI()
-{
-    gainSlider->setBounds(0, 0, 100, 100);
-    gainLabel->setBounds(0, 101, 100, 24);
+{   
+    int globalX = 50;
+    int globalY = 50;
+    gainSlider->setBounds(globalX + 0, globalY + 15, 100, 100);
+    gainLabel->setBounds(globalX + 0, globalY + 0, 100, 24);
 
-    delayMsSlider->setBounds(100, 0, 100, 100);
-    delayMsLabel->setBounds(100, 101, 100, 24);
+    delayMsSlider->setBounds(globalX + 100, globalY + 15, 100, 100);
+    delayMsLabel->setBounds(globalX + 100, globalY + 0, 100, 24);
 
-    drywetSlider->setBounds(200, 0, 100, 100);
-    drywetLabel->setBounds(200, 101, 100, 24);
+    drywetSlider->setBounds(globalX + 200, globalY + 15, 100, 100);
+    drywetLabel->setBounds(globalX + 200, globalY + 0, 100, 24);
 }
 
 void DelayAudioProcessorEditor::paramAttacher()

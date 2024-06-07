@@ -239,6 +239,35 @@ void DelayAudioProcessor::updateWritePositions(juce::AudioBuffer<float>& buffer,
     writePosition %= delayBufferSize;
 }
 
+juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createParameters()
+{
+    std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS", "Delay Ms", 0.0f, 96000.0f, 10000.0f));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN", "Feedback Gain", 0.0f, 1.0f, 0.7f));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DRYWET", "Dry/Wet", -1.0f, 1.0f, 0.0f));
+    return { parameters.begin(), parameters.end() };
+}
+
+void DelayAudioProcessor::mixDryWet(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& wetBuffer, int channel)
+{
+    auto bufferSize = wetBuffer.getNumSamples();
+    auto* drywetPointer = params.getRawParameterValue("DRYWET");
+    drywetInterpolator.setTargetValue(drywetPointer->load());
+    float drywetGain = drywetInterpolator.getNextValue();
+
+    // Scale dry wet gain from [-1,+1] to [0,+1]
+    float scaledDryWetGain = knobValRangeScaler(drywetGain, -1.0f, 1.0f, 0.0f, 1.0f);
+
+    DBG("drywet" << scaledDryWetGain);
+
+    buffer.addFromWithRamp(channel, 0, wetBuffer.getReadPointer(channel, 0), wetBuffer.getNumSamples(), scaledDryWetGain, scaledDryWetGain);
+}
+
+float DelayAudioProcessor::knobValRangeScaler(float paramToScale, float guiSclMin, float guiSclMax, float desiredSclMin, float desiredSclMax)
+{
+    float scaledParam = (desiredSclMax - desiredSclMin) * (paramToScale - guiSclMin) / (guiSclMax - guiSclMin) + desiredSclMin;
+    return scaledParam;
+}
 
 //==============================================================================
 bool DelayAudioProcessor::hasEditor() const
@@ -248,8 +277,8 @@ bool DelayAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* DelayAudioProcessor::createEditor()
 {
-    //return new DelayAudioProcessorEditor (*this);
-    return new juce::GenericAudioProcessorEditor(*this);
+    return new DelayAudioProcessorEditor (*this);
+    //return new juce::GenericAudioProcessorEditor(*this);
 }
 
 //==============================================================================
@@ -271,34 +300,4 @@ void DelayAudioProcessor::setStateInformation (const void* data, int sizeInBytes
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new DelayAudioProcessor();
-}
-
-juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createParameters()
-{
-    std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS", "Delay Ms", 0.0f, 96000.0f, 10000.0f));
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN", "Feedback Gain", 0.0f, 1.0f, 0.7f));
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DRYWET", "Dry/Wet", -1.0f, 1.0f, 0.0f));
-    return { parameters.begin(), parameters.end() };
-}
-
-void DelayAudioProcessor::mixDryWet(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& wetBuffer, int channel)
-{   
-    auto bufferSize = wetBuffer.getNumSamples();
-    auto* drywetPointer = params.getRawParameterValue("DRYWET");
-    drywetInterpolator.setTargetValue(drywetPointer->load());
-    float drywetGain = drywetInterpolator.getNextValue();
-
-    // Scale dry wet gain from [-1,+1] to [0,+1]
-    float scaledDryWetGain = knobValRangeScaler(drywetGain, -1.0f, 1.0f, 0.0f, 1.0f);
-
-    DBG("drywet" << scaledDryWetGain);
-
-    buffer.addFromWithRamp(channel, 0, wetBuffer.getReadPointer(channel, 0), wetBuffer.getNumSamples(), scaledDryWetGain, scaledDryWetGain);
-}
-
-float DelayAudioProcessor::knobValRangeScaler(float paramToScale, float guiSclMin, float guiSclMax, float desiredSclMin, float desiredSclMax)
-{
-    float scaledParam = (desiredSclMax - desiredSclMin) * (paramToScale - guiSclMin) / (guiSclMax - guiSclMin) + desiredSclMin;
-    return scaledParam;
 }
