@@ -36,9 +36,9 @@ private:
     void DelayAudioProcessorEditor::paramAttacher();
     void DelayAudioProcessorEditor::sliderValueChanged(juce::Slider* sliderMoved);
 
-    juce::ScopedPointer<juce::Slider> gainSlider, delayMsSlider;
-    juce::ScopedPointer<juce::Label> gainLabel, delayMsLabel;
-    juce::ScopedPointer<juce::AudioProcessorValueTreeState::SliderAttachment> gainParamAttach, delayMsParamAttach;
+    juce::ScopedPointer<juce::Slider> gainSlider, delayMsSlider, drywetSlider;
+    juce::ScopedPointer<juce::Label> gainLabel, delayMsLabel, drywetLabel;
+    juce::ScopedPointer<juce::AudioProcessorValueTreeState::SliderAttachment> gainParamAttach, delayMsParamAttach, drywetParamAttach;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayAudioProcessorEditor)
 };
