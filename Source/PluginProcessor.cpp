@@ -257,9 +257,9 @@ void DelayAudioProcessor::mixDryWet(juce::AudioBuffer<float>& buffer, juce::Audi
 
     // Scale dry wet gain from [-1,+1] to [0,+1]
     float scaledDryWetGain = knobValRangeScaler(drywetGain, -1.0f, 1.0f, 0.0f, 1.0f);
-
-    DBG("drywet" << scaledDryWetGain);
-
+    
+    // Reduce gain on the main buffer when as the wet gain increases.
+    buffer.applyGain(1 - 0.5 * scaledDryWetGain);
     buffer.addFromWithRamp(channel, 0, wetBuffer.getReadPointer(channel, 0), wetBuffer.getNumSamples(), scaledDryWetGain, scaledDryWetGain);
 }
 
