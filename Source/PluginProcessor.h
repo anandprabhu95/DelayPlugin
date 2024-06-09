@@ -60,8 +60,8 @@ private:
     juce::AudioBuffer<float> delayBuffer;
     int writePosition { 0 };
     int readPosition { 0 };
-    juce::LinearSmoothedValue<float> feedbackGainInterpolator { 0.7f };
-    juce::LinearSmoothedValue<float> delayTimeInterpolator { 10000.0f };
+    juce::LinearSmoothedValue<float> feedbackGainInterpolator { 0.0f };
+    juce::LinearSmoothedValue<float> delayTimeInterpolator { 0.0f };
     juce::LinearSmoothedValue<float> drywetInterpolator { 0.0f };
 
     //==============================================================================
