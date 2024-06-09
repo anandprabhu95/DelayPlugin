@@ -178,7 +178,7 @@ void DelayAudioProcessor::fillBuffer(juce::AudioBuffer<float>& wetBuffer, int ch
     if (delayBufferSize >= bufferSize + writePosition)
     {
         // Copy main buffer to delay buffer.
-        delayBuffer.copyFrom(channel, writePosition, wetBuffer.getWritePointer(channel), bufferSize);
+        delayBuffer.copyFrom(channel, writePosition, wetBuffer.getReadPointer(channel), bufferSize);
     }
     else
     {
@@ -187,10 +187,10 @@ void DelayAudioProcessor::fillBuffer(juce::AudioBuffer<float>& wetBuffer, int ch
         auto numSamplesAtStart = bufferSize - numSamplesToEnd;
 
         // Copy the samples to the end
-        delayBuffer.copyFrom(channel, writePosition, wetBuffer.getWritePointer(channel), numSamplesToEnd);
+        delayBuffer.copyFrom(channel, writePosition, wetBuffer.getReadPointer(channel), numSamplesToEnd);
 
         // Copy the rest from the start position of the buffer.
-        delayBuffer.copyFrom(channel, 0, wetBuffer.getWritePointer(channel, numSamplesToEnd), numSamplesAtStart);
+        delayBuffer.copyFrom(channel, 0, wetBuffer.getReadPointer(channel, numSamplesToEnd), numSamplesAtStart);
     }
 }
 
@@ -250,7 +250,6 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createP
 
 void DelayAudioProcessor::mixDryWet(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& wetBuffer, int channel)
 {
-    auto bufferSize = wetBuffer.getNumSamples();
     auto* drywetPointer = params.getRawParameterValue("DRYWET");
     drywetInterpolator.setTargetValue(drywetPointer->load());
     float drywetGain = drywetInterpolator.getNextValue();
@@ -259,7 +258,7 @@ void DelayAudioProcessor::mixDryWet(juce::AudioBuffer<float>& buffer, juce::Audi
     float scaledDryWetGain = knobValRangeScaler(drywetGain, -1.0f, 1.0f, 0.0f, 1.0f);
     
     // Reduce gain on the main buffer when as the wet gain increases.
-    buffer.applyGain(1 - 0.5 * scaledDryWetGain);
+    buffer.applyGain(1.0f - 0.5f * scaledDryWetGain);
     buffer.addFromWithRamp(channel, 0, wetBuffer.getReadPointer(channel, 0), wetBuffer.getNumSamples(), scaledDryWetGain, scaledDryWetGain);
 }
 

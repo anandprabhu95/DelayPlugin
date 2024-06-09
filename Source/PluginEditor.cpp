@@ -28,13 +28,15 @@ void DelayAudioProcessorEditor::resized()
 void DelayAudioProcessorEditor::createGUI()
 {
     //====================================================================================
-    addAndMakeVisible(gainSlider = new juce::Slider("gainslider"));
+    gainSlider = std::make_unique<juce::Slider>("gainslider");
+    addAndMakeVisible(gainSlider.get());
     gainSlider->setRange(0.0f, 1.0f, 0.1f);
     gainSlider->setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     gainSlider->setSliderStyle(juce::Slider::Rotary);
     gainSlider->addListener(this);
 
-    addAndMakeVisible(gainLabel = new juce::Label("gainslider", "Gain"));
+    gainLabel = std::make_unique<juce::Label>("gainlabel", "Gain");
+    addAndMakeVisible(gainLabel.get());
     gainLabel->setFont(juce::Font(10.00f, juce::Font::plain));
     gainLabel->setJustificationType(juce::Justification::centred);
     gainLabel->setEditable(false, false, false);
@@ -42,13 +44,15 @@ void DelayAudioProcessorEditor::createGUI()
     gainLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 
     //====================================================================================
-    addAndMakeVisible(delayMsSlider = new juce::Slider("delayslider"));
+    delayMsSlider = std::make_unique<juce::Slider>("delayslider");
+    addAndMakeVisible(delayMsSlider.get());
     delayMsSlider->setRange(0.0f, 96000.0f, 10.f);
     delayMsSlider->setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     delayMsSlider->setSliderStyle(juce::Slider::Rotary);
     delayMsSlider->addListener(this);
 
-    addAndMakeVisible(delayMsLabel = new juce::Label("delayslider", "Delay Ms"));
+    delayMsLabel = std::make_unique<juce::Label>("delaylabel", "Delay Time");
+    addAndMakeVisible(delayMsLabel.get());
     delayMsLabel->setFont(juce::Font(10.00f, juce::Font::plain));
     delayMsLabel->setJustificationType(juce::Justification::centred);
     delayMsLabel->setEditable(false, false, false);
@@ -56,13 +60,15 @@ void DelayAudioProcessorEditor::createGUI()
     delayMsLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 
     //====================================================================================
-    addAndMakeVisible(drywetSlider = new juce::Slider("drywetslider"));
+    drywetSlider = std::make_unique<juce::Slider>("drywetslider");
+    addAndMakeVisible(drywetSlider.get());
     drywetSlider->setRange(-1.0f, 1.0f, 0.01f);
     drywetSlider->setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     drywetSlider->setSliderStyle(juce::Slider::Rotary);
     drywetSlider->addListener(this);
 
-    addAndMakeVisible(drywetLabel = new juce::Label("drywetslider", "Dry/Wet"));
+    drywetLabel = std::make_unique<juce::Label>("drywetlabel", "Mix");
+    addAndMakeVisible(drywetLabel.get());
     drywetLabel->setFont(juce::Font(10.00f, juce::Font::plain));
     drywetLabel->setJustificationType(juce::Justification::centred);
     drywetLabel->setEditable(false, false, false);
@@ -105,9 +111,9 @@ void DelayAudioProcessorEditor::resizeGUI()
 
 void DelayAudioProcessorEditor::paramAttacher()
 {
-    gainParamAttach = new juce::AudioProcessorValueTreeState::SliderAttachment(audioProcessor.params, "FEEDBACKGAIN", *gainSlider);
-    delayMsParamAttach = new juce::AudioProcessorValueTreeState::SliderAttachment(audioProcessor.params, "DELAYMS", *delayMsSlider);
-    drywetParamAttach = new juce::AudioProcessorValueTreeState::SliderAttachment(audioProcessor.params, "DRYWET", *drywetSlider);
+    gainParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "FEEDBACKGAIN", *gainSlider);
+    delayMsParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "DELAYMS", *delayMsSlider);
+    drywetParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "DRYWET", *drywetSlider);
 }
 void DelayAudioProcessorEditor::sliderValueChanged(juce::Slider* sliderMoved)
 {

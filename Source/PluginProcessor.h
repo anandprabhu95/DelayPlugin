@@ -48,8 +48,8 @@ public:
     juce::AudioProcessorValueTreeState params;
 
 private:
-    void DelayAudioProcessor::fillBuffer(juce::AudioBuffer<float>& buffer, int channel);
-    void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& delayBuffer, int channel);
+    void DelayAudioProcessor::fillBuffer(juce::AudioBuffer<float>& wetBuffer, int channel);
+    void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& wetBuffer, juce::AudioBuffer<float>& delayBuffer, int channel);
     void DelayAudioProcessor::updateWritePositions(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& delayBuffer);
     void DelayAudioProcessor::mixDryWet(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& wetBuffer, int channel);
     juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createParameters();
