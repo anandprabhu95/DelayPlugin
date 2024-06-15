@@ -18,6 +18,13 @@ DelayAudioProcessorEditor::~DelayAudioProcessorEditor()
 void DelayAudioProcessorEditor::paint (juce::Graphics& g)
 {
     g.fillAll (juce::Colours::black);
+
+    g.setFont(9.0f);
+    g.setColour(juce::Colours::white);
+    g.drawText("Frecurse v1.0.0", 0, 210, 400, 10, juce::Justification::right, true);
+
+    g.setColour(juce::Colours::white);
+    g.drawLine(0, 210, 400, 210, 0.5);
 }
 
 void DelayAudioProcessorEditor::resized()
@@ -85,7 +92,7 @@ void DelayAudioProcessorEditor::createGUI()
 
     //=====================================================================================
     DBG("Setting Size");
-    setSize(400, 300);
+    setSize(400, 220);
 
     DBG("Created GUI");
 }
