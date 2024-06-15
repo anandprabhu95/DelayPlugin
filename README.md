@@ -5,4 +5,5 @@ Parameter controls:
 2) Feedback Gain: 0 to 1
 3) Dry/Wet mix
 
-   ![Screenshot 2024-06-07 211336](https://github.com/anandprabhu95/DelayPlugin/assets/93227915/0e8c3976-060a-42b6-b915-55a83034226d)
+
+![v1 0 0](https://github.com/anandprabhu95/DelayPlugin/assets/93227915/5cb40995-b5bf-43d5-891b-48a8e65bf976)
