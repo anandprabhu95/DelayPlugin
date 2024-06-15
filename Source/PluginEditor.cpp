@@ -26,8 +26,10 @@ void DelayAudioProcessorEditor::resized()
 }
 
 void DelayAudioProcessorEditor::createGUI()
-{
+{   
+    DBG("Creating GUI");
     //====================================================================================
+    DBG("Attaching GainSlider");
     gainSlider = std::make_unique<juce::Slider>("gainslider");
     addAndMakeVisible(gainSlider.get());
     gainSlider->setRange(0.0f, 1.0f, 0.1f);
@@ -35,6 +37,7 @@ void DelayAudioProcessorEditor::createGUI()
     gainSlider->setSliderStyle(juce::Slider::Rotary);
     gainSlider->addListener(this);
 
+    DBG("Attaching GainLabel");
     gainLabel = std::make_unique<juce::Label>("gainlabel", "Gain");
     addAndMakeVisible(gainLabel.get());
     gainLabel->setFont(juce::Font(10.00f, juce::Font::plain));
@@ -44,6 +47,7 @@ void DelayAudioProcessorEditor::createGUI()
     gainLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 
     //====================================================================================
+    DBG("Attaching DelayMsSlider");
     delayMsSlider = std::make_unique<juce::Slider>("delayslider");
     addAndMakeVisible(delayMsSlider.get());
     delayMsSlider->setRange(0.0f, 96000.0f, 10.f);
@@ -51,6 +55,7 @@ void DelayAudioProcessorEditor::createGUI()
     delayMsSlider->setSliderStyle(juce::Slider::Rotary);
     delayMsSlider->addListener(this);
 
+    DBG("Attaching DelayMsLabel");
     delayMsLabel = std::make_unique<juce::Label>("delaylabel", "Delay Time");
     addAndMakeVisible(delayMsLabel.get());
     delayMsLabel->setFont(juce::Font(10.00f, juce::Font::plain));
@@ -60,6 +65,7 @@ void DelayAudioProcessorEditor::createGUI()
     delayMsLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 
     //====================================================================================
+    DBG("Attaching DryWetSlider");
     drywetSlider = std::make_unique<juce::Slider>("drywetslider");
     addAndMakeVisible(drywetSlider.get());
     drywetSlider->setRange(-1.0f, 1.0f, 0.01f);
@@ -67,6 +73,7 @@ void DelayAudioProcessorEditor::createGUI()
     drywetSlider->setSliderStyle(juce::Slider::Rotary);
     drywetSlider->addListener(this);
 
+    DBG("Attaching DryWetLabel");
     drywetLabel = std::make_unique<juce::Label>("drywetlabel", "Mix");
     addAndMakeVisible(drywetLabel.get());
     drywetLabel->setFont(juce::Font(10.00f, juce::Font::plain));
@@ -77,26 +84,34 @@ void DelayAudioProcessorEditor::createGUI()
 
 
     //=====================================================================================
+    DBG("Setting Size");
     setSize(400, 300);
+
+    DBG("Created GUI");
 }
 
 void DelayAudioProcessorEditor::destroyGUI()
-{
-    gainSlider = nullptr;
+{   
+    DBG("Destroying GUI");
+
+    //gainSlider = nullptr;
     gainLabel = nullptr;
     gainParamAttach = nullptr;
-
-    delayMsSlider = nullptr;
+    
+    //delayMsSlider = nullptr;
     delayMsLabel = nullptr;
     delayMsParamAttach = nullptr;
-
-    drywetSlider = nullptr;
+    
+    //drywetSlider = nullptr;
     drywetLabel = nullptr;
     drywetParamAttach = nullptr;
+
+    DBG("Destroyed GUI");
 }
 
 void DelayAudioProcessorEditor::resizeGUI()
 {   
+    DBG("Resizing GUI");
     int globalX = 50;
     int globalY = 50;
     gainSlider->setBounds(globalX + 0, globalY + 15, 100, 100);
@@ -107,13 +122,17 @@ void DelayAudioProcessorEditor::resizeGUI()
 
     drywetSlider->setBounds(globalX + 200, globalY + 15, 100, 100);
     drywetLabel->setBounds(globalX + 200, globalY + 0, 100, 24);
+
+    DBG("Resized GUI");
 }
 
 void DelayAudioProcessorEditor::paramAttacher()
 {
+    DBG("Attaching Params");
     gainParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "FEEDBACKGAIN", *gainSlider);
     delayMsParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "DELAYMS", *delayMsSlider);
     drywetParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "DRYWET", *drywetSlider);
+    DBG("Attached Params");
 }
 void DelayAudioProcessorEditor::sliderValueChanged(juce::Slider* sliderMoved)
 {

@@ -162,11 +162,6 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
 
     // Loop the write position from 0 to delay buffer size.
     updateWritePositions(buffer, delayBuffer);
-
-    // For debugging, remove later
-    DBG("Buffer Size: " << bufferSize);
-    DBG("Delay Buffer Size: " << delayBufferSize);
-    DBG("Write Buffer Size: " << writePosition);
 }
 
 void DelayAudioProcessor::fillBuffer(juce::AudioBuffer<float>& wetBuffer, int channel)
