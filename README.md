@@ -1,7 +1,7 @@
 Delay plugin made with JUCE Framework (v7.0.12).
 
 Releases:
-- ![v1.0.0](https://github.com/anandprabhu95/DelayPlugin/releases/tag/v1.0.0)
+- [v1.0.0](https://github.com/anandprabhu95/DelayPlugin/releases/tag/v1.0.0)
 
 Parameter controls:
 1) Delay Time: 0 to 2 seconds.
