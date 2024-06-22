@@ -89,6 +89,21 @@ void DelayAudioProcessorEditor::createGUI()
     drywetLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
     drywetLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 
+    //====================================================================================
+    DBG("Attaching LfoButton");
+    lfoButton = std::make_unique<juce::ToggleButton>("");
+    addAndMakeVisible(lfoButton.get());
+    lfoButton->setSize(20, 20);
+    lfoButton->setClickingTogglesState(true);
+
+    DBG("Attaching LfoLabel");
+    lfoLabel = std::make_unique<juce::Label>("lfolabe", "LFO");
+    addAndMakeVisible(lfoLabel.get());
+    lfoLabel->setFont(juce::Font(10.00f, juce::Font::plain));
+    lfoLabel->setJustificationType(juce::Justification::centred);
+    lfoLabel->setEditable(false, false, false);
+    lfoLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    lfoLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 
     //=====================================================================================
     DBG("Setting Size");
@@ -113,6 +128,9 @@ void DelayAudioProcessorEditor::destroyGUI()
     drywetLabel = nullptr;
     drywetParamAttach = nullptr;
 
+    lfoButton = nullptr;
+    lfoLabel = nullptr;
+
     DBG("Destroyed GUI");
 }
 
@@ -121,6 +139,7 @@ void DelayAudioProcessorEditor::resizeGUI()
     DBG("Resizing GUI");
     int globalX = 50;
     int globalY = 50;
+
     gainSlider->setBounds(globalX + 0, globalY + 15, 100, 100);
     gainLabel->setBounds(globalX + 0, globalY + 0, 100, 24);
 
@@ -129,6 +148,9 @@ void DelayAudioProcessorEditor::resizeGUI()
 
     drywetSlider->setBounds(globalX + 200, globalY + 15, 100, 100);
     drywetLabel->setBounds(globalX + 200, globalY + 0, 100, 24);
+
+    lfoButton->setBounds(globalX + 140, globalY + 120, 40, 40);
+    lfoLabel->setBounds(globalX + 150, globalY + 120, 50, 40);
 
     DBG("Resized GUI");
 }
@@ -139,6 +161,7 @@ void DelayAudioProcessorEditor::paramAttacher()
     gainParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "FEEDBACKGAIN", *gainSlider);
     delayMsParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "DELAYMS", *delayMsSlider);
     drywetParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "DRYWET", *drywetSlider);
+    lfoParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "LFO", *lfoButton);
     DBG("Attached Params");
 }
 void DelayAudioProcessorEditor::sliderValueChanged(juce::Slider* sliderMoved)
