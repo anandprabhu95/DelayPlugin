@@ -54,15 +54,19 @@ private:
     void DelayAudioProcessor::mixDryWet(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& wetBuffer, int channel);
     juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createParameters();
     float DelayAudioProcessor::knobValRangeScaler(float paramToScale, float knobValMin, float knobValMax, float desiredSclMin, float desiredSclMax);
+    std::vector<float> DelayAudioProcessor::createSinArray(juce::AudioBuffer<float>& wetBuffer, int channel);
+    void DelayAudioProcessor::lfoAmplitudeModulation(juce::AudioBuffer<float>& wetBuffer, int channel, std::vector<float> amplitudeVec);
 
 
     juce::AudioBuffer<float> wetBuffer;
     juce::AudioBuffer<float> delayBuffer;
+    juce::AudioBuffer<float> lfoBuffer;
     int writePosition { 0 };
     int readPosition { 0 };
     juce::LinearSmoothedValue<float> feedbackGainInterpolator { 0.0f };
     juce::LinearSmoothedValue<float> delayTimeInterpolator { 0.0f };
     juce::LinearSmoothedValue<float> drywetInterpolator { 0.0f };
+    float kPI = 3.142;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayAudioProcessor)

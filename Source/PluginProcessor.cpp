@@ -155,6 +155,11 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
         
         // Feedback the main buffer containing the contents of the delay buffer [ y(k) = x(k) + G*x(k-1) ]
         fillBuffer(wetBuffer, channel);
+        
+        // Create LFO
+        auto amplVec = createSinArray(wetBuffer, channel);
+
+        lfoAmplitudeModulation(wetBuffer, channel, amplVec);
 
         // Dry/Wet mix
         mixDryWet(buffer, wetBuffer, channel);
@@ -240,6 +245,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createP
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS", "Delay Ms", 0.0f, 96000.0f, 0.0f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN", "Feedback Gain", 0.0f, 1.0f, 0.7f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DRYWET", "Dry/Wet", -1.0f, 1.0f, 0.0f));
+    parameters.push_back(std::make_unique<juce::AudioParameterBool>("LFO", "Enable LFO", 0));
     return { parameters.begin(), parameters.end() };
 }
 
@@ -261,6 +267,44 @@ float DelayAudioProcessor::knobValRangeScaler(float paramToScale, float guiSclMi
 {
     float scaledParam = (desiredSclMax - desiredSclMin) * (paramToScale - guiSclMin) / (guiSclMax - guiSclMin) + desiredSclMin;
     return scaledParam;
+}
+
+//=========================================== LFO ========================================
+void DelayAudioProcessor::lfoAmplitudeModulation(juce::AudioBuffer<float>& wetBuffer, int channel, std::vector<float> amplitudeVec)
+{
+    float drySample{ 0.0f };
+    float lfoSample{ 0.0f };
+    float amplitudeMod{ 0.0f };
+
+    auto isLfoOn = params.getRawParameterValue("LFO");
+
+    if (isLfoOn->load() != 0) {
+        for (channel = 0; channel < wetBuffer.getNumChannels(); ++channel)
+        {
+            for (int sample = 0;sample < wetBuffer.getNumSamples(); ++sample) {
+                drySample = wetBuffer.getSample(channel, sample);
+                amplitudeMod = amplitudeVec[sample];
+                lfoSample = drySample * amplitudeMod;
+                wetBuffer.setSample(channel, sample, lfoSample);
+            }
+        }
+    }
+}
+
+std::vector<float> DelayAudioProcessor::createSinArray(juce::AudioBuffer<float>& wetBuffer, int channel)
+{   
+    auto wetBufferSize = wetBuffer.getNumSamples();
+    std::vector<float> amplitudeVec;
+
+    for (auto i = 0; i < wetBufferSize; ++i)
+    {
+        // Sin
+        auto mSinVal = sin((static_cast<float> (i) / wetBufferSize) * (2 * kPI));
+        mSinVal = 0.5f * (mSinVal + 1);
+        //DBG("LFO VAL " << mSinVal << " Index:" << i);
+        amplitudeVec.push_back(mSinVal);
+    }
+    return amplitudeVec;
 }
 
 //==============================================================================
