@@ -21,10 +21,10 @@ void DelayAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setFont(9.0f);
     g.setColour(juce::Colours::white);
-    g.drawText("Frecurse v1.0.0", 0, 210, 400, 10, juce::Justification::right, true);
+    g.drawText("Frecurse v1.0.0", 0, HEIGHT-10, WIDTH, 10, juce::Justification::right, true);
 
     g.setColour(juce::Colours::white);
-    g.drawLine(0, 210, 400, 210, 0.5);
+    g.drawLine(0, HEIGHT-10, WIDTH, HEIGHT-10, 0.5);
 }
 
 void DelayAudioProcessorEditor::resized()
@@ -96,18 +96,36 @@ void DelayAudioProcessorEditor::createGUI()
     lfoButton->setSize(20, 20);
     lfoButton->setClickingTogglesState(true);
 
-    DBG("Attaching LfoLabel");
-    lfoLabel = std::make_unique<juce::Label>("lfolabe", "LFO");
-    addAndMakeVisible(lfoLabel.get());
-    lfoLabel->setFont(juce::Font(10.00f, juce::Font::plain));
-    lfoLabel->setJustificationType(juce::Justification::centred);
-    lfoLabel->setEditable(false, false, false);
-    lfoLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    lfoLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+    DBG("Attaching LfoButtonLabel");
+    lfoButtonLabel = std::make_unique<juce::Label>("lfobuttonlabel", "LFO");
+    addAndMakeVisible(lfoButtonLabel.get());
+    lfoButtonLabel->setFont(juce::Font(10.00f, juce::Font::plain));
+    lfoButtonLabel->setJustificationType(juce::Justification::centred);
+    lfoButtonLabel->setEditable(false, false, false);
+    lfoButtonLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    lfoButtonLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+
+    //====================================================================================
+    DBG("Attaching lfoFreqSlider");
+    lfoFreqSlider = std::make_unique<juce::Slider>("lfofreqslider");
+    addAndMakeVisible(lfoFreqSlider.get());
+    lfoFreqSlider->setRange(-1.0f, 1.0f, 0.01f);
+    lfoFreqSlider->setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+    lfoFreqSlider->setSliderStyle(juce::Slider::Rotary);
+    lfoFreqSlider->addListener(this);
+
+    DBG("Attaching lfoFreqLabel");
+    lfoFreqLabel = std::make_unique<juce::Label>("lfoFreqlabel", "LFO Freq");
+    addAndMakeVisible(lfoFreqLabel.get());
+    lfoFreqLabel->setFont(juce::Font(10.00f, juce::Font::plain));
+    lfoFreqLabel->setJustificationType(juce::Justification::centred);
+    lfoFreqLabel->setEditable(false, false, false);
+    lfoFreqLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    lfoFreqLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 
     //=====================================================================================
     DBG("Setting Size");
-    setSize(400, 220);
+    setSize(WIDTH, HEIGHT);
 
     DBG("Created GUI");
 }
@@ -129,7 +147,10 @@ void DelayAudioProcessorEditor::destroyGUI()
     drywetParamAttach = nullptr;
 
     lfoButton = nullptr;
-    lfoLabel = nullptr;
+    lfoButtonLabel = nullptr;
+
+    lfoFreqLabel = nullptr;
+    lfoFreqParamAttach = nullptr;
 
     DBG("Destroyed GUI");
 }
@@ -149,8 +170,11 @@ void DelayAudioProcessorEditor::resizeGUI()
     drywetSlider->setBounds(globalX + 200, globalY + 15, 100, 100);
     drywetLabel->setBounds(globalX + 200, globalY + 0, 100, 24);
 
-    lfoButton->setBounds(globalX + 140, globalY + 120, 40, 40);
-    lfoLabel->setBounds(globalX + 150, globalY + 120, 50, 40);
+    lfoButton->setBounds(globalX + 137.5, globalY + 120, 40, 40);
+    lfoButtonLabel->setBounds(globalX + 145, globalY + 120, 50, 40);
+
+    lfoFreqSlider->setBounds(globalX + 100, globalY + 160, 100, 100);
+    lfoFreqLabel->setBounds(globalX + 100, globalY + 145, 100, 24);
 
     DBG("Resized GUI");
 }
@@ -161,7 +185,8 @@ void DelayAudioProcessorEditor::paramAttacher()
     gainParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "FEEDBACKGAIN", *gainSlider);
     delayMsParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "DELAYMS", *delayMsSlider);
     drywetParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "DRYWET", *drywetSlider);
-    lfoParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "LFO", *lfoButton);
+    lfoButtonParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "LFOENA", *lfoButton);
+    lfoFreqParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "LFOFREQ", *lfoFreqSlider);
     DBG("Attached Params");
 }
 void DelayAudioProcessorEditor::sliderValueChanged(juce::Slider* sliderMoved)

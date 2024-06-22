@@ -1,6 +1,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "Constants.h"
 
 //==============================================================================
 
@@ -66,7 +67,6 @@ private:
     juce::LinearSmoothedValue<float> feedbackGainInterpolator { 0.0f };
     juce::LinearSmoothedValue<float> delayTimeInterpolator { 0.0f };
     juce::LinearSmoothedValue<float> drywetInterpolator { 0.0f };
-    float kPI = 3.142;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayAudioProcessor)

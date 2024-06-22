@@ -245,7 +245,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createP
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS", "Delay Ms", 0.0f, 96000.0f, 0.0f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN", "Feedback Gain", 0.0f, 1.0f, 0.7f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DRYWET", "Dry/Wet", -1.0f, 1.0f, 0.0f));
-    parameters.push_back(std::make_unique<juce::AudioParameterBool>("LFO", "Enable LFO", 0));
+    parameters.push_back(std::make_unique<juce::AudioParameterBool>("LFOENA", "Enable LFO", 0));
+    //parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LFOFREQ", "LFO Freq", -1.0f, 1.0f, 0.0f));
     return { parameters.begin(), parameters.end() };
 }
 
@@ -276,7 +277,7 @@ void DelayAudioProcessor::lfoAmplitudeModulation(juce::AudioBuffer<float>& wetBu
     float lfoSample{ 0.0f };
     float amplitudeMod{ 0.0f };
 
-    auto isLfoOn = params.getRawParameterValue("LFO");
+    auto isLfoOn = params.getRawParameterValue("LFOENA");
 
     if (isLfoOn->load() != 0) {
         for (channel = 0; channel < wetBuffer.getNumChannels(); ++channel)
@@ -299,7 +300,7 @@ std::vector<float> DelayAudioProcessor::createSinArray(juce::AudioBuffer<float>&
     for (auto i = 0; i < wetBufferSize; ++i)
     {
         // Sin
-        auto mSinVal = sin((static_cast<float> (i) / wetBufferSize) * (2 * kPI));
+        auto mSinVal = sin((static_cast<float> (i) / wetBufferSize) * (2 * PI));
         mSinVal = 0.5f * (mSinVal + 1);
         //DBG("LFO VAL " << mSinVal << " Index:" << i);
         amplitudeVec.push_back(mSinVal);
