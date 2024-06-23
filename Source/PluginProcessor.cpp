@@ -157,9 +157,9 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
         fillBuffer(wetBuffer, channel);
         
         // Create LFO
-        auto amplVec = createSinArray(wetBuffer, channel);
+        auto amplVec = createSinArray(wetBuffer);
 
-        lfoAmplitudeModulation(wetBuffer, channel, amplVec);
+        // lfoAmplitudeModulation(wetBuffer, channel, amplVec);
 
         // Dry/Wet mix
         mixDryWet(buffer, wetBuffer, channel);
@@ -246,7 +246,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createP
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN", "Feedback Gain", 0.0f, 1.0f, 0.7f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DRYWET", "Dry/Wet", -1.0f, 1.0f, 0.0f));
     parameters.push_back(std::make_unique<juce::AudioParameterBool>("LFOENA", "Enable LFO", 0));
-    //parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LFOFREQ", "LFO Freq", -1.0f, 1.0f, 0.0f));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LFOFREQ", "LFO Freq", -1.0f, 1.0f, 0.0f));
     return { parameters.begin(), parameters.end() };
 }
 
@@ -282,7 +282,7 @@ void DelayAudioProcessor::lfoAmplitudeModulation(juce::AudioBuffer<float>& wetBu
     if (isLfoOn->load() != 0) {
         for (channel = 0; channel < wetBuffer.getNumChannels(); ++channel)
         {
-            for (int sample = 0;sample < wetBuffer.getNumSamples(); ++sample) {
+            for (int sample = 0; sample < wetBuffer.getNumSamples(); ++sample) {
                 drySample = wetBuffer.getSample(channel, sample);
                 amplitudeMod = amplitudeVec[sample];
                 lfoSample = drySample * amplitudeMod;
@@ -292,18 +292,26 @@ void DelayAudioProcessor::lfoAmplitudeModulation(juce::AudioBuffer<float>& wetBu
     }
 }
 
-std::vector<float> DelayAudioProcessor::createSinArray(juce::AudioBuffer<float>& wetBuffer, int channel)
+std::vector<float> DelayAudioProcessor::createSinArray(juce::AudioBuffer<float>& wetBuffer)
 {   
     auto wetBufferSize = wetBuffer.getNumSamples();
     std::vector<float> amplitudeVec;
+    auto sampleRate = static_cast<float>(getSampleRate());
+    auto increment = 1.0f / (sampleRate * 0.05f);
+    auto deltaIndex = wetBufferSize / (sampleRate * 0.05);
 
-    for (auto i = 0; i < wetBufferSize; ++i)
+    for (float i = lfoSinIndex; i < lfoSinIndex + deltaIndex; i+=increment)
     {
         // Sin
-        auto mSinVal = sin((static_cast<float> (i) / wetBufferSize) * (2 * PI));
-        mSinVal = 0.5f * (mSinVal + 1);
-        //DBG("LFO VAL " << mSinVal << " Index:" << i);
+        auto mSinVal = sin(static_cast<float> (i) * (2 * PI));
+        //mSinVal = 0.5f * (mSinVal + 1);
+        DBG("LFO VAL: " << mSinVal << "Index: " << i);
         amplitudeVec.push_back(mSinVal);
+        if (lfoSinIndex > sampleRate * 2.0f)
+        {
+            DBG("Reset lfoIndex");
+            lfoSinIndex = 0.0f;
+        }
     }
     return amplitudeVec;
 }
