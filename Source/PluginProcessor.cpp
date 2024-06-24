@@ -19,6 +19,7 @@ DelayAudioProcessor::DelayAudioProcessor()
 
 DelayAudioProcessor::~DelayAudioProcessor()
 {
+    DBG("Destroyed Processor");
 }
 
 //==============================================================================
@@ -143,6 +144,12 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
         wetBuffer.clear(i, 0, wetBuffer.getNumSamples());
     }
 
+    // Create SinArray
+    auto sinArrayResult = createSinArray(wetBuffer, lfoSinIndexPrev);
+    auto amplVec = sinArrayResult.first;
+    lfoSinIndexPrev = sinArrayResult.second;
+    DBG("Prev :" << lfoSinIndexPrev);
+
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {   
         wetBuffer.copyFrom(channel, 0, buffer.getWritePointer(channel), bufferSize);
@@ -156,10 +163,7 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
         // Feedback the main buffer containing the contents of the delay buffer [ y(k) = x(k) + G*x(k-1) ]
         fillBuffer(wetBuffer, channel);
         
-        // Create LFO
-        auto amplVec = createSinArray(wetBuffer);
-
-        // lfoAmplitudeModulation(wetBuffer, channel, amplVec);
+        lfoAmplitudeModulation(wetBuffer, channel, amplVec);
 
         // Dry/Wet mix
         mixDryWet(buffer, wetBuffer, channel);
@@ -292,28 +296,30 @@ void DelayAudioProcessor::lfoAmplitudeModulation(juce::AudioBuffer<float>& wetBu
     }
 }
 
-std::vector<float> DelayAudioProcessor::createSinArray(juce::AudioBuffer<float>& wetBuffer)
+std::pair<std::vector<float>, float> DelayAudioProcessor::createSinArray(juce::AudioBuffer<float>& wetBuffer, float lfoSinIndexPrevious)
 {   
     auto wetBufferSize = wetBuffer.getNumSamples();
     std::vector<float> amplitudeVec;
     auto sampleRate = static_cast<float>(getSampleRate());
-    auto increment = 1.0f / (sampleRate * 0.05f);
-    auto deltaIndex = wetBufferSize / (sampleRate * 0.05);
-
-    for (float i = lfoSinIndex; i < lfoSinIndex + deltaIndex; i+=increment)
+    auto deltaIndex = wetBufferSize / sampleRate ;
+    auto increment = deltaIndex / wetBufferSize;
+    float lfoSinIndexStart = lfoSinIndexPrevious;
+    float i = 0.0f;
+    for (i = lfoSinIndexStart; i < lfoSinIndexStart + deltaIndex; i+=increment)
     {
         // Sin
         auto mSinVal = sin(static_cast<float> (i) * (2 * PI));
         //mSinVal = 0.5f * (mSinVal + 1);
-        DBG("LFO VAL: " << mSinVal << "Index: " << i);
+        //DBG("LFO VAL: " << mSinVal << "Index: " << i);
         amplitudeVec.push_back(mSinVal);
-        if (lfoSinIndex > sampleRate * 2.0f)
-        {
-            DBG("Reset lfoIndex");
-            lfoSinIndex = 0.0f;
-        }
     }
-    return amplitudeVec;
+    if (i > 0.5f)
+    {
+        DBG("Reset lfoIndex");
+        i = 0.0f;
+    }
+    std::pair<std::vector<float>, float>result(amplitudeVec, i);
+    return result;
 }
 
 //==============================================================================
