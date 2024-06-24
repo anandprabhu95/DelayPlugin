@@ -21,7 +21,7 @@ void DelayAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setFont(9.0f);
     g.setColour(juce::Colours::white);
-    g.drawText("Frecurse v1.0.0", 0, HEIGHT-10, WIDTH, 10, juce::Justification::right, true);
+    g.drawText(VERSION, 0, HEIGHT-10, WIDTH, 10, juce::Justification::right, true);
 
     g.setColour(juce::Colours::white);
     g.drawLine(0, HEIGHT-10, WIDTH, HEIGHT-10, 0.5);
@@ -158,23 +158,21 @@ void DelayAudioProcessorEditor::destroyGUI()
 void DelayAudioProcessorEditor::resizeGUI()
 {   
     DBG("Resizing GUI");
-    int globalX = 50;
-    int globalY = 50;
 
-    gainSlider->setBounds(globalX + 0, globalY + 15, 100, 100);
-    gainLabel->setBounds(globalX + 0, globalY + 0, 100, 24);
+    gainSlider->setBounds(GLOBAL_X + FB_GAIN_SLIDER_X, GLOBAL_Y + FB_GAIN_SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
+    gainLabel->setBounds(GLOBAL_X + FB_GAIN_LABEL_X, GLOBAL_Y + FB_GAIN_LABEL_Y, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
 
-    delayMsSlider->setBounds(globalX + 100, globalY + 15, 100, 100);
-    delayMsLabel->setBounds(globalX + 100, globalY + 0, 100, 24);
+    delayMsSlider->setBounds(GLOBAL_X + DELAYMS_SLIDER_X, GLOBAL_Y + DELAYMS_SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
+    delayMsLabel->setBounds(GLOBAL_X + DELAYMS_LABEL_X, GLOBAL_Y + DELAYMS_LABEL_Y, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
 
-    drywetSlider->setBounds(globalX + 200, globalY + 15, 100, 100);
-    drywetLabel->setBounds(globalX + 200, globalY + 0, 100, 24);
+    drywetSlider->setBounds(GLOBAL_X + MIX_SLIDER_X, GLOBAL_Y + MIX_SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
+    drywetLabel->setBounds(GLOBAL_X + MIX_LABEL_X, GLOBAL_Y + MIX_LABEL_Y, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
 
-    lfoButton->setBounds(globalX + 137.5, globalY + 120, 40, 40);
-    lfoButtonLabel->setBounds(globalX + 145, globalY + 120, 50, 40);
+    lfoButton->setBounds(GLOBAL_X + LFOENA_BUT_X, GLOBAL_Y + LFOENA_BUT_Y, LFOENA_BUT_WIDTH, LFOENA_BUT_HEIGHT);
+    lfoButtonLabel->setBounds(GLOBAL_X + LFOENA_LABEL_X, GLOBAL_Y + LFOENA_LABEL_Y, LFOENA_BUT_LAB_WIDTH, LFOENA_BUT_LAB_HEIGHT);
 
-    lfoFreqSlider->setBounds(globalX + 100, globalY + 160, 100, 100);
-    lfoFreqLabel->setBounds(globalX + 100, globalY + 145, 100, 24);
+    lfoFreqSlider->setBounds(GLOBAL_X + LFOFREQ_SLIDER_X, GLOBAL_Y + LFOFREQ_SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
+    lfoFreqLabel->setBounds(GLOBAL_X + LFOFREQ_LABEL_X, GLOBAL_Y + LFOFREQ_LABEL_Y, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
 
     DBG("Resized GUI");
 }
