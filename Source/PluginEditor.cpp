@@ -109,7 +109,7 @@ void DelayAudioProcessorEditor::createGUI()
     DBG("Attaching lfoFreqSlider");
     lfoFreqSlider = std::make_unique<juce::Slider>("lfofreqslider");
     addAndMakeVisible(lfoFreqSlider.get());
-    lfoFreqSlider->setRange(-1.0f, 1.0f, 0.01f);
+    lfoFreqSlider->setRange(1.0f, 10.0f, 0.01f);
     lfoFreqSlider->setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     lfoFreqSlider->setSliderStyle(juce::Slider::Rotary);
     lfoFreqSlider->addListener(this);
@@ -146,7 +146,7 @@ void DelayAudioProcessorEditor::destroyGUI()
     drywetLabel = nullptr;
     drywetParamAttach = nullptr;
 
-    lfoButton = nullptr;
+    //lfoButton = nullptr;
     lfoButtonLabel = nullptr;
 
     lfoFreqLabel = nullptr;

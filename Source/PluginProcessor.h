@@ -67,6 +67,7 @@ private:
     juce::LinearSmoothedValue<float> feedbackGainInterpolator { 0.0f };
     juce::LinearSmoothedValue<float> delayTimeInterpolator { 0.0f };
     juce::LinearSmoothedValue<float> drywetInterpolator { 0.0f };
+    juce::LinearSmoothedValue<float> lfoFreqInterpolator{ 0.0f };
 
     float lfoSinIndexPrev {0.0f};
 

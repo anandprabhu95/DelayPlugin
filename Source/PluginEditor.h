@@ -34,7 +34,8 @@ private:
 
     std::unique_ptr<juce::Label> gainLabel, delayMsLabel, drywetLabel, lfoButtonLabel, lfoFreqLabel;
 
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainParamAttach, delayMsParamAttach, drywetParamAttach, lfoFreqParamAttach;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainParamAttach, delayMsParamAttach, 
+                                                                          drywetParamAttach, lfoFreqParamAttach;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> lfoButtonParamAttach;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayAudioProcessorEditor)
