@@ -303,7 +303,7 @@ std::pair<std::vector<float>, float> DelayAudioProcessor::createSinArray(juce::A
     std::vector<float> amplitudeVec;
     auto sampleRate = static_cast<float>(getSampleRate());
     auto deltaIndex = wetBufferSize / sampleRate ;
-    auto increment = deltaIndex / wetBufferSize;
+    auto increment = 1.0f / sampleRate;
     float lfoSinIndexStart = lfoSinIndexPrevious;
     auto lfoFreq = params.getRawParameterValue("LFOFREQ");
     DBG("LfoFreq: " << lfoFreq->load());
@@ -315,7 +315,7 @@ std::pair<std::vector<float>, float> DelayAudioProcessor::createSinArray(juce::A
         mSinVal = 0.5 * mSinVal + 0.5;
         amplitudeVec.push_back(mSinVal);
     }
-    if (i > 0.5f)
+    if (i > 1/lfoFreq->load())
     {
         DBG("Reset lfoIndex");
         i = 0.0f;
