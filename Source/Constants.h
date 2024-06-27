@@ -1,14 +1,17 @@
 #pragma once
 
-#define	VERSION					"Frecurse v1.0.0"
+#define	VERSION					"Frecurse v1.1.0"
 
 #define PI						3.14159
 
-#define HEIGHT					350
+#define HEIGHT					380
 #define WIDTH					400
 
 #define SLIDER_WIDTH			100
 #define SLIDER_HEIGHT			100
+
+#define LIN_SLIDER_WIDTH		70
+#define LIN_SLIDER_HEIGHT		24
 
 #define SLIDER_LABEL_WIDTH		100
 #define SLIDER_LABEL_HEIGHT		24
@@ -32,15 +35,22 @@
 #define MIX_LABEL_Y				0
 
 #define LFOFREQ_SLIDER_X		100
-#define LFOFREQ_SLIDER_Y		160
+#define LFOFREQ_SLIDER_Y		140
 #define LFOFREQ_LABEL_X			100
-#define LFOFREQ_LABEL_Y			145
+#define LFOFREQ_LABEL_Y			125
 
 #define LFOENA_BUT_X			137.5
-#define LFOENA_BUT_Y			120
+#define LFOENA_BUT_Y			245
 #define LFOENA_BUT_WIDTH		40
 #define LFOENA_BUT_HEIGHT		40
-#define LFOENA_LABEL_X			150
-#define LFOENA_LABEL_Y			120
-#define LFOENA_BUT_LAB_HEIGHT	40
-#define LFOENA_BUT_LAB_WIDTH	40
+#define LFOENA_LABEL_X			135
+#define LFOENA_LABEL_Y			280
+#define LFOENA_BUT_LAB_HEIGHT	10
+#define LFOENA_BUT_LAB_WIDTH	30
+
+#define LFOAMT_SLIDER_X			118
+#define LFOAMT_SLIDER_Y			227
+#define LFOAMT_LABEL_X			95
+#define LFOAMT_LABEL_Y			233.5
+#define LFOAMT_LAB_HEIGHT		10
+#define LFOAMT_LAB_WIDTH		30

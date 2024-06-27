@@ -29,13 +29,15 @@ private:
     void DelayAudioProcessorEditor::paramAttacher();
     void DelayAudioProcessorEditor::sliderValueChanged(juce::Slider* sliderMoved);
 
-    std::unique_ptr<juce::Slider> gainSlider, delayMsSlider, drywetSlider, lfoFreqSlider;
+    std::unique_ptr<juce::Slider> gainSlider, delayMsSlider, drywetSlider, lfoFreqSlider,
+                                  lfoAmtSlider;
     std::unique_ptr<juce::ToggleButton> lfoButton;
 
-    std::unique_ptr<juce::Label> gainLabel, delayMsLabel, drywetLabel, lfoButtonLabel, lfoFreqLabel;
+    std::unique_ptr<juce::Label> gainLabel, delayMsLabel, drywetLabel, lfoButtonLabel, lfoFreqLabel, lfoAmtLabel;
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainParamAttach, delayMsParamAttach, 
-                                                                          drywetParamAttach, lfoFreqParamAttach;
+                                                                          drywetParamAttach, lfoFreqParamAttach,
+                                                                          lfoAmtParamAttach;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> lfoButtonParamAttach;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayAudioProcessorEditor)

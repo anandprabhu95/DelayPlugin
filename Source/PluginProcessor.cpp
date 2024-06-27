@@ -96,6 +96,7 @@ void DelayAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     delayTimeInterpolator.reset(sampleRate, 0.0001);
     drywetInterpolator.reset(sampleRate, 0.005);
     lfoFreqInterpolator.reset(sampleRate, 0.0005);
+    lfoAmtInterpolator.reset(sampleRate, 0.0005);
 }
 
 void DelayAudioProcessor::releaseResources()
@@ -252,6 +253,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createP
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DRYWET", "Dry/Wet", -1.0f, 1.0f, 0.0f));
     parameters.push_back(std::make_unique<juce::AudioParameterBool>("LFOENA", "Enable LFO", 0));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LFOFREQ", "LFO Freq", 1.f, 10.0f, 2.0f));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LFOAMT", "LFO Amt", 0.5f, 1.0f, 0.5f));
     return { parameters.begin(), parameters.end() };
 }
 
@@ -297,7 +299,7 @@ void DelayAudioProcessor::lfoAmplitudeModulation(juce::AudioBuffer<float>& wetBu
     }
 }
 
-std::pair<std::vector<float>, float> DelayAudioProcessor::createSinArray(juce::AudioBuffer<float>& wetBuffer, float lfoSinIndexPrevious)
+std::pair<std::vector<float>, float> DelayAudioProcessor::createSinArray(juce::AudioBuffer<float>& wetBuffer, float lfoSinIndexPrevious) const
 {   
     auto wetBufferSize = wetBuffer.getNumSamples();
     std::vector<float> amplitudeVec;
@@ -306,13 +308,14 @@ std::pair<std::vector<float>, float> DelayAudioProcessor::createSinArray(juce::A
     auto increment = 1.0f / sampleRate;
     float lfoSinIndexStart = lfoSinIndexPrevious;
     auto lfoFreq = params.getRawParameterValue("LFOFREQ");
+    auto lfoAmt = params.getRawParameterValue("LFOAMT");
     DBG("LfoFreq: " << lfoFreq->load());
 
     float i = 0.0f;
     for (i = lfoSinIndexStart; i < lfoSinIndexStart + deltaIndex; i+=increment)
     {
         auto mSinVal = sin(static_cast<float> (i) * (2 * PI) * lfoFreq->load());
-        mSinVal = 0.5 * mSinVal + 0.5;
+        mSinVal = lfoAmt->load() * mSinVal + (1 - lfoAmt->load());
         amplitudeVec.push_back(mSinVal);
     }
     if (i > 1/lfoFreq->load())
@@ -320,8 +323,7 @@ std::pair<std::vector<float>, float> DelayAudioProcessor::createSinArray(juce::A
         DBG("Reset lfoIndex");
         i = 0.0f;
     }
-    std::pair<std::vector<float>, float>result(amplitudeVec, i);
-    return result;
+    return std::pair<std::vector<float>, float>(amplitudeVec, i);
 }
 
 //==============================================================================
