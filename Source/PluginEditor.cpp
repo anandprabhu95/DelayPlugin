@@ -17,7 +17,7 @@ DelayAudioProcessorEditor::~DelayAudioProcessorEditor()
 //==============================================================================
 void DelayAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    g.fillAll (juce::Colours::black);
+    paintBackground(g);
 
     g.setFont(9.0f);
     g.setColour(juce::Colours::white);
@@ -152,26 +152,29 @@ void DelayAudioProcessorEditor::destroyGUI()
 {   
     DBG("Destroying GUI");
 
-    //gainSlider = nullptr;
     gainLabel = nullptr;
     gainParamAttach = nullptr;
+    gainSlider = nullptr;
     
-    //delayMsSlider = nullptr;
     delayMsLabel = nullptr;
     delayMsParamAttach = nullptr;
-    
-    //drywetSlider = nullptr;
+    delayMsSlider = nullptr;
+   
     drywetLabel = nullptr;
     drywetParamAttach = nullptr;
-
-    //lfoButton = nullptr;
+    drywetSlider = nullptr;
+    
     lfoButtonLabel = nullptr;
+    lfoButtonParamAttach = nullptr;
+    lfoButton = nullptr;
 
     lfoFreqLabel = nullptr;
     lfoFreqParamAttach = nullptr;
+    lfoFreqSlider = nullptr;
 
     lfoAmtLabel = nullptr;
     lfoAmtParamAttach = nullptr;
+    lfoAmtSlider = nullptr;
 
     DBG("Destroyed GUI");
 }
@@ -197,6 +200,7 @@ void DelayAudioProcessorEditor::resizeGUI()
     
     lfoAmtSlider->setBounds(GLOBAL_X + LFOAMT_SLIDER_X, GLOBAL_Y + LFOAMT_SLIDER_Y, LIN_SLIDER_WIDTH, LIN_SLIDER_HEIGHT);
     lfoAmtLabel->setBounds(GLOBAL_X + LFOAMT_LABEL_X, GLOBAL_Y + LFOAMT_LABEL_Y, LFOAMT_LAB_WIDTH, LFOAMT_LAB_HEIGHT);
+    
     DBG("Resized GUI");
 }
 
@@ -211,8 +215,19 @@ void DelayAudioProcessorEditor::paramAttacher()
     lfoAmtParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "LFOAMT", *lfoAmtSlider);
     DBG("Attached Params");
 }
+
 void DelayAudioProcessorEditor::sliderValueChanged(juce::Slider* sliderMoved)
 {
     
+}
+
+//=================================================================================
+
+void DelayAudioProcessorEditor::paintBackground(juce::Graphics& g)
+{
+    juce::Colour colour = juce::Colour::fromFloatRGBA(BG_RED, BG_GREEN, BG_BLUE, BG_ALPHA);
+    juce::ColourGradient cg = juce::ColourGradient::vertical(colour, 0, colour.darker(1.5f), HEIGHT);
+    g.setGradientFill(cg);
+    g.fillAll();
 }
 

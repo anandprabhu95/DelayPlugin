@@ -2,6 +2,11 @@
 
 #define	VERSION					"Frecurse v1.1.0"
 
+#define BG_RED					0.58f
+#define BG_GREEN				0.18f
+#define BG_BLUE					0.24f
+#define BG_ALPHA				1.0f
+
 #define PI						3.14159
 
 #define HEIGHT					380

@@ -40,5 +40,9 @@ private:
                                                                           lfoAmtParamAttach;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> lfoButtonParamAttach;
 
+    //======================================================================================================
+
+    void DelayAudioProcessorEditor::paintBackground(juce::Graphics& g);
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayAudioProcessorEditor)
 };
