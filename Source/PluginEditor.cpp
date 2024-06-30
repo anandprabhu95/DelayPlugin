@@ -142,7 +142,9 @@ void DelayAudioProcessorEditor::createGUI()
     lfoAmtLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 
     //=====================================================================================
-    DBG("Setting Size");
+    getLookAndFeel().setColour(juce::Slider::thumbColourId, juce::Colours::silver);
+    //getLookAndFeel().setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::red.darker(10));
+    //getLookAndFeel().setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::red.darker(5));
     setSize(WIDTH, HEIGHT);
 
     DBG("Created GUI");
