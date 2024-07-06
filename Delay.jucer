@@ -4,6 +4,10 @@
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1">
   <MAINGROUP id="qmb2tA" name="Delay">
     <GROUP id="{AAE2B65E-7605-6E07-8A82-FD424FC83BEC}" name="Source">
+      <GROUP id="{983AE491-C0BF-347E-DD63-E6CFB6E0FEDB}" name="Reverb">
+        <FILE id="T2re76" name="Reverb.cpp" compile="1" resource="0" file="Source/Reverb.cpp"/>
+        <FILE id="IOdOAJ" name="Reverb.h" compile="0" resource="0" file="Source/Reverb.h"/>
+      </GROUP>
       <FILE id="ltOvu6" name="Constants.h" compile="0" resource="0" file="Source/Constants.h"/>
       <FILE id="cpWlAR" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
