@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    Reverb.h
-    Created: 6 Jul 2024 5:10:25pm
-    Author:  Anand Prabhu
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include <JuceHeader.h>
@@ -22,9 +12,15 @@ public:
     Reverb();
     ~Reverb();
 
+    //==============================================================================
+    void Reverb::reverb(juce::AudioBuffer<float>& dryBuffer);
+    int numAllPass = 4;
+
 private:
+    void Reverb::allPass(juce::AudioBuffer<float>& dryBuffer, int channel);
 
-
+    float oldDrySample = 0.0f;
+    float oldWetSample = 0.0f;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Reverb)
 };
