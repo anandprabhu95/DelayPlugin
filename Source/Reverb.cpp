@@ -1,8 +1,9 @@
-﻿#include "Reverb.h"
+#include "Reverb.h"
 
 //==============================================================================
 Reverb::Reverb()
 {
+    revBuffer.setSize(2, 96000);
 }
 
 Reverb::~Reverb()
@@ -10,31 +11,93 @@ Reverb::~Reverb()
 }
 
 //==============================================================================
-void Reverb::allPass(juce::AudioBuffer<float>& dryBuffer, int channel)
+void Reverb::fillBuffer(juce::AudioBuffer<float>& buffer, int channel)
 {
-    auto bufferSize = dryBuffer.getNumSamples();
-    float allPassGain = 0.7f;
-    float drySample = 0.0f;
-    float wetSample = 0.0f;
+    auto bufferSize = buffer.getNumSamples();
+    auto revBufferSize = revBuffer.getNumSamples();
 
-    //AllPass difference equation: y[n] = g​ain*x[n] + x[n-1] - gain*[n-1]
-
-    for (channel = 0; channel < dryBuffer.getNumChannels(); ++channel)
+    // Check if main buffer can be copied to delay buffer without wrapping around
+    if (revBufferSize >= bufferSize + writePosition)
     {
-        for (int sample = 0; sample < dryBuffer.getNumSamples(); ++sample)
-        {
-            drySample = dryBuffer.getSample(channel, sample);
-            wetSample = allPassGain * drySample + oldDrySample - allPassGain * oldWetSample;
-            dryBuffer.setSample(channel, sample, wetSample);
-        }
+        // Copy main buffer to delay buffer.
+        revBuffer.copyFrom(channel, writePosition, buffer.getReadPointer(channel), bufferSize);
+    }
+    else
+    {
+        // Check how much space is left in the delay buffer.
+        auto numSamplesToEnd = revBufferSize - writePosition;
+        auto numSamplesAtStart = bufferSize - numSamplesToEnd;
+
+        // Copy the samples to the end
+        revBuffer.copyFrom(channel, writePosition, buffer.getReadPointer(channel), numSamplesToEnd);
+
+        // Copy the rest from the start position of the buffer.
+        revBuffer.copyFrom(channel, 0, buffer.getReadPointer(channel, numSamplesToEnd), numSamplesAtStart);
     }
 }
 
-void Reverb::reverb(juce::AudioBuffer<float>& dryBuffer)
+void Reverb::readFromBuffer(juce::AudioBuffer<float>& buffer, int channel)
 {
-    for (int i = 0; i < numAllPass; ++i)
+    auto bufferSize = buffer.getNumSamples();
+    auto revBufferSize = revBuffer.getNumSamples();
+
+    //auto* delayTimePointer = params.getRawParameterValue("DELAYMS");
+    //delayTimeInterpolator.setTargetValue(delayTimePointer->load());
+    //float delayTime = delayTimeInterpolator.getNextValue();
+    float delayTime = 300; // Samples
+
+    //auto* feedbackGainPointer = params.getRawParameterValue("FEEDBACKGAIN");
+    //feedbackGainInterpolator.setTargetValue(feedbackGainPointer->load());
+    //float feedbackGain = feedbackGainInterpolator.getNextValue();
+
+    // Read "delayTime" seconds of audio in the past from the delay buffer.
+    readPosition = writePosition - static_cast<int>(delayTime);
+    auto readPosTemp = readPosition;
+    int pos = 0;
+    for (int k = 0; k < 40; ++k)
     {
-        allPass(dryBuffer, getNumInputChannels());
+        DBG("k: " << k);
+        // Wrap around.
+        if (readPosTemp < 0)
+        {
+            readPosTemp = revBufferSize + readPosTemp;
+        }
+        DBG("ReadPsTemp: " << readPosTemp);
+        if (readPosTemp + bufferSize < revBufferSize)
+        {
+            DBG("Trig if");
+            buffer.addFromWithRamp(channel, 0, revBuffer.getWritePointer(channel, readPosTemp), bufferSize, 0.5, 0.5);
+
+        }
+        else
+        {
+            DBG("Trig else");
+            auto numSamplesToEnd = revBufferSize - readPosTemp;
+            buffer.addFromWithRamp(channel, 0, revBuffer.getWritePointer(channel, readPosTemp), numSamplesToEnd, 0.5, 0.5);
+            auto numSamplesAtStart = bufferSize - numSamplesToEnd;
+            buffer.addFromWithRamp(channel, numSamplesToEnd, revBuffer.getWritePointer(channel, 0), numSamplesAtStart, 0.5, 0.5);
+        }
+        readPosTemp = readPosition - k * static_cast<int>(delayTime);
     }
+    
+}
+
+void Reverb::updateWritePositions(juce::AudioBuffer<float>& buffer)
+{
+    // Loop the write position from 0 to delay buffer size.
+    auto bufferSize = buffer.getNumSamples();
+    auto revBufferSize = revBuffer.getNumSamples();
+    writePosition += bufferSize;
+    writePosition %= revBufferSize;
+}
+
+void Reverb::reverb(juce::AudioBuffer<float>& buffer, int channel)
+{
+    for (int j = 0; j < channel; ++j)
+    {
+        fillBuffer(buffer, j);
+        readFromBuffer(buffer, j);
+    }
+    updateWritePositions(buffer);
 }
 
