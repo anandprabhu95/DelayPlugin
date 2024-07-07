@@ -2,6 +2,7 @@
 
 #include <JuceHeader.h>
 #include "Constants.h"
+#include "Reverb.h"
 
 //==============================================================================
 
@@ -47,6 +48,7 @@ public:
 
     //==============================================================================
     juce::AudioProcessorValueTreeState params;
+    Reverb* reverb;
 
 private:
     void DelayAudioProcessor::fillBuffer(juce::AudioBuffer<float>& wetBuffer, int channel);

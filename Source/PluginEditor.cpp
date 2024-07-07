@@ -141,6 +141,22 @@ void DelayAudioProcessorEditor::createGUI()
     lfoAmtLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
     lfoAmtLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 
+    //====================================================================================
+    DBG("Attaching testReverbButton");
+    testReverbButton = std::make_unique<juce::ToggleButton>("");
+    addAndMakeVisible(testReverbButton.get());
+    testReverbButton->setSize(20, 20);
+    testReverbButton->setClickingTogglesState(true);
+
+    DBG("Attaching testReverbButtonLabel");
+    testRvrbLabel = std::make_unique<juce::Label>("testreverbbuttonlabel", "Test Reverb");
+    addAndMakeVisible(testRvrbLabel.get());
+    testRvrbLabel->setFont(juce::Font(10.00f, juce::Font::plain));
+    testRvrbLabel->setJustificationType(juce::Justification::left);
+    testRvrbLabel->setEditable(false, false, false);
+    testRvrbLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    testRvrbLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+
     //=====================================================================================
     getLookAndFeel().setColour(juce::Slider::thumbColourId, juce::Colours::silver);
     //getLookAndFeel().setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::red.darker(10));
@@ -178,6 +194,10 @@ void DelayAudioProcessorEditor::destroyGUI()
     lfoAmtParamAttach = nullptr;
     lfoAmtSlider = nullptr;
 
+    testRvrbLabel = nullptr;
+    testRvrbButParamAttach = nullptr;
+    testReverbButton = nullptr;
+
     DBG("Destroyed GUI");
 }
 
@@ -202,6 +222,9 @@ void DelayAudioProcessorEditor::resizeGUI()
     
     lfoAmtSlider->setBounds(GLOBAL_X + LFOAMT_SLIDER_X, GLOBAL_Y + LFOAMT_SLIDER_Y, LIN_SLIDER_WIDTH, LIN_SLIDER_HEIGHT);
     lfoAmtLabel->setBounds(GLOBAL_X + LFOAMT_LABEL_X, GLOBAL_Y + LFOAMT_LABEL_Y, LFOAMT_LAB_WIDTH, LFOAMT_LAB_HEIGHT);
+
+    testReverbButton->setBounds(GLOBAL_X + TESTRVRB_BUT_X, GLOBAL_Y + TESTRVRB_BUT_Y, TESTRVRB_BUT_WIDTH, TESTRVRB_BUT_HEIGHT);
+    testRvrbLabel->setBounds(GLOBAL_X + TESTRVRB_LABEL_X, GLOBAL_Y + TESTRVRB_LABEL_Y, TESTRVRB_BUT_LAB_WIDTH, TESTRVRB_BUT_LAB_HEIGHT);
     
     DBG("Resized GUI");
 }
@@ -215,6 +238,7 @@ void DelayAudioProcessorEditor::paramAttacher()
     lfoButtonParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "LFOENA", *lfoButton);
     lfoFreqParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "LFOFREQ", *lfoFreqSlider);
     lfoAmtParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "LFOAMT", *lfoAmtSlider);
+    testRvrbButParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "TESTRVRB", *testReverbButton);
     DBG("Attached Params");
 }
 

@@ -12,14 +12,15 @@ DelayAudioProcessor::DelayAudioProcessor()
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
                        ), 
-                        params (*this, nullptr, "Parameters", createParameters())
+                        params (*this, nullptr, "Parameters", createParameters()),
+                        reverb(new Reverb())
 #endif
 {
 }
 
 DelayAudioProcessor::~DelayAudioProcessor()
 {
-    DBG("Destroyed Processor");
+    delete reverb;
 }
 
 //==============================================================================
@@ -173,6 +174,13 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
 
     // Loop the write position from 0 to delay buffer size.
     updateWritePositions(buffer, delayBuffer);
+
+    auto* isTestRvrbOn = params.getRawParameterValue("TESTRVRB");
+    if (isTestRvrbOn->load())
+    {
+        reverb->reverb(buffer, getNumInputChannels());
+    }
+    
 }
 
 void DelayAudioProcessor::fillBuffer(juce::AudioBuffer<float>& wetBuffer, int channel)
@@ -254,6 +262,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createP
     parameters.push_back(std::make_unique<juce::AudioParameterBool>("LFOENA", "Enable LFO", 0));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LFOFREQ", "LFO Freq", 1.f, 10.0f, 2.0f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LFOAMT", "LFO Amt", 0.5f, 1.0f, 0.5f));
+    parameters.push_back(std::make_unique<juce::AudioParameterBool>("TESTRVRB", "Test Reverb", 0));
     return { parameters.begin(), parameters.end() };
 }
 
