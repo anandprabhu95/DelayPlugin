@@ -19,7 +19,7 @@ private:
     void Reverb::fillBuffer(juce::AudioBuffer<float>& buffer, int channel);
     void Reverb::readFromBuffer(juce::AudioBuffer<float>& buffer, int channel);
     void Reverb::updateWritePositions(juce::AudioBuffer<float>& buffer);
-
+    float Reverb::feedbackRampDown(int index, int indexMax, float startVal, float endVal);
 
     float oldDrySample = 0.0f;
     float oldWetSample = 0.0f;

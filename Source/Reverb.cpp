@@ -44,7 +44,7 @@ void Reverb::readFromBuffer(juce::AudioBuffer<float>& buffer, int channel)
     //auto* delayTimePointer = params.getRawParameterValue("DELAYMS");
     //delayTimeInterpolator.setTargetValue(delayTimePointer->load());
     //float delayTime = delayTimeInterpolator.getNextValue();
-    float delayTime = 300; // Samples
+    float delayTime = 100; // Samples
 
     //auto* feedbackGainPointer = params.getRawParameterValue("FEEDBACKGAIN");
     //feedbackGainInterpolator.setTargetValue(feedbackGainPointer->load());
@@ -56,6 +56,7 @@ void Reverb::readFromBuffer(juce::AudioBuffer<float>& buffer, int channel)
     int pos = 0;
     for (int k = 0; k < 40; ++k)
     {
+        float gain = feedbackRampDown(k, 40, 1, 0.2);
         DBG("k: " << k);
         // Wrap around.
         if (readPosTemp < 0)
@@ -66,20 +67,18 @@ void Reverb::readFromBuffer(juce::AudioBuffer<float>& buffer, int channel)
         if (readPosTemp + bufferSize < revBufferSize)
         {
             DBG("Trig if");
-            buffer.addFromWithRamp(channel, 0, revBuffer.getWritePointer(channel, readPosTemp), bufferSize, 0.5, 0.5);
-
+            buffer.addFromWithRamp(channel, 0, revBuffer.getWritePointer(channel, readPosTemp), bufferSize, gain, gain);
         }
         else
         {
             DBG("Trig else");
             auto numSamplesToEnd = revBufferSize - readPosTemp;
-            buffer.addFromWithRamp(channel, 0, revBuffer.getWritePointer(channel, readPosTemp), numSamplesToEnd, 0.5, 0.5);
+            buffer.addFromWithRamp(channel, 0, revBuffer.getWritePointer(channel, readPosTemp), numSamplesToEnd, gain, gain);
             auto numSamplesAtStart = bufferSize - numSamplesToEnd;
-            buffer.addFromWithRamp(channel, numSamplesToEnd, revBuffer.getWritePointer(channel, 0), numSamplesAtStart, 0.5, 0.5);
+            buffer.addFromWithRamp(channel, numSamplesToEnd, revBuffer.getWritePointer(channel, 0), numSamplesAtStart, gain, gain);
         }
         readPosTemp = readPosition - k * static_cast<int>(delayTime);
     }
-    
 }
 
 void Reverb::updateWritePositions(juce::AudioBuffer<float>& buffer)
@@ -99,5 +98,11 @@ void Reverb::reverb(juce::AudioBuffer<float>& buffer, int channel)
         readFromBuffer(buffer, j);
     }
     updateWritePositions(buffer);
+}
+
+float Reverb::feedbackRampDown(int index, int indexMax, float startVal, float endVal)
+{
+    float val = (endVal - startVal) / indexMax * index + startVal;
+    return val;
 }
 
