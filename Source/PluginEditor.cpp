@@ -36,7 +36,7 @@ void DelayAudioProcessorEditor::createGUI()
 {   
     DBG("Creating GUI");
     //====================================================================================
-    DBG("Attaching GainSlider");
+    DBG("Attaching GainSlider Left Channel");
     gainSlider = std::make_unique<juce::Slider>("gainslider");
     addAndMakeVisible(gainSlider.get());
     gainSlider->setRange(0.0f, 1.0f, 0.1f);
@@ -44,8 +44,8 @@ void DelayAudioProcessorEditor::createGUI()
     gainSlider->setSliderStyle(juce::Slider::Rotary);
     gainSlider->addListener(this);
 
-    DBG("Attaching GainLabel");
-    gainLabel = std::make_unique<juce::Label>("gainlabel", "Gain");
+    DBG("Attaching GainLabel Left Channel");
+    gainLabel = std::make_unique<juce::Label>("gainlabel", "Gain L");
     addAndMakeVisible(gainLabel.get());
     gainLabel->setFont(juce::Font(10.00f, juce::Font::plain));
     gainLabel->setJustificationType(juce::Justification::centred);
@@ -54,7 +54,7 @@ void DelayAudioProcessorEditor::createGUI()
     gainLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 
     //====================================================================================
-    DBG("Attaching DelayMsSlider");
+    DBG("Attaching DelayMsSlider Left Channel");
     delayMsSlider = std::make_unique<juce::Slider>("delayslider");
     addAndMakeVisible(delayMsSlider.get());
     delayMsSlider->setRange(0.0f, 96000.0f, 10.f);
@@ -62,14 +62,50 @@ void DelayAudioProcessorEditor::createGUI()
     delayMsSlider->setSliderStyle(juce::Slider::Rotary);
     delayMsSlider->addListener(this);
 
-    DBG("Attaching DelayMsLabel");
-    delayMsLabel = std::make_unique<juce::Label>("delaylabel", "Delay Time");
+    DBG("Attaching DelayMsLabel Right Channel");
+    delayMsLabel = std::make_unique<juce::Label>("delaylabel", "Delay Time L");
     addAndMakeVisible(delayMsLabel.get());
     delayMsLabel->setFont(juce::Font(10.00f, juce::Font::plain));
     delayMsLabel->setJustificationType(juce::Justification::centred);
     delayMsLabel->setEditable(false, false, false);
     delayMsLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
     delayMsLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+
+    //====================================================================================
+    DBG("Attaching GainSlider Right Channel");
+    gainSlider2 = std::make_unique<juce::Slider>("gainslider2");
+    addAndMakeVisible(gainSlider2.get());
+    gainSlider2->setRange(0.0f, 1.0f, 0.1f);
+    gainSlider2->setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+    gainSlider2->setSliderStyle(juce::Slider::Rotary);
+    gainSlider2->addListener(this);
+
+    DBG("Attaching GainLabel Right Channel");
+    gainLabel2 = std::make_unique<juce::Label>("gainlabel2", "Gain R");
+    addAndMakeVisible(gainLabel2.get());
+    gainLabel2->setFont(juce::Font(10.00f, juce::Font::plain));
+    gainLabel2->setJustificationType(juce::Justification::centred);
+    gainLabel2->setEditable(false, false, false);
+    gainLabel2->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    gainLabel2->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+
+    //====================================================================================
+    DBG("Attaching DelayMsSlider Right Channel");
+    delayMsSlider2 = std::make_unique<juce::Slider>("delayslider2");
+    addAndMakeVisible(delayMsSlider2.get());
+    delayMsSlider2->setRange(0.0f, 96000.0f, 10.f);
+    delayMsSlider2->setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+    delayMsSlider2->setSliderStyle(juce::Slider::Rotary);
+    delayMsSlider2->addListener(this);
+
+    DBG("Attaching DelayMsLabel Right Channel");
+    delayMsLabel2 = std::make_unique<juce::Label>("delaylabel2", "Delay Time R");
+    addAndMakeVisible(delayMsLabel2.get());
+    delayMsLabel2->setFont(juce::Font(10.00f, juce::Font::plain));
+    delayMsLabel2->setJustificationType(juce::Justification::centred);
+    delayMsLabel2->setEditable(false, false, false);
+    delayMsLabel2->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    delayMsLabel2->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 
     //====================================================================================
     DBG("Attaching DryWetSlider");
@@ -157,6 +193,22 @@ void DelayAudioProcessorEditor::createGUI()
     testRvrbLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
     testRvrbLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 
+    //====================================================================================
+    DBG("Attaching syncDelayButton");
+    syncDelayButton = std::make_unique<juce::ToggleButton>("");
+    addAndMakeVisible(syncDelayButton.get());
+    syncDelayButton->setSize(20, 20);
+    syncDelayButton->setClickingTogglesState(true);
+
+    DBG("Attaching testReverbButtonLabel");
+    syncDelayLabel = std::make_unique<juce::Label>("testreverbbuttonlabel", "Sync");
+    addAndMakeVisible(syncDelayLabel.get());
+    syncDelayLabel->setFont(juce::Font(10.00f, juce::Font::plain));
+    syncDelayLabel->setJustificationType(juce::Justification::left);
+    syncDelayLabel->setEditable(false, false, false);
+    syncDelayLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    syncDelayLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+
     //=====================================================================================
     getLookAndFeel().setColour(juce::Slider::thumbColourId, juce::Colours::silver);
     //getLookAndFeel().setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::red.darker(10));
@@ -177,6 +229,14 @@ void DelayAudioProcessorEditor::destroyGUI()
     delayMsLabel = nullptr;
     delayMsParamAttach = nullptr;
     delayMsSlider = nullptr;
+
+    gainLabel2 = nullptr;
+    gainParamAttach2 = nullptr;
+    gainSlider2 = nullptr;
+
+    delayMsLabel2 = nullptr;
+    delayMsParamAttach2 = nullptr;
+    delayMsSlider2 = nullptr;
    
     drywetLabel = nullptr;
     drywetParamAttach = nullptr;
@@ -198,6 +258,10 @@ void DelayAudioProcessorEditor::destroyGUI()
     testRvrbButParamAttach = nullptr;
     testReverbButton = nullptr;
 
+    syncDelayLabel = nullptr;
+    syncDelayButParamAttach = nullptr;
+    syncDelayButton = nullptr;
+
     DBG("Destroyed GUI");
 }
 
@@ -210,6 +274,12 @@ void DelayAudioProcessorEditor::resizeGUI()
 
     delayMsSlider->setBounds(GLOBAL_X + DELAYMS_SLIDER_X, GLOBAL_Y + DELAYMS_SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
     delayMsLabel->setBounds(GLOBAL_X + DELAYMS_LABEL_X, GLOBAL_Y + DELAYMS_LABEL_Y, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
+
+    gainSlider2->setBounds(GLOBAL_X + FB_GAIN_SLIDER_X2, GLOBAL_Y + FB_GAIN_SLIDER_Y2, SLIDER_WIDTH, SLIDER_HEIGHT);
+    gainLabel2->setBounds(GLOBAL_X + FB_GAIN_LABEL_X2, GLOBAL_Y + FB_GAIN_LABEL_Y2, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
+
+    delayMsSlider2->setBounds(GLOBAL_X + DELAYMS_SLIDER_X2, GLOBAL_Y + DELAYMS_SLIDER_Y2, SLIDER_WIDTH, SLIDER_HEIGHT);
+    delayMsLabel2->setBounds(GLOBAL_X + DELAYMS_LABEL_X2, GLOBAL_Y + DELAYMS_LABEL_Y2, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
 
     drywetSlider->setBounds(GLOBAL_X + MIX_SLIDER_X, GLOBAL_Y + MIX_SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
     drywetLabel->setBounds(GLOBAL_X + MIX_LABEL_X, GLOBAL_Y + MIX_LABEL_Y, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
@@ -225,6 +295,9 @@ void DelayAudioProcessorEditor::resizeGUI()
 
     testReverbButton->setBounds(GLOBAL_X + TESTRVRB_BUT_X, GLOBAL_Y + TESTRVRB_BUT_Y, TESTRVRB_BUT_WIDTH, TESTRVRB_BUT_HEIGHT);
     testRvrbLabel->setBounds(GLOBAL_X + TESTRVRB_LABEL_X, GLOBAL_Y + TESTRVRB_LABEL_Y, TESTRVRB_BUT_LAB_WIDTH, TESTRVRB_BUT_LAB_HEIGHT);
+
+    syncDelayButton->setBounds(GLOBAL_X + SYNCDEL_BUT_X, GLOBAL_Y + SYNCDEL_BUT_Y, SYNCDEL_BUT_WIDTH, SYNCDEL_BUT_HEIGHT);
+    syncDelayLabel->setBounds(GLOBAL_X + SYNCDEL_LABEL_X, GLOBAL_Y + SYNCDEL_LABEL_Y, SYNCDEL_BUT_LAB_WIDTH, SYNCDEL_BUT_LAB_HEIGHT);
     
     DBG("Resized GUI");
 }
