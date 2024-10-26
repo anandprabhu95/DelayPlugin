@@ -218,7 +218,30 @@ void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& wetBuffer, ju
     float feedbackGain = 0.0f;
     float delayTime = 0.0f;
 
-    if (channel == 0)
+    auto* isStereoOn = params.getRawParameterValue("STRODEL");
+    if (isStereoOn->load() == 1) {
+        if (channel == 0)
+        {
+            auto* delayTimePointer = params.getRawParameterValue("DELAYMS");
+            delayTimeInterpolator.setTargetValue(delayTimePointer->load());
+            delayTime = delayTimeInterpolator.getNextValue();
+    
+            auto* feedbackGainPointer = params.getRawParameterValue("FEEDBACKGAIN");
+            feedbackGainInterpolator.setTargetValue(feedbackGainPointer->load());
+            feedbackGain = feedbackGainInterpolator.getNextValue();
+        }
+        else
+        {
+            auto* delayTime2Pointer = params.getRawParameterValue("DELAYMS2");
+            delayTime2Interpolator.setTargetValue(delayTime2Pointer->load());
+            delayTime = delayTime2Interpolator.getNextValue();
+    
+            auto* feedbackGain2Pointer = params.getRawParameterValue("FEEDBACKGAIN2");
+            feedbackGain2Interpolator.setTargetValue(feedbackGain2Pointer->load());
+            feedbackGain = feedbackGain2Interpolator.getNextValue();
+        }
+    }
+    else
     {
         auto* delayTimePointer = params.getRawParameterValue("DELAYMS");
         delayTimeInterpolator.setTargetValue(delayTimePointer->load());
@@ -227,16 +250,6 @@ void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& wetBuffer, ju
         auto* feedbackGainPointer = params.getRawParameterValue("FEEDBACKGAIN");
         feedbackGainInterpolator.setTargetValue(feedbackGainPointer->load());
         feedbackGain = feedbackGainInterpolator.getNextValue();
-    }
-    else
-    {
-        auto* delayTime2Pointer = params.getRawParameterValue("DELAYMS2");
-        delayTime2Interpolator.setTargetValue(delayTime2Pointer->load());
-        delayTime = delayTime2Interpolator.getNextValue();
-
-        auto* feedbackGain2Pointer = params.getRawParameterValue("FEEDBACKGAIN2");
-        feedbackGain2Interpolator.setTargetValue(feedbackGain2Pointer->load());
-        feedbackGain = feedbackGain2Interpolator.getNextValue();
     }
     
 
@@ -275,15 +288,21 @@ void DelayAudioProcessor::updateWritePositions(juce::AudioBuffer<float>& buffer,
 juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createParameters()
 {
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
+
+    // Sliders
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS", "Delay Ms", 0.0f, 96000.0f, 0.0f));
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS2", "Delay Ms agd2", 0.0f, 96000.0f, 0.0f));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS2", "Delay Ms 2", 0.0f, 96000.0f, 0.0f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN", "Feedback Gain", 0.0f, 1.0f, 0.7f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN2", "Feedback Gain 2", 0.0f, 1.0f, 0.7f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DRYWET", "Dry/Wet", -1.0f, 1.0f, 0.0f));
-    parameters.push_back(std::make_unique<juce::AudioParameterBool>("LFOENA", "Enable LFO", 0));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LFOFREQ", "LFO Freq", 1.f, 10.0f, 2.0f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LFOAMT", "LFO Amt", 0.5f, 1.0f, 0.5f));
+    
+    // Buttons
+    parameters.push_back(std::make_unique<juce::AudioParameterBool>("LFOENA", "Enable LFO", 0));
     parameters.push_back(std::make_unique<juce::AudioParameterBool>("TESTRVRB", "Test Reverb", 0));
+    parameters.push_back(std::make_unique<juce::AudioParameterBool>("STRODEL", "Stereo Delay", 0));
+
     return { parameters.begin(), parameters.end() };
 }
 

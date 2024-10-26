@@ -31,16 +31,16 @@ private:
 
     std::unique_ptr<juce::Slider> gainSlider, delayMsSlider, gainSlider2, delayMsSlider2, drywetSlider, lfoFreqSlider,
                                   lfoAmtSlider;
-    std::unique_ptr<juce::ToggleButton> lfoButton, testReverbButton, syncDelayButton;
+    std::unique_ptr<juce::ToggleButton> lfoButton, testReverbButton, stereoDelayButton;
 
-    std::unique_ptr<juce::Label> gainLabel, delayMsLabel, gainLabel2, delayMsLabel2, syncDelayLabel, 
+    std::unique_ptr<juce::Label> gainLabel, delayMsLabel, gainLabel2, delayMsLabel2, stereoDelayLabel,
                                  drywetLabel, lfoButtonLabel, lfoFreqLabel, lfoAmtLabel, testRvrbLabel;
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainParamAttach, delayMsParamAttach,
                                                                           gainParamAttach2, delayMsParamAttach2,
                                                                           drywetParamAttach, lfoFreqParamAttach,
                                                                           lfoAmtParamAttach;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> lfoButtonParamAttach, testRvrbButParamAttach, syncDelayButParamAttach;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> lfoButtonParamAttach, testRvrbButParamAttach, stereoDelayButParamAttach;
 
     //======================================================================================================
 

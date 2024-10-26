@@ -62,7 +62,7 @@ void DelayAudioProcessorEditor::createGUI()
     delayMsSlider->setSliderStyle(juce::Slider::Rotary);
     delayMsSlider->addListener(this);
 
-    DBG("Attaching DelayMsLabel Right Channel");
+    DBG("Attaching DelayMsLabel Left Channel");
     delayMsLabel = std::make_unique<juce::Label>("delaylabel", "Delay Time L");
     addAndMakeVisible(delayMsLabel.get());
     delayMsLabel->setFont(juce::Font(10.00f, juce::Font::plain));
@@ -194,20 +194,20 @@ void DelayAudioProcessorEditor::createGUI()
     testRvrbLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 
     //====================================================================================
-    DBG("Attaching syncDelayButton");
-    syncDelayButton = std::make_unique<juce::ToggleButton>("");
-    addAndMakeVisible(syncDelayButton.get());
-    syncDelayButton->setSize(20, 20);
-    syncDelayButton->setClickingTogglesState(true);
+    DBG("Attaching stereoDelayButton");
+    stereoDelayButton = std::make_unique<juce::ToggleButton>("");
+    addAndMakeVisible(stereoDelayButton.get());
+    stereoDelayButton->setSize(20, 20);
+    stereoDelayButton->setClickingTogglesState(true);
 
-    DBG("Attaching testReverbButtonLabel");
-    syncDelayLabel = std::make_unique<juce::Label>("testreverbbuttonlabel", "Sync");
-    addAndMakeVisible(syncDelayLabel.get());
-    syncDelayLabel->setFont(juce::Font(10.00f, juce::Font::plain));
-    syncDelayLabel->setJustificationType(juce::Justification::left);
-    syncDelayLabel->setEditable(false, false, false);
-    syncDelayLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    syncDelayLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+    DBG("Attaching stereoDelayButtonLabel");
+    stereoDelayLabel = std::make_unique<juce::Label>("stereodelaybuttonlabel", "Stereo");
+    addAndMakeVisible(stereoDelayLabel.get());
+    stereoDelayLabel->setFont(juce::Font(10.00f, juce::Font::plain));
+    stereoDelayLabel->setJustificationType(juce::Justification::left);
+    stereoDelayLabel->setEditable(false, false, false);
+    stereoDelayLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    stereoDelayLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 
     //=====================================================================================
     getLookAndFeel().setColour(juce::Slider::thumbColourId, juce::Colours::silver);
@@ -258,9 +258,9 @@ void DelayAudioProcessorEditor::destroyGUI()
     testRvrbButParamAttach = nullptr;
     testReverbButton = nullptr;
 
-    syncDelayLabel = nullptr;
-    syncDelayButParamAttach = nullptr;
-    syncDelayButton = nullptr;
+    stereoDelayLabel = nullptr;
+    stereoDelayButParamAttach = nullptr;
+    stereoDelayButton = nullptr;
 
     DBG("Destroyed GUI");
 }
@@ -296,8 +296,8 @@ void DelayAudioProcessorEditor::resizeGUI()
     testReverbButton->setBounds(GLOBAL_X + TESTRVRB_BUT_X, GLOBAL_Y + TESTRVRB_BUT_Y, TESTRVRB_BUT_WIDTH, TESTRVRB_BUT_HEIGHT);
     testRvrbLabel->setBounds(GLOBAL_X + TESTRVRB_LABEL_X, GLOBAL_Y + TESTRVRB_LABEL_Y, TESTRVRB_BUT_LAB_WIDTH, TESTRVRB_BUT_LAB_HEIGHT);
 
-    syncDelayButton->setBounds(GLOBAL_X + SYNCDEL_BUT_X, GLOBAL_Y + SYNCDEL_BUT_Y, SYNCDEL_BUT_WIDTH, SYNCDEL_BUT_HEIGHT);
-    syncDelayLabel->setBounds(GLOBAL_X + SYNCDEL_LABEL_X, GLOBAL_Y + SYNCDEL_LABEL_Y, SYNCDEL_BUT_LAB_WIDTH, SYNCDEL_BUT_LAB_HEIGHT);
+    stereoDelayButton->setBounds(GLOBAL_X + STRODEL_BUT_X, GLOBAL_Y + STRODEL_BUT_Y, STRODEL_BUT_WIDTH, STRODEL_BUT_HEIGHT);
+    stereoDelayLabel->setBounds(GLOBAL_X + STRODEL_LABEL_X, GLOBAL_Y + STRODEL_LABEL_Y, STRODEL_BUT_LAB_WIDTH, STRODEL_BUT_LAB_HEIGHT);
     
     DBG("Resized GUI");
 }
@@ -314,11 +314,25 @@ void DelayAudioProcessorEditor::paramAttacher()
     lfoFreqParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "LFOFREQ", *lfoFreqSlider);
     lfoAmtParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "LFOAMT", *lfoAmtSlider);
     testRvrbButParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "TESTRVRB", *testReverbButton);
+    stereoDelayButParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "STRODEL", *stereoDelayButton);
     DBG("Attached Params");
 }
 
-void DelayAudioProcessorEditor::sliderValueChanged(juce::Slider* sliderMoved)
+void DelayAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
 {
+    //==============================================================================
+    // Sync knobs when stereo button is unchecked
+    if (stereoDelayButton->getToggleState() == 0)
+    {
+        if (slider == gainSlider.get())
+            gainSlider2->setValue(gainSlider->getValue(), juce::dontSendNotification);
+        else if (slider == gainSlider2.get())
+            gainSlider->setValue(gainSlider2->getValue(), juce::dontSendNotification);
+        else if (slider == delayMsSlider.get())
+            delayMsSlider2->setValue(delayMsSlider->getValue(), juce::dontSendNotification);
+        else if (slider == delayMsSlider2.get())
+            delayMsSlider->setValue(delayMsSlider2->getValue(), juce::dontSendNotification);
+    }
     
 }
 

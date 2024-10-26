@@ -16,35 +16,18 @@
       </OUTPUTS>
     </LAYOUT>
   </FILTER>
-  <FILTER uid="13" x="0.5" y="0.9" useARA="0">
+  <FILTER uid="13" x="0.53625" y="0.8709677419354839" useARA="0">
     <PLUGIN name="Audio Output" descriptiveName="" format="Internal" category="I/O devices"
             manufacturer="JUCE" version="1.0" file="" uniqueId="724248cb"
-            isInstrument="0" fileTime="0" infoUpdateTime="0" numInputs="2"
+            isInstrument="0" fileTime="0" infoUpdateTime="0" numInputs="8"
             numOutputs="0" isShell="0" hasARAExtension="0" uid="724248cb"/>
     <STATE>0.</STATE>
     <LAYOUT>
       <INPUTS>
-        <BUS index="0" layout="L R"/>
+        <BUS index="0" layout="L R C Lfe Ls Rs"/>
       </INPUTS>
       <OUTPUTS>
         <BUS index="0" layout="disabled"/>
-      </OUTPUTS>
-    </LAYOUT>
-  </FILTER>
-  <FILTER uid="15" x="0.5" y="0.5342741935483871" useARA="0" uiLastX_Normal="484"
-          uiLastY_Normal="126" uiopen_Normal="0">
-    <PLUGIN name="Delay" format="VST3" category="Fx" manufacturer="yourcompany"
-            version="1.0.0" file="C:\Users\anand\repos\DelayPlugin\Delay\Builds\VisualStudio2022\x64\Debug\VST3\Delay.vst3\Contents\x86_64-win\Delay.vst3"
-            uniqueId="fca1e8ed" isInstrument="0" fileTime="1901b96a3cf" infoUpdateTime="1901bb2ca8a"
-            numInputs="2" numOutputs="2" isShell="0" hasARAExtension="0"
-            uid="e9580a24"/>
-    <STATE>191.VMjLgXK....O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9XCLt3hKt3hKt3hKt3hYRUUSTEETIckVwTjQisVTTgkdEYjKAQjYPQSPWgUdMcjKAQjct3hdA4hKt3hKt3hKtnTUv.UQAslXuk0UXoWUFE0YQcEV77RRC8Vav8lak4Fc9vyKVMEUy.Ea0cVZtMEcgQWY9..</STATE>
-    <LAYOUT>
-      <INPUTS>
-        <BUS index="0" layout="L R"/>
-      </INPUTS>
-      <OUTPUTS>
-        <BUS index="0" layout="L R"/>
       </OUTPUTS>
     </LAYOUT>
   </FILTER>
@@ -61,9 +44,26 @@
       </OUTPUTS>
     </LAYOUT>
   </FILTER>
+  <FILTER uid="19" x="0.49875" y="0.5866935483870968" useARA="0" uiLastX_Normal="1013"
+          uiLastY_Normal="214" uiopen_Normal="0">
+    <PLUGIN name="Delay" format="VST3" category="Fx" manufacturer="yourcompany"
+            version="1.0.0" file="C:\Users\anand\repos\DelayPlugin\Delay\output\VST3\Delay.vst3"
+            uniqueId="fca1e8ed" isInstrument="0" fileTime="192ca4b78ce" infoUpdateTime="192ca5411f6"
+            numInputs="2" numOutputs="2" isShell="0" hasARAExtension="0"
+            uid="e9580a24"/>
+    <STATE>191.VMjLgXK....O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9XCLt3hKt3hKt3hKt3hYRUUSTEETIckVwTjQisVTTgkdEYjKAQjYPQSPWgUdMcjKAQjct3hdA4hKt3hKt3hKtnTUv.UQAslXuk0UXoWUFE0YQcEV77RRC8Vav8lak4Fc9vyKVMEUy.Ea0cVZtMEcgQWY9..</STATE>
+    <LAYOUT>
+      <INPUTS>
+        <BUS index="0" layout="L R"/>
+      </INPUTS>
+      <OUTPUTS>
+        <BUS index="0" layout="L R"/>
+      </OUTPUTS>
+    </LAYOUT>
+  </FILTER>
   <CONNECTION srcFilter="12" srcChannel="4096" dstFilter="18" dstChannel="4096"/>
-  <CONNECTION srcFilter="15" srcChannel="0" dstFilter="13" dstChannel="0"/>
-  <CONNECTION srcFilter="15" srcChannel="1" dstFilter="13" dstChannel="1"/>
-  <CONNECTION srcFilter="18" srcChannel="0" dstFilter="15" dstChannel="0"/>
-  <CONNECTION srcFilter="18" srcChannel="1" dstFilter="15" dstChannel="1"/>
+  <CONNECTION srcFilter="18" srcChannel="0" dstFilter="19" dstChannel="0"/>
+  <CONNECTION srcFilter="18" srcChannel="1" dstFilter="19" dstChannel="1"/>
+  <CONNECTION srcFilter="19" srcChannel="0" dstFilter="13" dstChannel="0"/>
+  <CONNECTION srcFilter="19" srcChannel="1" dstFilter="13" dstChannel="1"/>
 </FILTERGRAPH>
