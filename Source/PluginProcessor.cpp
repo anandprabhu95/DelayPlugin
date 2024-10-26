@@ -93,8 +93,10 @@ void DelayAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     wetBuffer.setSize(getTotalNumOutputChannels(), samplesPerBlock);
 
     // Ramp parameter values to target value at desired rate.
-    feedbackGainInterpolator.reset(sampleRate, 0.0005);
-    delayTimeInterpolator.reset(sampleRate, 0.0001);
+    feedbackGainInterpolator.reset(sampleRate, 0.0001);
+    feedbackGain2Interpolator.reset(sampleRate, 0.0001);
+    delayTimeInterpolator.reset(sampleRate, 0.00005);
+    delayTime2Interpolator.reset(sampleRate, 0.00005);
     drywetInterpolator.reset(sampleRate, 0.005);
     lfoFreqInterpolator.reset(sampleRate, 0.0005);
     lfoAmtInterpolator.reset(sampleRate, 0.0005);
@@ -213,13 +215,30 @@ void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& wetBuffer, ju
     auto bufferSize = wetBuffer.getNumSamples();
     auto delayBufferSize = delayBuffer.getNumSamples();
 
-    auto* delayTimePointer = params.getRawParameterValue("DELAYMS");
-    delayTimeInterpolator.setTargetValue(delayTimePointer->load());
-    float delayTime = delayTimeInterpolator.getNextValue();
+    float feedbackGain = 0.0f;
+    float delayTime = 0.0f;
 
-    auto* feedbackGainPointer = params.getRawParameterValue("FEEDBACKGAIN");
-    feedbackGainInterpolator.setTargetValue(feedbackGainPointer->load());
-    float feedbackGain = feedbackGainInterpolator.getNextValue();
+    if (channel == 0)
+    {
+        auto* delayTimePointer = params.getRawParameterValue("DELAYMS");
+        delayTimeInterpolator.setTargetValue(delayTimePointer->load());
+        delayTime = delayTimeInterpolator.getNextValue();
+
+        auto* feedbackGainPointer = params.getRawParameterValue("FEEDBACKGAIN");
+        feedbackGainInterpolator.setTargetValue(feedbackGainPointer->load());
+        feedbackGain = feedbackGainInterpolator.getNextValue();
+    }
+    else
+    {
+        auto* delayTime2Pointer = params.getRawParameterValue("DELAYMS2");
+        delayTime2Interpolator.setTargetValue(delayTime2Pointer->load());
+        delayTime = delayTime2Interpolator.getNextValue();
+
+        auto* feedbackGain2Pointer = params.getRawParameterValue("FEEDBACKGAIN2");
+        feedbackGain2Interpolator.setTargetValue(feedbackGain2Pointer->load());
+        feedbackGain = feedbackGain2Interpolator.getNextValue();
+    }
+    
 
     // Read "delayTime" seconds of audio in the past from the delay buffer.
     auto readPosition = writePosition - static_cast<int>(delayTime);
@@ -257,7 +276,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createP
 {
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS", "Delay Ms", 0.0f, 96000.0f, 0.0f));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS2", "Delay Ms agd2", 0.0f, 96000.0f, 0.0f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN", "Feedback Gain", 0.0f, 1.0f, 0.7f));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN2", "Feedback Gain 2", 0.0f, 1.0f, 0.7f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DRYWET", "Dry/Wet", -1.0f, 1.0f, 0.0f));
     parameters.push_back(std::make_unique<juce::AudioParameterBool>("LFOENA", "Enable LFO", 0));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LFOFREQ", "LFO Freq", 1.f, 10.0f, 2.0f));

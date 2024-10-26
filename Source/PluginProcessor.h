@@ -67,7 +67,9 @@ private:
     int writePosition { 0 };
     int readPosition { 0 };
     juce::LinearSmoothedValue<float> feedbackGainInterpolator { 0.0f };
+    juce::LinearSmoothedValue<float> feedbackGain2Interpolator{ 0.0f };
     juce::LinearSmoothedValue<float> delayTimeInterpolator { 0.0f };
+    juce::LinearSmoothedValue<float> delayTime2Interpolator{ 0.0f };
     juce::LinearSmoothedValue<float> drywetInterpolator { 0.0f };
     juce::LinearSmoothedValue<float> lfoFreqInterpolator{ 0.0f };
     juce::LinearSmoothedValue<float> lfoAmtInterpolator{ 0.0f };
