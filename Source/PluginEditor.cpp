@@ -18,6 +18,7 @@ DelayAudioProcessorEditor::~DelayAudioProcessorEditor()
 void DelayAudioProcessorEditor::paint (juce::Graphics& g)
 {
     paintBackground(g);
+    componentDisable();
 
     g.setFont(9.0f);
     g.setColour(juce::Colours::white);
@@ -25,6 +26,26 @@ void DelayAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setColour(juce::Colours::white);
     g.drawLine(0, HEIGHT-10, WIDTH, HEIGHT-10, 0.5);
+
+
+}
+
+void DelayAudioProcessorEditor::componentDisable()
+{
+    // Disable Slider2 when in mono modo.
+    if (stereoDelayButton->getToggleState() == 0)
+    {
+        gainSlider2->setValue(gainSlider->getValue(), juce::dontSendNotification);
+        gainSlider2->setEnabled(0);
+
+        delayMsSlider2->setValue(delayMsSlider->getValue(), juce::dontSendNotification);
+        delayMsSlider2->setEnabled(0);      
+    }
+    else
+    {
+        gainSlider2->setEnabled(1);
+        delayMsSlider2->setEnabled(1);
+    }
 }
 
 void DelayAudioProcessorEditor::resized()
@@ -320,19 +341,6 @@ void DelayAudioProcessorEditor::paramAttacher()
 
 void DelayAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
 {
-    //==============================================================================
-    // Sync knobs when stereo button is unchecked
-    if (stereoDelayButton->getToggleState() == 0)
-    {
-        if (slider == gainSlider.get())
-            gainSlider2->setValue(gainSlider->getValue(), juce::dontSendNotification);
-        else if (slider == gainSlider2.get())
-            gainSlider->setValue(gainSlider2->getValue(), juce::dontSendNotification);
-        else if (slider == delayMsSlider.get())
-            delayMsSlider2->setValue(delayMsSlider->getValue(), juce::dontSendNotification);
-        else if (slider == delayMsSlider2.get())
-            delayMsSlider->setValue(delayMsSlider2->getValue(), juce::dontSendNotification);
-    }
     
 }
 

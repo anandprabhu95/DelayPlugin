@@ -153,7 +153,7 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     auto sinArrayResult = createSinArray(wetBuffer, lfoSinIndexPrev);
     auto amplVec = sinArrayResult.first;
     lfoSinIndexPrev = sinArrayResult.second;
-    DBG("Prev :" << lfoSinIndexPrev);
+    //DBG("Prev :" << lfoSinIndexPrev);
 
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {   
@@ -301,7 +301,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createP
     // Buttons
     parameters.push_back(std::make_unique<juce::AudioParameterBool>("LFOENA", "Enable LFO", 0));
     parameters.push_back(std::make_unique<juce::AudioParameterBool>("TESTRVRB", "Test Reverb", 0));
-    parameters.push_back(std::make_unique<juce::AudioParameterBool>("STRODEL", "Stereo Delay", 0));
+    parameters.push_back(std::make_unique<juce::AudioParameterBool>("STRODEL", "Stereo Delay", 1));
 
     return { parameters.begin(), parameters.end() };
 }
@@ -358,7 +358,7 @@ std::pair<std::vector<float>, float> DelayAudioProcessor::createSinArray(juce::A
     float lfoSinIndexStart = lfoSinIndexPrevious;
     auto lfoFreq = params.getRawParameterValue("LFOFREQ");
     auto lfoAmt = params.getRawParameterValue("LFOAMT");
-    DBG("LfoFreq: " << lfoFreq->load());
+    //DBG("LfoFreq: " << lfoFreq->load());
 
     float i = 0.0f;
     for (i = lfoSinIndexStart; i < lfoSinIndexStart + deltaIndex; i+=increment)
@@ -369,7 +369,7 @@ std::pair<std::vector<float>, float> DelayAudioProcessor::createSinArray(juce::A
     }
     if (i > 1/lfoFreq->load())
     {
-        DBG("Reset lfoIndex");
+        //DBG("Reset lfoIndex");
         i = 0.0f;
     }
     return std::pair<std::vector<float>, float>(amplitudeVec, i);

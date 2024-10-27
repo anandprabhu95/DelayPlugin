@@ -28,6 +28,7 @@ private:
     void DelayAudioProcessorEditor::resizeGUI();
     void DelayAudioProcessorEditor::paramAttacher();
     void DelayAudioProcessorEditor::sliderValueChanged(juce::Slider* sliderMoved);
+    void DelayAudioProcessorEditor::componentDisable();
 
     std::unique_ptr<juce::Slider> gainSlider, delayMsSlider, gainSlider2, delayMsSlider2, drywetSlider, lfoFreqSlider,
                                   lfoAmtSlider;
