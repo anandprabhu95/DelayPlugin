@@ -37,14 +37,36 @@ void DelayAudioProcessorEditor::componentDisable()
     {
         gainSlider2->setValue(gainSlider->getValue(), juce::dontSendNotification);
         gainSlider2->setEnabled(0);
+        gainSlider2->setAlpha(0.5f);
 
         delayMsSlider2->setValue(delayMsSlider->getValue(), juce::dontSendNotification);
-        delayMsSlider2->setEnabled(0);      
+        delayMsSlider2->setEnabled(0);
+        delayMsSlider2->setAlpha(0.5f);
     }
     else
     {
         gainSlider2->setEnabled(1);
+        gainSlider2->setAlpha(1.0f);
+
         delayMsSlider2->setEnabled(1);
+        delayMsSlider2->setAlpha(1.0f);
+    }
+
+    if (lfoButton->getToggleState() == 0)
+    {
+        lfoFreqSlider->setEnabled(0);
+        lfoFreqSlider->setAlpha(0.5f);
+
+        lfoAmtSlider->setEnabled(0);
+        lfoAmtSlider->setAlpha(0.5f);
+    }
+    else
+    {
+        lfoFreqSlider->setEnabled(1);
+        lfoFreqSlider->setAlpha(1.0f);
+
+        lfoAmtSlider->setEnabled(1);
+        lfoAmtSlider->setAlpha(1.0f);
     }
 }
 

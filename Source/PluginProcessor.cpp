@@ -290,18 +290,18 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createP
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
 
     // Sliders
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS", "Delay Ms", 0.0f, 96000.0f, 0.0f));
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS2", "Delay Ms 2", 0.0f, 96000.0f, 0.0f));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS", "Delay Ms", 0.0f, 96000.0f, 20000.0f));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS2", "Delay Ms 2", 0.0f, 96000.0f, 20000.0f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN", "Feedback Gain", 0.0f, 1.0f, 0.7f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN2", "Feedback Gain 2", 0.0f, 1.0f, 0.7f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DRYWET", "Dry/Wet", -1.0f, 1.0f, 0.0f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LFOFREQ", "LFO Freq", 1.f, 10.0f, 2.0f));
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LFOAMT", "LFO Amt", 0.5f, 1.0f, 0.5f));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LFOAMT", "LFO Amt", 0.0f, 1.0f, 0.2f));
     
     // Buttons
     parameters.push_back(std::make_unique<juce::AudioParameterBool>("LFOENA", "Enable LFO", 0));
     parameters.push_back(std::make_unique<juce::AudioParameterBool>("TESTRVRB", "Test Reverb", 0));
-    parameters.push_back(std::make_unique<juce::AudioParameterBool>("STRODEL", "Stereo Delay", 1));
+    parameters.push_back(std::make_unique<juce::AudioParameterBool>("STRODEL", "Stereo Delay", 0));
 
     return { parameters.begin(), parameters.end() };
 }

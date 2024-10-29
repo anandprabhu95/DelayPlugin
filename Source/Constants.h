@@ -9,7 +9,7 @@
 
 #define PI						3.14159
 
-#define HEIGHT					530
+#define HEIGHT					430
 #define WIDTH					400
 
 #define SLIDER_WIDTH			100
@@ -49,24 +49,24 @@
 #define MIX_LABEL_X				200
 #define MIX_LABEL_Y				0
 
-#define LFOFREQ_SLIDER_X		100
-#define LFOFREQ_SLIDER_Y		140 + 150
-#define LFOFREQ_LABEL_X			100
-#define LFOFREQ_LABEL_Y			125 + 150
+#define LFOFREQ_SLIDER_X		200
+#define LFOFREQ_SLIDER_Y		15 + 150
+#define LFOFREQ_LABEL_X			200
+#define LFOFREQ_LABEL_Y			0 + 150
 
-#define LFOENA_BUT_X			137.5
-#define LFOENA_BUT_Y			245 + 150
+#define LFOENA_BUT_X			237.5
+#define LFOENA_BUT_Y			140 + 150
 #define LFOENA_BUT_WIDTH		40
 #define LFOENA_BUT_HEIGHT		40
-#define LFOENA_LABEL_X			135
-#define LFOENA_LABEL_Y			280 + 150
+#define LFOENA_LABEL_X			257
+#define LFOENA_LABEL_Y			155 + 150
 #define LFOENA_BUT_LAB_HEIGHT	10
 #define LFOENA_BUT_LAB_WIDTH	30
 
-#define LFOAMT_SLIDER_X			118
-#define LFOAMT_SLIDER_Y			227 + 150
-#define LFOAMT_LABEL_X			95
-#define LFOAMT_LABEL_Y			233.5 + 150
+#define LFOAMT_SLIDER_X			215
+#define LFOAMT_SLIDER_Y			115 + 150
+#define LFOAMT_LABEL_X			195
+#define LFOAMT_LABEL_Y			126 + 150
 #define LFOAMT_LAB_HEIGHT		10
 #define LFOAMT_LAB_WIDTH		30
 
@@ -79,11 +79,11 @@
 #define TESTRVRB_BUT_LAB_HEIGHT	10
 #define TESTRVRB_BUT_LAB_WIDTH	100
 
-#define STRODEL_BUT_X			220
-#define STRODEL_BUT_Y			287.5 + 150
+#define STRODEL_BUT_X			90
+#define STRODEL_BUT_Y			140 + 150
 #define STRODEL_BUT_WIDTH		40
 #define STRODEL_BUT_HEIGHT		40
-#define STRODEL_LABEL_X			240
-#define STRODEL_LABEL_Y			302.5 + 150
+#define STRODEL_LABEL_X			110
+#define STRODEL_LABEL_Y			155 + 150
 #define STRODEL_BUT_LAB_HEIGHT	10
 #define STRODEL_BUT_LAB_WIDTH	100
