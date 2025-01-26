@@ -2,6 +2,8 @@
 
 #define	VERSION					"Frecurse v1.2.0"
 
+#define MAX_DELAY_TIME			2.0f
+
 #define BG_RED					0.58f
 #define BG_GREEN				0.18f
 #define BG_BLUE					0.24f
@@ -21,69 +23,72 @@
 #define SLIDER_LABEL_WIDTH		100
 #define SLIDER_LABEL_HEIGHT		24
 
+#define TEXTBOX_WIDTH           30
+#define TEXTBOX_HEIGHT          20
+
 #define GLOBAL_X				50
 #define GLOBAL_Y				50
 
 #define FB_GAIN_SLIDER_X		0
 #define FB_GAIN_SLIDER_Y		15
 #define FB_GAIN_LABEL_X			0
-#define FB_GAIN_LABEL_Y			0
+#define FB_GAIN_LABEL_Y			-10
 
 #define DELAYMS_SLIDER_X		100
 #define DELAYMS_SLIDER_Y		15
 #define DELAYMS_LABEL_X			100
-#define DELAYMS_LABEL_Y			0
+#define DELAYMS_LABEL_Y			-10
 
 #define FB_GAIN_SLIDER_X2		0
-#define FB_GAIN_SLIDER_Y2		15 + 150
+#define FB_GAIN_SLIDER_Y2		165
 #define FB_GAIN_LABEL_X2		0
-#define FB_GAIN_LABEL_Y2		0 + 150
+#define FB_GAIN_LABEL_Y2		140
 
 #define DELAYMS_SLIDER_X2		100
-#define DELAYMS_SLIDER_Y2		15 + 150
+#define DELAYMS_SLIDER_Y2		165
 #define DELAYMS_LABEL_X2		100
-#define DELAYMS_LABEL_Y2		0 + 150
+#define DELAYMS_LABEL_Y2		140
 
 #define MIX_SLIDER_X			200
 #define MIX_SLIDER_Y			15
 #define MIX_LABEL_X				200
-#define MIX_LABEL_Y				0
+#define MIX_LABEL_Y				-10
 
 #define LFOFREQ_SLIDER_X		200
-#define LFOFREQ_SLIDER_Y		15 + 150
+#define LFOFREQ_SLIDER_Y		165
 #define LFOFREQ_LABEL_X			200
-#define LFOFREQ_LABEL_Y			0 + 150
+#define LFOFREQ_LABEL_Y			140
 
-#define LFOENA_BUT_X			237.5
-#define LFOENA_BUT_Y			140 + 150
+#define LFOENA_BUT_X			237
+#define LFOENA_BUT_Y			290
 #define LFOENA_BUT_WIDTH		40
 #define LFOENA_BUT_HEIGHT		40
 #define LFOENA_LABEL_X			257
-#define LFOENA_LABEL_Y			155 + 150
+#define LFOENA_LABEL_Y			305
 #define LFOENA_BUT_LAB_HEIGHT	10
 #define LFOENA_BUT_LAB_WIDTH	30
 
 #define LFOAMT_SLIDER_X			215
-#define LFOAMT_SLIDER_Y			115 + 150
+#define LFOAMT_SLIDER_Y			265
 #define LFOAMT_LABEL_X			195
-#define LFOAMT_LABEL_Y			126 + 150
+#define LFOAMT_LABEL_Y			271
 #define LFOAMT_LAB_HEIGHT		10
 #define LFOAMT_LAB_WIDTH		30
 
 #define TESTRVRB_BUT_X			-50
-#define TESTRVRB_BUT_Y			287.5 + 150
+#define TESTRVRB_BUT_Y			437
 #define TESTRVRB_BUT_WIDTH		40
 #define TESTRVRB_BUT_HEIGHT		40
 #define TESTRVRB_LABEL_X		-30
-#define TESTRVRB_LABEL_Y		302.5 + 150
+#define TESTRVRB_LABEL_Y		452
 #define TESTRVRB_BUT_LAB_HEIGHT	10
 #define TESTRVRB_BUT_LAB_WIDTH	100
 
 #define STRODEL_BUT_X			90
-#define STRODEL_BUT_Y			140 + 150
+#define STRODEL_BUT_Y			290
 #define STRODEL_BUT_WIDTH		40
 #define STRODEL_BUT_HEIGHT		40
 #define STRODEL_LABEL_X			110
-#define STRODEL_LABEL_Y			155 + 150
+#define STRODEL_LABEL_Y			305
 #define STRODEL_BUT_LAB_HEIGHT	10
 #define STRODEL_BUT_LAB_WIDTH	100

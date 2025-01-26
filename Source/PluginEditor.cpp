@@ -83,8 +83,8 @@ void DelayAudioProcessorEditor::createGUI()
     gainSlider = std::make_unique<juce::Slider>("gainslider");
     addAndMakeVisible(gainSlider.get());
     gainSlider->setRange(0.0f, 1.0f, 0.1f);
-    gainSlider->setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     gainSlider->setSliderStyle(juce::Slider::Rotary);
+    setTextBox(gainSlider);
     gainSlider->addListener(this);
 
     DBG("Attaching GainLabel Left Channel");
@@ -101,8 +101,8 @@ void DelayAudioProcessorEditor::createGUI()
     delayMsSlider = std::make_unique<juce::Slider>("delayslider");
     addAndMakeVisible(delayMsSlider.get());
     delayMsSlider->setRange(0.0f, 96000.0f, 10.f);
-    delayMsSlider->setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     delayMsSlider->setSliderStyle(juce::Slider::Rotary);
+    setTextBox(delayMsSlider);
     delayMsSlider->addListener(this);
 
     DBG("Attaching DelayMsLabel Left Channel");
@@ -119,8 +119,8 @@ void DelayAudioProcessorEditor::createGUI()
     gainSlider2 = std::make_unique<juce::Slider>("gainslider2");
     addAndMakeVisible(gainSlider2.get());
     gainSlider2->setRange(0.0f, 1.0f, 0.1f);
-    gainSlider2->setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     gainSlider2->setSliderStyle(juce::Slider::Rotary);
+    setTextBox(gainSlider2);
     gainSlider2->addListener(this);
 
     DBG("Attaching GainLabel Right Channel");
@@ -137,8 +137,8 @@ void DelayAudioProcessorEditor::createGUI()
     delayMsSlider2 = std::make_unique<juce::Slider>("delayslider2");
     addAndMakeVisible(delayMsSlider2.get());
     delayMsSlider2->setRange(0.0f, 96000.0f, 10.f);
-    delayMsSlider2->setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     delayMsSlider2->setSliderStyle(juce::Slider::Rotary);
+    setTextBox(delayMsSlider2);
     delayMsSlider2->addListener(this);
 
     DBG("Attaching DelayMsLabel Right Channel");
@@ -155,8 +155,8 @@ void DelayAudioProcessorEditor::createGUI()
     drywetSlider = std::make_unique<juce::Slider>("drywetslider");
     addAndMakeVisible(drywetSlider.get());
     drywetSlider->setRange(-1.0f, 1.0f, 0.01f);
-    drywetSlider->setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     drywetSlider->setSliderStyle(juce::Slider::Rotary);
+    setTextBox(drywetSlider);
     drywetSlider->addListener(this);
 
     DBG("Attaching DryWetLabel");
@@ -189,8 +189,8 @@ void DelayAudioProcessorEditor::createGUI()
     lfoFreqSlider = std::make_unique<juce::Slider>("lfofreqslider");
     addAndMakeVisible(lfoFreqSlider.get());
     lfoFreqSlider->setRange(1.0f, 10.0f, 0.01f);
-    lfoFreqSlider->setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
     lfoFreqSlider->setSliderStyle(juce::Slider::Rotary);
+    setTextBox(lfoFreqSlider);
     lfoFreqSlider->addListener(this);
 
     DBG("Attaching lfoFreqLabel");
@@ -260,6 +260,15 @@ void DelayAudioProcessorEditor::createGUI()
 
     DBG("Created GUI");
 }
+
+void DelayAudioProcessorEditor::setTextBox(std::unique_ptr<juce::Slider>& slider)
+{
+    juce::Colour outlinecolour = juce::Colour::fromFloatRGBA(BG_RED, BG_GREEN, BG_BLUE, BG_ALPHA);
+    outlinecolour.withAlpha(0.0f);
+    slider->setTextBoxStyle(juce::Slider::TextBoxAbove, true, TEXTBOX_WIDTH, TEXTBOX_HEIGHT);
+    slider->setColour(juce::Slider::textBoxOutlineColourId, outlinecolour);
+}
+
 
 void DelayAudioProcessorEditor::destroyGUI()
 {   
@@ -363,7 +372,6 @@ void DelayAudioProcessorEditor::paramAttacher()
 
 void DelayAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
 {
-    
 }
 
 //=================================================================================
