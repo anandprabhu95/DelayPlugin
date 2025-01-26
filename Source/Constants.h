@@ -23,7 +23,7 @@
 #define SLIDER_LABEL_WIDTH		100
 #define SLIDER_LABEL_HEIGHT		24
 
-#define TEXTBOX_WIDTH           30
+#define TEXTBOX_WIDTH           40
 #define TEXTBOX_HEIGHT          20
 
 #define GLOBAL_X				50

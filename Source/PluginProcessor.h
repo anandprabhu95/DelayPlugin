@@ -53,13 +53,14 @@ public:
 private:
     void DelayAudioProcessor::fillBuffer(juce::AudioBuffer<float>& wetBuffer, int channel);
     void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& wetBuffer, juce::AudioBuffer<float>& delayBuffer, int channel);
+    float DelayAudioProcessor::delayTimeSecs2Samples(float delayTime);
     void DelayAudioProcessor::updateWritePositions(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& delayBuffer);
     void DelayAudioProcessor::mixDryWet(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& wetBuffer, int channel);
     juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createParameters();
     float DelayAudioProcessor::knobValRangeScaler(float paramToScale, float knobValMin, float knobValMax, float desiredSclMin, float desiredSclMax);
     std::pair<std::vector<float>, float> DelayAudioProcessor::createSinArray(juce::AudioBuffer<float>& wetBuffer, float lfoSinIndexPrevious) const;
     void DelayAudioProcessor::lfoAmplitudeModulation(juce::AudioBuffer<float>& wetBuffer, int channel, std::vector<float> amplitudeVec);
-
+    
 
     juce::AudioBuffer<float> wetBuffer;
     juce::AudioBuffer<float> delayBuffer;

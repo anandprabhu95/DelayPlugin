@@ -100,7 +100,7 @@ void DelayAudioProcessorEditor::createGUI()
     DBG("Attaching DelayMsSlider Left Channel");
     delayMsSlider = std::make_unique<juce::Slider>("delayslider");
     addAndMakeVisible(delayMsSlider.get());
-    delayMsSlider->setRange(0.0f, 96000.0f, 10.f);
+    delayMsSlider->setRange(0.0f, 2.0f, 0.0001f);
     delayMsSlider->setSliderStyle(juce::Slider::Rotary);
     setTextBox(delayMsSlider);
     delayMsSlider->addListener(this);
@@ -136,7 +136,7 @@ void DelayAudioProcessorEditor::createGUI()
     DBG("Attaching DelayMsSlider Right Channel");
     delayMsSlider2 = std::make_unique<juce::Slider>("delayslider2");
     addAndMakeVisible(delayMsSlider2.get());
-    delayMsSlider2->setRange(0.0f, 96000.0f, 10.f);
+    delayMsSlider2->setRange(0.0f, 2.0f, 10.f);
     delayMsSlider2->setSliderStyle(juce::Slider::Rotary);
     setTextBox(delayMsSlider2);
     delayMsSlider2->addListener(this);
