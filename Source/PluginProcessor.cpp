@@ -299,8 +299,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createP
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
 
     // Sliders
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS", "Delay Ms", 0.0f, 2.0f, 0.0f));
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS2", "Delay Ms 2", 0.0f, 2.0f, 0.0f));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS", "Delay Ms", 0.0f, MAX_DELAY_TIME, 0.0f));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS2", "Delay Ms 2", 0.0f, MAX_DELAY_TIME, 0.0f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN", "Feedback Gain", 0.0f, 1.0f, 0.7f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN2", "Feedback Gain 2", 0.0f, 1.0f, 0.7f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DRYWET", "Dry/Wet", -1.0f, 1.0f, 0.0f));
