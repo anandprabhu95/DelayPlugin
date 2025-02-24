@@ -16,6 +16,7 @@ DelayAudioProcessor::DelayAudioProcessor()
                         reverb(new Reverb())
 #endif
 {
+    params.state = juce::ValueTree("savedParams");
 }
 
 DelayAudioProcessor::~DelayAudioProcessor()
@@ -399,15 +400,21 @@ juce::AudioProcessorEditor* DelayAudioProcessor::createEditor()
 //==============================================================================
 void DelayAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+    std::unique_ptr<juce::XmlElement> xml(params.state.createXml());
+    copyXmlToBinary(*xml.get(), destData);
 }
 
 void DelayAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+    std::unique_ptr<juce::XmlElement> savedParameters(getXmlFromBinary(data, sizeInBytes));
+
+    if (savedParameters.get() != nullptr)
+    {
+        if (savedParameters->hasTagName(params.state.getType()))
+        {
+            params.state = juce::ValueTree::fromXml(*savedParameters.get());
+        }
+    }
 }
 
 //==============================================================================
