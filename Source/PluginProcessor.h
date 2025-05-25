@@ -77,6 +77,8 @@ private:
 
     float lfoSinIndexPrev {0.0f};
 
+    juce::AudioPlayHead::PositionInfo* positionInfo;
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayAudioProcessor)
 };

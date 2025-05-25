@@ -183,7 +183,16 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     {
         reverb->reverb(buffer, getNumInputChannels());
     }
-    
+    auto playHead = this->getPlayHead();
+    auto bpm = playHead->getPosition()->getBpm();
+    if (bpm.hasValue())
+    {
+        DBG("BPM: " << *bpm);
+    }
+    else
+    {
+        DBG("BPM has no value.");
+    }
 }
 
 void DelayAudioProcessor::fillBuffer(juce::AudioBuffer<float>& wetBuffer, int channel)
