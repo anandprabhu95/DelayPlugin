@@ -62,22 +62,22 @@ private:
     void DelayAudioProcessor::lfoAmplitudeModulation(juce::AudioBuffer<float>& wetBuffer, int channel, std::vector<float> amplitudeVec);
     
 
-    juce::AudioBuffer<float> wetBuffer;
-    juce::AudioBuffer<float> delayBuffer;
-    juce::AudioBuffer<float> lfoBuffer;
-    int writePosition { 0 };
-    int readPosition { 0 };
-    juce::LinearSmoothedValue<float> feedbackGainInterpolator { 0.0f };
-    juce::LinearSmoothedValue<float> feedbackGain2Interpolator{ 0.0f };
-    juce::LinearSmoothedValue<float> delayTimeInterpolator { 0.0f };
-    juce::LinearSmoothedValue<float> delayTime2Interpolator{ 0.0f };
-    juce::LinearSmoothedValue<float> drywetInterpolator { 0.0f };
-    juce::LinearSmoothedValue<float> lfoFreqInterpolator{ 0.0f };
-    juce::LinearSmoothedValue<float> lfoAmtInterpolator{ 0.0f };
+    juce::AudioBuffer<float> m_wetBuffer;
+    juce::AudioBuffer<float> m_delayBuffer;
 
-    float lfoSinIndexPrev {0.0f};
+    int m_writePosition { 0 };
+    int m_readPosition { 0 };
+    juce::LinearSmoothedValue<float> m_feedbackGainInterpolator { 0.0f };
+    juce::LinearSmoothedValue<float> m_feedbackGain2Interpolator{ 0.0f };
+    juce::LinearSmoothedValue<float> m_delayTimeInterpolator { 0.0f };
+    juce::LinearSmoothedValue<float> m_delayTime2Interpolator{ 0.0f };
+    juce::LinearSmoothedValue<float> m_drywetInterpolator { 0.0f };
+    juce::LinearSmoothedValue<float> m_lfoFreqInterpolator{ 0.0f };
+    juce::LinearSmoothedValue<float> m_lfoAmtInterpolator{ 0.0f };
 
-    juce::AudioPlayHead::PositionInfo* positionInfo;
+    float m_lfoSinIndexPrev {0.0f};
+
+    juce::Optional<double> m_bpm;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayAudioProcessor)
