@@ -32,18 +32,18 @@ private:
     void DelayAudioProcessorEditor::setTextBox(std::unique_ptr<juce::Slider>& slider);
 
 
-    std::unique_ptr<juce::Slider> gainSlider, delayMsSlider, gainSlider2, delayMsSlider2, drywetSlider, lfoFreqSlider,
-                                  lfoAmtSlider;
-    std::unique_ptr<juce::ToggleButton> lfoButton, testReverbButton, stereoDelayButton;
+    std::unique_ptr<juce::Slider> m_gainSlider, m_delayMsSlider, m_gainSlider2, m_delayMsSlider2, m_drywetSlider, m_lfoFreqSlider,
+                                  m_lfoAmtSlider;
+    std::unique_ptr<juce::ToggleButton> m_lfoButton, m_testReverbButton, m_stereoDelayButton;
 
-    std::unique_ptr<juce::Label> gainLabel, delayMsLabel, gainLabel2, delayMsLabel2, stereoDelayLabel,
-                                 drywetLabel, lfoButtonLabel, lfoFreqLabel, lfoAmtLabel, testRvrbLabel;
+    std::unique_ptr<juce::Label> m_gainLabel, m_delayMsLabel, m_gainLabel2, m_delayMsLabel2, m_stereoDelayLabel,
+                                 m_drywetLabel, m_lfoButtonLabel, m_lfoFreqLabel, m_lfoAmtLabel, m_testRvrbLabel;
 
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gainParamAttach, delayMsParamAttach,
-                                                                          gainParamAttach2, delayMsParamAttach2,
-                                                                          drywetParamAttach, lfoFreqParamAttach,
-                                                                          lfoAmtParamAttach;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> lfoButtonParamAttach, testRvrbButParamAttach, stereoDelayButParamAttach;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> m_gainParamAttach, m_delayMsParamAttach,
+                                                                          m_gainParamAttach2, m_delayMsParamAttach2,
+                                                                          m_drywetParamAttach, m_lfoFreqParamAttach,
+                                                                          m_lfoAmtParamAttach;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> m_lfoButtonParamAttach, m_testRvrbButParamAttach, m_stereoDelayButParamAttach;
 
     //======================================================================================================
 
