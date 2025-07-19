@@ -19,6 +19,7 @@ void DelayAudioProcessorEditor::paint (juce::Graphics& g)
 {
     paintBackground(g);
     componentDisable();
+    modifyDelaySliderForBpmSync();
 }
 
 void DelayAudioProcessorEditor::componentDisable()
@@ -404,5 +405,26 @@ void DelayAudioProcessorEditor::paintBackground(juce::Graphics& g)
     g.drawText(VERSION, 0, HEIGHT - 10, WIDTH, 10, juce::Justification::right, true);
     g.setColour(juce::Colours::white);
     g.drawLine(0, HEIGHT - 10, WIDTH, HEIGHT - 10, 0.5);
+}
+
+void DelayAudioProcessorEditor::modifyDelaySliderForBpmSync()
+{
+    if (m_bpmSyncButton->getToggleState() == 1)
+    {
+        m_delayMsSlider->setRange(0, 6, 1);
+
+        // Map the integers to BPM Synced delay times in PluginProcessor later. 
+        // 0 -> 1/64 note
+        // 1 -> 1/32 note
+        // 2 -> 1/16 note
+        // 3 -> 1/8  note
+        // 4 -> 1/4  note
+        // 5 -> 2/4  note
+        // 6 -> 4/4  note
+    }
+    else
+    {
+        m_delayMsSlider->setRange(0.0f, MAX_DELAY_TIME, 0.0001f);
+    }
 }
 

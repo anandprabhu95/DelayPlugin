@@ -30,6 +30,7 @@ private:
     void DelayAudioProcessorEditor::sliderValueChanged(juce::Slider* sliderMoved);
     void DelayAudioProcessorEditor::componentDisable();
     void DelayAudioProcessorEditor::setTextBox(std::unique_ptr<juce::Slider>& slider);
+    void DelayAudioProcessorEditor::modifyDelaySliderForBpmSync();
 
 
     std::unique_ptr<juce::Slider> m_gainSlider, m_delayMsSlider, m_gainSlider2, m_delayMsSlider2, m_drywetSlider, m_lfoFreqSlider,
