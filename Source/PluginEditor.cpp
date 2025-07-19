@@ -19,10 +19,6 @@ void DelayAudioProcessorEditor::paint (juce::Graphics& g)
 {
     paintBackground(g);
     componentDisable();
-
-    
-
-
 }
 
 void DelayAudioProcessorEditor::componentDisable()
@@ -247,6 +243,22 @@ void DelayAudioProcessorEditor::createGUI()
     m_stereoDelayLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
     m_stereoDelayLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 
+    //====================================================================================
+    DBG("Attaching bpmSyncButton");
+    m_bpmSyncButton = std::make_unique<juce::ToggleButton>("");
+    addAndMakeVisible(m_bpmSyncButton.get());
+    m_bpmSyncButton->setSize(20, 20);
+    m_bpmSyncButton->setClickingTogglesState(true);
+
+    DBG("Attaching bpmSyncButtonLabel");
+    m_bpmSyncButtonLabel = std::make_unique<juce::Label>("bpmsyncbuttonlabel", "BPM Sync");
+    addAndMakeVisible(m_bpmSyncButtonLabel.get());
+    m_bpmSyncButtonLabel->setFont(juce::Font(10.00f, juce::Font::plain));
+    m_bpmSyncButtonLabel->setJustificationType(juce::Justification::left);
+    m_bpmSyncButtonLabel->setEditable(false, false, false);
+    m_bpmSyncButtonLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    m_bpmSyncButtonLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+
     //=====================================================================================
     getLookAndFeel().setColour(juce::Slider::thumbColourId, juce::Colours::silver);
     //getLookAndFeel().setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::red.darker(10));
@@ -309,6 +321,10 @@ void DelayAudioProcessorEditor::destroyGUI()
     m_stereoDelayButParamAttach = nullptr;
     m_stereoDelayButton = nullptr;
 
+    m_bpmSyncButtonLabel = nullptr;
+    m_bpmSyncButParamAttach = nullptr;
+    m_bpmSyncButton = nullptr;
+
     DBG("Destroyed GUI");
 }
 
@@ -345,6 +361,9 @@ void DelayAudioProcessorEditor::resizeGUI()
 
     m_stereoDelayButton->setBounds(GLOBAL_X + STRODEL_BUT_X, GLOBAL_Y + STRODEL_BUT_Y, STRODEL_BUT_WIDTH, STRODEL_BUT_HEIGHT);
     m_stereoDelayLabel->setBounds(GLOBAL_X + STRODEL_LABEL_X, GLOBAL_Y + STRODEL_LABEL_Y, STRODEL_BUT_LAB_WIDTH, STRODEL_BUT_LAB_HEIGHT);
+
+    m_bpmSyncButton->setBounds(GLOBAL_X + BPMSYNC_BUT_X, GLOBAL_Y + BPMSYNC_BUT_Y, BPMSYNC_BUT_WIDTH, BPMSYNC_BUT_HEIGHT);
+    m_bpmSyncButtonLabel->setBounds(GLOBAL_X + BPMSYNC_LABEL_X, GLOBAL_Y + BPMSYNC_LABEL_Y, BPMSYNC_BUT_LAB_WIDTH, BPMSYNC_BUT_LAB_HEIGHT);
     
     DBG("Resized GUI");
 }
@@ -362,6 +381,8 @@ void DelayAudioProcessorEditor::paramAttacher()
     m_lfoAmtParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "LFOAMT", *m_lfoAmtSlider);
     m_testRvrbButParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "TESTRVRB", *m_testReverbButton);
     m_stereoDelayButParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "STRODEL", *m_stereoDelayButton);
+    m_bpmSyncButParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "BPMSYNC", *m_bpmSyncButton);
+
     DBG("Attached Params");
 }
 
@@ -381,7 +402,6 @@ void DelayAudioProcessorEditor::paintBackground(juce::Graphics& g)
     g.setFont(9.0f);
     g.setColour(juce::Colours::white);
     g.drawText(VERSION, 0, HEIGHT - 10, WIDTH, 10, juce::Justification::right, true);
-
     g.setColour(juce::Colours::white);
     g.drawLine(0, HEIGHT - 10, WIDTH, HEIGHT - 10, 0.5);
 }
