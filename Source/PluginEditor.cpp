@@ -20,12 +20,7 @@ void DelayAudioProcessorEditor::paint (juce::Graphics& g)
     paintBackground(g);
     componentDisable();
 
-    g.setFont(9.0f);
-    g.setColour(juce::Colours::white);
-    g.drawText(VERSION, 0, HEIGHT-10, WIDTH, 10, juce::Justification::right, true);
-
-    g.setColour(juce::Colours::white);
-    g.drawLine(0, HEIGHT-10, WIDTH, HEIGHT-10, 0.5);
+    
 
 
 }
@@ -382,5 +377,12 @@ void DelayAudioProcessorEditor::paintBackground(juce::Graphics& g)
     juce::ColourGradient cg = juce::ColourGradient::vertical(colour, 0, colour.darker(1.5f), HEIGHT);
     g.setGradientFill(cg);
     g.fillAll();
+
+    g.setFont(9.0f);
+    g.setColour(juce::Colours::white);
+    g.drawText(VERSION, 0, HEIGHT - 10, WIDTH, 10, juce::Justification::right, true);
+
+    g.setColour(juce::Colours::white);
+    g.drawLine(0, HEIGHT - 10, WIDTH, HEIGHT - 10, 0.5);
 }
 
