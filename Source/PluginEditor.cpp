@@ -297,6 +297,8 @@ void DelayAudioProcessorEditor::destroyGUI()
     m_delayMsLabel = nullptr;
     m_delayMsParamAttach = nullptr;
     m_delayMsSlider = nullptr;
+    m_delayBpmParamAttach = nullptr;
+    m_delayBpmSlider = nullptr;
 
     m_gainLabel2 = nullptr;
     m_gainParamAttach2 = nullptr;
