@@ -107,6 +107,14 @@ void DelayAudioProcessorEditor::createGUI()
     m_delayMsLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 
     //====================================================================================
+    DBG("Attaching DelayBpmSlider Left Channel");
+    m_delayBpmSlider = std::make_unique<juce::Slider>("delaybpmslider");
+    m_delayBpmSlider->setRange(0, 6, 1);
+    m_delayBpmSlider->setSliderStyle(juce::Slider::Rotary);
+    setTextBox(m_delayBpmSlider);
+    m_delayBpmSlider->addListener(this);
+
+    //====================================================================================
     DBG("Attaching GainSlider Right Channel");
     m_gainSlider2 = std::make_unique<juce::Slider>("gainslider2");
     addAndMakeVisible(m_gainSlider2.get());
@@ -337,6 +345,7 @@ void DelayAudioProcessorEditor::resizeGUI()
     m_gainLabel->setBounds(GLOBAL_X + FB_GAIN_LABEL_X, GLOBAL_Y + FB_GAIN_LABEL_Y, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
 
     m_delayMsSlider->setBounds(GLOBAL_X + DELAYMS_SLIDER_X, GLOBAL_Y + DELAYMS_SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
+    m_delayBpmSlider->setBounds(GLOBAL_X + DELAYBPM_SLIDER_X, GLOBAL_Y + DELAYBPM_SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
     m_delayMsLabel->setBounds(GLOBAL_X + DELAYMS_LABEL_X, GLOBAL_Y + DELAYMS_LABEL_Y, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
 
     m_gainSlider2->setBounds(GLOBAL_X + FB_GAIN_SLIDER_X2, GLOBAL_Y + FB_GAIN_SLIDER_Y2, SLIDER_WIDTH, SLIDER_HEIGHT);
@@ -376,6 +385,7 @@ void DelayAudioProcessorEditor::paramAttacher()
     m_gainParamAttach2 = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "FEEDBACKGAIN2", *m_gainSlider2);
     m_delayMsParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "DELAYMS", *m_delayMsSlider);
     m_delayMsParamAttach2 = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "DELAYMS2", *m_delayMsSlider2);
+    m_delayBpmParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "DELAYBPM", *m_delayBpmSlider);
     m_drywetParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "DRYWET", *m_drywetSlider);
     m_lfoButtonParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "LFOENA", *m_lfoButton);
     m_lfoFreqParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "LFOFREQ", *m_lfoFreqSlider);
@@ -411,7 +421,8 @@ void DelayAudioProcessorEditor::modifyDelaySliderForBpmSync()
 {
     if (m_bpmSyncButton->getToggleState() == 1)
     {
-        m_delayMsSlider->setRange(0, 6, 1);
+        m_delayMsSlider->setVisible(false);
+        addAndMakeVisible(m_delayBpmSlider.get());
 
         // Map the integers to BPM Synced delay times in PluginProcessor later. 
         // 0 -> 1/64 note
@@ -424,7 +435,8 @@ void DelayAudioProcessorEditor::modifyDelaySliderForBpmSync()
     }
     else
     {
-        m_delayMsSlider->setRange(0.0f, MAX_DELAY_TIME, 0.0001f);
+        m_delayBpmSlider->setVisible(false);
+        addAndMakeVisible(m_delayMsSlider.get());
     }
 }
 

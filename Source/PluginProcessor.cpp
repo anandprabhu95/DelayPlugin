@@ -311,6 +311,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createP
 
     // Sliders
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS", "Delay Ms", 0.0f, MAX_DELAY_TIME, 0.0f));
+    parameters.push_back(std::make_unique<juce::AudioParameterInt>("DELAYBPM", "Delay BPM", 0, 6, 6));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS2", "Delay Ms 2", 0.0f, MAX_DELAY_TIME, 0.0f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN", "Feedback Gain", 0.0f, 1.0f, 0.7f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN2", "Feedback Gain 2", 0.0f, 1.0f, 0.7f));
@@ -322,6 +323,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createP
     parameters.push_back(std::make_unique<juce::AudioParameterBool>("LFOENA", "Enable LFO", 0));
     parameters.push_back(std::make_unique<juce::AudioParameterBool>("TESTRVRB", "Test Reverb", 0));
     parameters.push_back(std::make_unique<juce::AudioParameterBool>("STRODEL", "Stereo Delay", 0));
+    parameters.push_back(std::make_unique<juce::AudioParameterBool>("BPMSYNC", "BPM Sync", 0));
 
     return { parameters.begin(), parameters.end() };
 }

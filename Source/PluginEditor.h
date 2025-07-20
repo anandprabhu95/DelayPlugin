@@ -33,7 +33,7 @@ private:
     void DelayAudioProcessorEditor::modifyDelaySliderForBpmSync();
 
 
-    std::unique_ptr<juce::Slider> m_gainSlider, m_delayMsSlider, m_gainSlider2, m_delayMsSlider2, m_drywetSlider, m_lfoFreqSlider,
+    std::unique_ptr<juce::Slider> m_gainSlider, m_delayMsSlider, m_delayBpmSlider, m_gainSlider2, m_delayMsSlider2, m_drywetSlider, m_lfoFreqSlider,
                                   m_lfoAmtSlider;
     std::unique_ptr<juce::ToggleButton> m_lfoButton, m_testReverbButton, m_stereoDelayButton, m_bpmSyncButton;
 
@@ -41,7 +41,7 @@ private:
                                  m_drywetLabel, m_lfoButtonLabel, m_lfoFreqLabel, m_lfoAmtLabel, m_testRvrbLabel,
                                  m_bpmSyncButtonLabel;
 
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> m_gainParamAttach, m_delayMsParamAttach,
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> m_gainParamAttach, m_delayMsParamAttach, m_delayBpmParamAttach,
                                                                           m_gainParamAttach2, m_delayMsParamAttach2,
                                                                           m_drywetParamAttach, m_lfoFreqParamAttach,
                                                                           m_lfoAmtParamAttach;
