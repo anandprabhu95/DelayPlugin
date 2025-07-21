@@ -151,6 +151,14 @@ void DelayAudioProcessorEditor::createGUI()
     m_delayMsLabel2->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 
     //====================================================================================
+    DBG("Attaching DelayBpmSlider Right Channel");
+    m_delayBpmSlider2 = std::make_unique<juce::Slider>("delaybpmslider2");
+    m_delayBpmSlider2->setRange(0, 6, 1);
+    m_delayBpmSlider2->setSliderStyle(juce::Slider::Rotary);
+    setTextBox(m_delayBpmSlider2);
+    m_delayBpmSlider2->addListener(this);
+
+    //====================================================================================
     DBG("Attaching DryWetSlider");
     m_drywetSlider = std::make_unique<juce::Slider>("drywetslider");
     addAndMakeVisible(m_drywetSlider.get());
@@ -268,6 +276,22 @@ void DelayAudioProcessorEditor::createGUI()
     m_bpmSyncButtonLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
     m_bpmSyncButtonLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 
+    //====================================================================================
+    DBG("Attaching bpmSyncButton2");
+    m_bpmSyncButton2 = std::make_unique<juce::ToggleButton>("");
+    addAndMakeVisible(m_bpmSyncButton2.get());
+    m_bpmSyncButton2->setSize(20, 20);
+    m_bpmSyncButton2->setClickingTogglesState(true);
+
+    DBG("Attaching bpmSync2ButtonLabel");
+    m_bpmSync2ButtonLabel = std::make_unique<juce::Label>("bpmsync2buttonlabel", "BPM Sync");
+    addAndMakeVisible(m_bpmSync2ButtonLabel.get());
+    m_bpmSync2ButtonLabel->setFont(juce::Font(10.00f, juce::Font::plain));
+    m_bpmSync2ButtonLabel->setJustificationType(juce::Justification::left);
+    m_bpmSync2ButtonLabel->setEditable(false, false, false);
+    m_bpmSync2ButtonLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    m_bpmSync2ButtonLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+
     //=====================================================================================
     getLookAndFeel().setColour(juce::Slider::thumbColourId, juce::Colours::silver);
     //getLookAndFeel().setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::red.darker(10));
@@ -307,6 +331,8 @@ void DelayAudioProcessorEditor::destroyGUI()
     m_delayMsLabel2 = nullptr;
     m_delayMsParamAttach2 = nullptr;
     m_delayMsSlider2 = nullptr;
+    m_delayBpmParamAttach2 = nullptr;
+    m_delayBpmSlider2 = nullptr;
    
     m_drywetLabel = nullptr;
     m_drywetParamAttach = nullptr;
@@ -334,6 +360,10 @@ void DelayAudioProcessorEditor::destroyGUI()
 
     m_bpmSyncButtonLabel = nullptr;
     m_bpmSyncButParamAttach = nullptr;
+    m_bpmSyncButton2 = nullptr;
+
+    m_bpmSync2ButtonLabel = nullptr;
+    m_bpmSyncButParamAttach = nullptr;
     m_bpmSyncButton = nullptr;
 
     DBG("Destroyed GUI");
@@ -354,6 +384,7 @@ void DelayAudioProcessorEditor::resizeGUI()
     m_gainLabel2->setBounds(GLOBAL_X + FB_GAIN_LABEL_X2, GLOBAL_Y + FB_GAIN_LABEL_Y2, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
 
     m_delayMsSlider2->setBounds(GLOBAL_X + DELAYMS_SLIDER_X2, GLOBAL_Y + DELAYMS_SLIDER_Y2, SLIDER_WIDTH, SLIDER_HEIGHT);
+    m_delayBpmSlider2->setBounds(GLOBAL_X + DELAYBPM_SLIDER_X2, GLOBAL_Y + DELAYBPM_SLIDER_Y2, SLIDER_WIDTH, SLIDER_HEIGHT);
     m_delayMsLabel2->setBounds(GLOBAL_X + DELAYMS_LABEL_X2, GLOBAL_Y + DELAYMS_LABEL_Y2, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
 
     m_drywetSlider->setBounds(GLOBAL_X + MIX_SLIDER_X, GLOBAL_Y + MIX_SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
@@ -376,6 +407,9 @@ void DelayAudioProcessorEditor::resizeGUI()
 
     m_bpmSyncButton->setBounds(GLOBAL_X + BPMSYNC_BUT_X, GLOBAL_Y + BPMSYNC_BUT_Y, BPMSYNC_BUT_WIDTH, BPMSYNC_BUT_HEIGHT);
     m_bpmSyncButtonLabel->setBounds(GLOBAL_X + BPMSYNC_LABEL_X, GLOBAL_Y + BPMSYNC_LABEL_Y, BPMSYNC_BUT_LAB_WIDTH, BPMSYNC_BUT_LAB_HEIGHT);
+
+    m_bpmSyncButton2->setBounds(GLOBAL_X + BPMSYNC2_BUT_X, GLOBAL_Y + BPMSYNC2_BUT_Y, BPMSYNC2_BUT_WIDTH, BPMSYNC2_BUT_HEIGHT);
+    m_bpmSync2ButtonLabel->setBounds(GLOBAL_X + BPMSYNC2_LABEL_X, GLOBAL_Y + BPMSYNC2_LABEL_Y, BPMSYNC2_BUT_LAB_WIDTH, BPMSYNC2_BUT_LAB_HEIGHT);
     
     DBG("Resized GUI");
 }
@@ -388,6 +422,7 @@ void DelayAudioProcessorEditor::paramAttacher()
     m_delayMsParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "DELAYMS", *m_delayMsSlider);
     m_delayMsParamAttach2 = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "DELAYMS2", *m_delayMsSlider2);
     m_delayBpmParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "DELAYBPM", *m_delayBpmSlider);
+    m_delayBpmParamAttach2 = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "DELAYBPM2", *m_delayBpmSlider2);
     m_drywetParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "DRYWET", *m_drywetSlider);
     m_lfoButtonParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "LFOENA", *m_lfoButton);
     m_lfoFreqParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "LFOFREQ", *m_lfoFreqSlider);
@@ -430,6 +465,17 @@ void DelayAudioProcessorEditor::modifyDelaySliderForBpmSync()
     {
         m_delayBpmSlider->setVisible(false);
         addAndMakeVisible(m_delayMsSlider.get());
+    }
+
+    if (m_bpmSyncButton2->getToggleState() == 1)
+    {
+        m_delayMsSlider2->setVisible(false);
+        addAndMakeVisible(m_delayBpmSlider2.get());
+    }
+    else
+    {
+        m_delayBpmSlider2->setVisible(false);
+        addAndMakeVisible(m_delayMsSlider2.get());
     }
 }
 
