@@ -60,6 +60,7 @@ private:
     float DelayAudioProcessor::knobValRangeScaler(float paramToScale, float knobValMin, float knobValMax, float desiredSclMin, float desiredSclMax);
     std::pair<std::vector<float>, float> DelayAudioProcessor::createSinArray(juce::AudioBuffer<float>& wetBuffer, float lfoSinIndexPrevious) const;
     void DelayAudioProcessor::lfoAmplitudeModulation(juce::AudioBuffer<float>& wetBuffer, int channel, std::vector<float> amplitudeVec);
+    float DelayAudioProcessor::delayTimeFromBpmSlider();
     
 
     juce::AudioBuffer<float> m_wetBuffer;

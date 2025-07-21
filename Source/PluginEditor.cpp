@@ -425,15 +425,6 @@ void DelayAudioProcessorEditor::modifyDelaySliderForBpmSync()
     {
         m_delayMsSlider->setVisible(false);
         addAndMakeVisible(m_delayBpmSlider.get());
-
-        // Map the integers to BPM Synced delay times in PluginProcessor later. 
-        // 0 -> 1/64 note
-        // 1 -> 1/32 note
-        // 2 -> 1/16 note
-        // 3 -> 1/8  note
-        // 4 -> 1/4  note
-        // 5 -> 2/4  note
-        // 6 -> 4/4  note
     }
     else
     {

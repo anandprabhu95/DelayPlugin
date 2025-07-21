@@ -183,17 +183,52 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     {
         reverb->reverb(buffer, getNumInputChannels());
     }
+}
 
+
+float DelayAudioProcessor::delayTimeFromBpmSlider()
+{
     auto playHead = this->getPlayHead();
     m_bpm = playHead->getPosition()->getBpm();
+
+    auto* delayNoteSetg = params.getRawParameterValue("DELAYBPM");
+    float delayTime = 0.0f;
+
     if (m_bpm.hasValue())
     {
         DBG("BPM: " << *m_bpm);
+        auto oneBeatTime = *m_bpm * (60 / getSampleRate());
+
+        switch (static_cast<int>(delayNoteSetg->load()))
+        {
+        case 0:
+            delayTime = oneBeatTime * (1/64);
+            break;
+        case 1:
+            delayTime = oneBeatTime * (1/32);
+            break;
+        case 2:
+            delayTime = oneBeatTime * (1/16);
+            break;
+        case 3:
+            delayTime = oneBeatTime * (1/8);
+            break;
+        case 4:
+            delayTime = oneBeatTime * (1/4);
+            break;
+        case 5:
+            delayTime = oneBeatTime * (2/4);
+            break;
+        case 6:
+            delayTime = oneBeatTime * (4/4);
+            break;
+        }
     }
     else
     {
-        DBG("BPM has no value.");
+        delayTime = 120 * (60 / getSampleRate()); // Default 120 BPM
     }
+    return delayTime;
 }
 
 void DelayAudioProcessor::fillBuffer(juce::AudioBuffer<float>& wetBuffer, int channel)
