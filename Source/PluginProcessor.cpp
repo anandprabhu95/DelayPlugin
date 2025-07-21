@@ -197,7 +197,7 @@ float DelayAudioProcessor::delayTimeFromBpmSlider()
     if (m_bpm.hasValue())
     {
         DBG("BPM: " << *m_bpm);
-        auto oneBeatTime = *m_bpm * (60 / getSampleRate());
+        auto oneBeatTime = 60 / (*m_bpm);
 
         switch (static_cast<int>(delayNoteSetg->load()))
         {
@@ -265,15 +265,26 @@ void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& wetBuffer, ju
     float delayTime = 0.0f;
     float delaySamples = 0.0f;
 
+    auto* isBpmSyncOn = params.getRawParameterValue("BPMSYNC");
+
     auto* isStereoOn = params.getRawParameterValue("STRODEL");
+
     if (isStereoOn->load() == 1) {
         if (channel == 0)
         {
             auto* delayTimePointer = params.getRawParameterValue("DELAYMS");
             m_delayTimeInterpolator.setTargetValue(delayTimePointer->load());
-            delayTime = m_delayTimeInterpolator.getNextValue();
+
+            if (isBpmSyncOn->load() == 1)
+            {
+                delayTime = delayTimeFromBpmSlider();
+            }
+            else
+            {
+                delayTime = m_delayTimeInterpolator.getNextValue();
+            }
+            
             delaySamples = delayTimeSecs2Samples(delayTime);
-    
             auto* feedbackGainPointer = params.getRawParameterValue("FEEDBACKGAIN");
             m_feedbackGainInterpolator.setTargetValue(feedbackGainPointer->load());
             feedbackGain = m_feedbackGainInterpolator.getNextValue();
@@ -282,7 +293,15 @@ void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& wetBuffer, ju
         {
             auto* delayTime2Pointer = params.getRawParameterValue("DELAYMS2");
             m_delayTime2Interpolator.setTargetValue(delayTime2Pointer->load());
-            delayTime = m_delayTime2Interpolator.getNextValue();
+            
+            if (isBpmSyncOn->load() == 1)
+            {
+                delayTime = delayTimeFromBpmSlider();
+            }
+            else
+            {
+                delayTime = m_delayTime2Interpolator.getNextValue();
+            }
             delaySamples = delayTimeSecs2Samples(delayTime);
     
             auto* feedbackGain2Pointer = params.getRawParameterValue("FEEDBACKGAIN2");
@@ -294,7 +313,16 @@ void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& wetBuffer, ju
     {
         auto* delayTimePointer = params.getRawParameterValue("DELAYMS");
         m_delayTimeInterpolator.setTargetValue(delayTimePointer->load());
-        delayTime = m_delayTimeInterpolator.getNextValue();
+        
+        if (isBpmSyncOn->load() == 1)
+        {
+            delayTime = delayTimeFromBpmSlider();
+        }
+        else
+        {
+            delayTime = m_delayTimeInterpolator.getNextValue();
+        }
+
         delaySamples = delayTimeSecs2Samples(delayTime);
 
         auto* feedbackGainPointer = params.getRawParameterValue("FEEDBACKGAIN");
