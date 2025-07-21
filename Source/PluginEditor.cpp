@@ -34,6 +34,15 @@ void DelayAudioProcessorEditor::componentDisable()
         m_delayMsSliderRight->setValue(m_delayMsSliderLeft->getValue(), juce::dontSendNotification);
         m_delayMsSliderRight->setEnabled(0);
         m_delayMsSliderRight->setAlpha(0.5f);
+
+        m_delayBpmSliderRight->setValue(m_delayBpmSliderLeft->getValue(), juce::dontSendNotification);
+        m_delayBpmSliderRight->setEnabled(0);
+        m_delayBpmSliderRight->setAlpha(0.5f);
+
+        m_bpmSyncButtonRight->setToggleState(m_bpmSyncButtonLeft->getToggleState(), juce::dontSendNotification);
+        m_bpmSyncButtonRight->setEnabled(0);
+        m_bpmSyncButtonRight->setAlpha(0.5f);
+        m_bpmSyncButtonLabelRight->setAlpha(0.5f);
     }
     else
     {
@@ -42,6 +51,13 @@ void DelayAudioProcessorEditor::componentDisable()
 
         m_delayMsSliderRight->setEnabled(1);
         m_delayMsSliderRight->setAlpha(1.0f);
+
+        m_delayBpmSliderRight->setEnabled(1);
+        m_delayBpmSliderRight->setAlpha(1.0f);
+
+        m_bpmSyncButtonRight->setEnabled(1);
+        m_bpmSyncButtonRight->setAlpha(1.0f);
+        m_bpmSyncButtonLabelRight->setAlpha(1.0f);
     }
 
     if (m_lfoButton->getToggleState() == 0)
