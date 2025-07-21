@@ -27,21 +27,21 @@ void DelayAudioProcessorEditor::componentDisable()
     // Disable Slider2 when in mono modo.
     if (m_stereoDelayButton->getToggleState() == 0)
     {
-        m_gainSlider2->setValue(m_gainSlider->getValue(), juce::dontSendNotification);
-        m_gainSlider2->setEnabled(0);
-        m_gainSlider2->setAlpha(0.5f);
+        m_gainSliderRight->setValue(m_gainSliderLeft->getValue(), juce::dontSendNotification);
+        m_gainSliderRight->setEnabled(0);
+        m_gainSliderRight->setAlpha(0.5f);
 
-        m_delayMsSlider2->setValue(m_delayMsSlider->getValue(), juce::dontSendNotification);
-        m_delayMsSlider2->setEnabled(0);
-        m_delayMsSlider2->setAlpha(0.5f);
+        m_delayMsSliderRight->setValue(m_delayMsSliderLeft->getValue(), juce::dontSendNotification);
+        m_delayMsSliderRight->setEnabled(0);
+        m_delayMsSliderRight->setAlpha(0.5f);
     }
     else
     {
-        m_gainSlider2->setEnabled(1);
-        m_gainSlider2->setAlpha(1.0f);
+        m_gainSliderRight->setEnabled(1);
+        m_gainSliderRight->setAlpha(1.0f);
 
-        m_delayMsSlider2->setEnabled(1);
-        m_delayMsSlider2->setAlpha(1.0f);
+        m_delayMsSliderRight->setEnabled(1);
+        m_delayMsSliderRight->setAlpha(1.0f);
     }
 
     if (m_lfoButton->getToggleState() == 0)
@@ -72,91 +72,91 @@ void DelayAudioProcessorEditor::createGUI()
     DBG("Creating GUI");
     //====================================================================================
     DBG("Attaching GainSlider Left Channel");
-    m_gainSlider = std::make_unique<juce::Slider>("gainslider");
-    addAndMakeVisible(m_gainSlider.get());
-    m_gainSlider->setRange(0.0f, 1.0f, 0.1f);
-    m_gainSlider->setSliderStyle(juce::Slider::Rotary);
-    setTextBox(m_gainSlider);
-    m_gainSlider->addListener(this);
+    m_gainSliderLeft = std::make_unique<juce::Slider>("gainsliderleft");
+    addAndMakeVisible(m_gainSliderLeft.get());
+    m_gainSliderLeft->setRange(0.0f, 1.0f, 0.1f);
+    m_gainSliderLeft->setSliderStyle(juce::Slider::Rotary);
+    setTextBox(m_gainSliderLeft);
+    m_gainSliderLeft->addListener(this);
 
     DBG("Attaching GainLabel Left Channel");
-    m_gainLabel = std::make_unique<juce::Label>("gainlabel", "Gain L");
-    addAndMakeVisible(m_gainLabel.get());
-    m_gainLabel->setFont(juce::Font(10.00f, juce::Font::plain));
-    m_gainLabel->setJustificationType(juce::Justification::centred);
-    m_gainLabel->setEditable(false, false, false);
-    m_gainLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    m_gainLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+    m_gainLabelLeft = std::make_unique<juce::Label>("gainlabelleft", "Gain L");
+    addAndMakeVisible(m_gainLabelLeft.get());
+    m_gainLabelLeft->setFont(juce::Font(10.00f, juce::Font::plain));
+    m_gainLabelLeft->setJustificationType(juce::Justification::centred);
+    m_gainLabelLeft->setEditable(false, false, false);
+    m_gainLabelLeft->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    m_gainLabelLeft->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 
     //====================================================================================
     DBG("Attaching DelayMsSlider Left Channel");
-    m_delayMsSlider = std::make_unique<juce::Slider>("delayslider");
-    addAndMakeVisible(m_delayMsSlider.get());
-    m_delayMsSlider->setRange(0.0f, MAX_DELAY_TIME, 0.0001f);
-    m_delayMsSlider->setSliderStyle(juce::Slider::Rotary);
-    setTextBox(m_delayMsSlider);
-    m_delayMsSlider->addListener(this);
+    m_delayMsSliderLeft = std::make_unique<juce::Slider>("delaysliderleft");
+    addAndMakeVisible(m_delayMsSliderLeft.get());
+    m_delayMsSliderLeft->setRange(0.0f, MAX_DELAY_TIME, 0.0001f);
+    m_delayMsSliderLeft->setSliderStyle(juce::Slider::Rotary);
+    setTextBox(m_delayMsSliderLeft);
+    m_delayMsSliderLeft->addListener(this);
 
     DBG("Attaching DelayMsLabel Left Channel");
-    m_delayMsLabel = std::make_unique<juce::Label>("delaylabel", "Delay Time L");
-    addAndMakeVisible(m_delayMsLabel.get());
-    m_delayMsLabel->setFont(juce::Font(10.00f, juce::Font::plain));
-    m_delayMsLabel->setJustificationType(juce::Justification::centred);
-    m_delayMsLabel->setEditable(false, false, false);
-    m_delayMsLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    m_delayMsLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+    m_delayMsLabelLeft = std::make_unique<juce::Label>("delaylabelleft", "Delay Time L");
+    addAndMakeVisible(m_delayMsLabelLeft.get());
+    m_delayMsLabelLeft->setFont(juce::Font(10.00f, juce::Font::plain));
+    m_delayMsLabelLeft->setJustificationType(juce::Justification::centred);
+    m_delayMsLabelLeft->setEditable(false, false, false);
+    m_delayMsLabelLeft->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    m_delayMsLabelLeft->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 
     //====================================================================================
     DBG("Attaching DelayBpmSlider Left Channel");
-    m_delayBpmSlider = std::make_unique<juce::Slider>("delaybpmslider");
-    m_delayBpmSlider->setRange(0, 6, 1);
-    m_delayBpmSlider->setSliderStyle(juce::Slider::Rotary);
-    setTextBox(m_delayBpmSlider);
-    m_delayBpmSlider->addListener(this);
+    m_delayBpmSliderLeft = std::make_unique<juce::Slider>("delaybpmsliderleft");
+    m_delayBpmSliderLeft->setRange(0, 6, 1);
+    m_delayBpmSliderLeft->setSliderStyle(juce::Slider::Rotary);
+    setTextBox(m_delayBpmSliderLeft);
+    m_delayBpmSliderLeft->addListener(this);
 
     //====================================================================================
     DBG("Attaching GainSlider Right Channel");
-    m_gainSlider2 = std::make_unique<juce::Slider>("gainslider2");
-    addAndMakeVisible(m_gainSlider2.get());
-    m_gainSlider2->setRange(0.0f, 1.0f, 0.1f);
-    m_gainSlider2->setSliderStyle(juce::Slider::Rotary);
-    setTextBox(m_gainSlider2);
-    m_gainSlider2->addListener(this);
+    m_gainSliderRight = std::make_unique<juce::Slider>("gainsliderright");
+    addAndMakeVisible(m_gainSliderRight.get());
+    m_gainSliderRight->setRange(0.0f, 1.0f, 0.1f);
+    m_gainSliderRight->setSliderStyle(juce::Slider::Rotary);
+    setTextBox(m_gainSliderRight);
+    m_gainSliderRight->addListener(this);
 
     DBG("Attaching GainLabel Right Channel");
-    m_gainLabel2 = std::make_unique<juce::Label>("gainlabel2", "Gain R");
-    addAndMakeVisible(m_gainLabel2.get());
-    m_gainLabel2->setFont(juce::Font(10.00f, juce::Font::plain));
-    m_gainLabel2->setJustificationType(juce::Justification::centred);
-    m_gainLabel2->setEditable(false, false, false);
-    m_gainLabel2->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    m_gainLabel2->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+    m_gainLabelRight = std::make_unique<juce::Label>("gainlabelright", "Gain R");
+    addAndMakeVisible(m_gainLabelRight.get());
+    m_gainLabelRight->setFont(juce::Font(10.00f, juce::Font::plain));
+    m_gainLabelRight->setJustificationType(juce::Justification::centred);
+    m_gainLabelRight->setEditable(false, false, false);
+    m_gainLabelRight->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    m_gainLabelRight->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 
     //====================================================================================
     DBG("Attaching DelayMsSlider Right Channel");
-    m_delayMsSlider2 = std::make_unique<juce::Slider>("delayslider2");
-    addAndMakeVisible(m_delayMsSlider2.get());
-    m_delayMsSlider2->setRange(0.0f, MAX_DELAY_TIME, 0.0001f);
-    m_delayMsSlider2->setSliderStyle(juce::Slider::Rotary);
-    setTextBox(m_delayMsSlider2);
-    m_delayMsSlider2->addListener(this);
+    m_delayMsSliderRight = std::make_unique<juce::Slider>("delaysliderright");
+    addAndMakeVisible(m_delayMsSliderRight.get());
+    m_delayMsSliderRight->setRange(0.0f, MAX_DELAY_TIME, 0.0001f);
+    m_delayMsSliderRight->setSliderStyle(juce::Slider::Rotary);
+    setTextBox(m_delayMsSliderRight);
+    m_delayMsSliderRight->addListener(this);
 
     DBG("Attaching DelayMsLabel Right Channel");
-    m_delayMsLabel2 = std::make_unique<juce::Label>("delaylabel2", "Delay Time R");
-    addAndMakeVisible(m_delayMsLabel2.get());
-    m_delayMsLabel2->setFont(juce::Font(10.00f, juce::Font::plain));
-    m_delayMsLabel2->setJustificationType(juce::Justification::centred);
-    m_delayMsLabel2->setEditable(false, false, false);
-    m_delayMsLabel2->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    m_delayMsLabel2->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+    m_delayMsLabelRight = std::make_unique<juce::Label>("delaylabelright", "Delay Time R");
+    addAndMakeVisible(m_delayMsLabelRight.get());
+    m_delayMsLabelRight->setFont(juce::Font(10.00f, juce::Font::plain));
+    m_delayMsLabelRight->setJustificationType(juce::Justification::centred);
+    m_delayMsLabelRight->setEditable(false, false, false);
+    m_delayMsLabelRight->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    m_delayMsLabelRight->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 
     //====================================================================================
     DBG("Attaching DelayBpmSlider Right Channel");
-    m_delayBpmSlider2 = std::make_unique<juce::Slider>("delaybpmslider2");
-    m_delayBpmSlider2->setRange(0, 6, 1);
-    m_delayBpmSlider2->setSliderStyle(juce::Slider::Rotary);
-    setTextBox(m_delayBpmSlider2);
-    m_delayBpmSlider2->addListener(this);
+    m_delayBpmSliderRight = std::make_unique<juce::Slider>("delaybpmsliderright");
+    m_delayBpmSliderRight->setRange(0, 6, 1);
+    m_delayBpmSliderRight->setSliderStyle(juce::Slider::Rotary);
+    setTextBox(m_delayBpmSliderRight);
+    m_delayBpmSliderRight->addListener(this);
 
     //====================================================================================
     DBG("Attaching DryWetSlider");
@@ -261,36 +261,36 @@ void DelayAudioProcessorEditor::createGUI()
     m_stereoDelayLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 
     //====================================================================================
-    DBG("Attaching bpmSyncButton");
-    m_bpmSyncButton = std::make_unique<juce::ToggleButton>("");
-    addAndMakeVisible(m_bpmSyncButton.get());
-    m_bpmSyncButton->setSize(20, 20);
-    m_bpmSyncButton->setClickingTogglesState(true);
+    DBG("Attaching bpmSyncButton for Left channel");
+    m_bpmSyncButtonLeft = std::make_unique<juce::ToggleButton>("");
+    addAndMakeVisible(m_bpmSyncButtonLeft.get());
+    m_bpmSyncButtonLeft->setSize(20, 20);
+    m_bpmSyncButtonLeft->setClickingTogglesState(true);
 
-    DBG("Attaching bpmSyncButtonLabel");
-    m_bpmSyncButtonLabel = std::make_unique<juce::Label>("bpmsyncbuttonlabel", "BPM Sync");
-    addAndMakeVisible(m_bpmSyncButtonLabel.get());
-    m_bpmSyncButtonLabel->setFont(juce::Font(10.00f, juce::Font::plain));
-    m_bpmSyncButtonLabel->setJustificationType(juce::Justification::left);
-    m_bpmSyncButtonLabel->setEditable(false, false, false);
-    m_bpmSyncButtonLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    m_bpmSyncButtonLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+    DBG("Attaching bpmSyncButtonLabel for Left channel");
+    m_bpmSyncButtonLabelLeft = std::make_unique<juce::Label>("bpmsyncbuttonlabelleft", "BPM Sync Left");
+    addAndMakeVisible(m_bpmSyncButtonLabelLeft.get());
+    m_bpmSyncButtonLabelLeft->setFont(juce::Font(10.00f, juce::Font::plain));
+    m_bpmSyncButtonLabelLeft->setJustificationType(juce::Justification::left);
+    m_bpmSyncButtonLabelLeft->setEditable(false, false, false);
+    m_bpmSyncButtonLabelLeft->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    m_bpmSyncButtonLabelLeft->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 
     //====================================================================================
-    DBG("Attaching bpmSyncButton2");
-    m_bpmSyncButton2 = std::make_unique<juce::ToggleButton>("");
-    addAndMakeVisible(m_bpmSyncButton2.get());
-    m_bpmSyncButton2->setSize(20, 20);
-    m_bpmSyncButton2->setClickingTogglesState(true);
+    DBG("Attaching bpmSyncButton for Right channel");
+    m_bpmSyncButtonRight = std::make_unique<juce::ToggleButton>("");
+    addAndMakeVisible(m_bpmSyncButtonRight.get());
+    m_bpmSyncButtonRight->setSize(20, 20);
+    m_bpmSyncButtonRight->setClickingTogglesState(true);
 
-    DBG("Attaching bpmSync2ButtonLabel");
-    m_bpmSync2ButtonLabel = std::make_unique<juce::Label>("bpmsync2buttonlabel", "BPM Sync");
-    addAndMakeVisible(m_bpmSync2ButtonLabel.get());
-    m_bpmSync2ButtonLabel->setFont(juce::Font(10.00f, juce::Font::plain));
-    m_bpmSync2ButtonLabel->setJustificationType(juce::Justification::left);
-    m_bpmSync2ButtonLabel->setEditable(false, false, false);
-    m_bpmSync2ButtonLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    m_bpmSync2ButtonLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+    DBG("Attaching bpmSync2ButtonLabel for Right Channel");
+    m_bpmSyncButtonLabelRight = std::make_unique<juce::Label>("bpmsync2buttonlabelright", "BPM Sync Right");
+    addAndMakeVisible(m_bpmSyncButtonLabelRight.get());
+    m_bpmSyncButtonLabelRight->setFont(juce::Font(10.00f, juce::Font::plain));
+    m_bpmSyncButtonLabelRight->setJustificationType(juce::Justification::left);
+    m_bpmSyncButtonLabelRight->setEditable(false, false, false);
+    m_bpmSyncButtonLabelRight->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    m_bpmSyncButtonLabelRight->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 
     //=====================================================================================
     getLookAndFeel().setColour(juce::Slider::thumbColourId, juce::Colours::silver);
@@ -314,25 +314,25 @@ void DelayAudioProcessorEditor::destroyGUI()
 {   
     DBG("Destroying GUI");
 
-    m_gainLabel = nullptr;
-    m_gainParamAttach = nullptr;
-    m_gainSlider = nullptr;
+    m_gainLabelLeft = nullptr;
+    m_gainParamAttachLeft = nullptr;
+    m_gainSliderLeft = nullptr;
     
-    m_delayMsLabel = nullptr;
-    m_delayMsParamAttach = nullptr;
-    m_delayMsSlider = nullptr;
-    m_delayBpmParamAttach = nullptr;
-    m_delayBpmSlider = nullptr;
+    m_delayMsLabelLeft = nullptr;
+    m_delayMsParamAttachLeft = nullptr;
+    m_delayMsSliderLeft = nullptr;
+    m_delayBpmParamAttachLeft = nullptr;
+    m_delayBpmSliderLeft = nullptr;
 
-    m_gainLabel2 = nullptr;
-    m_gainParamAttach2 = nullptr;
-    m_gainSlider2 = nullptr;
+    m_gainLabelRight = nullptr;
+    m_gainParamAttachRight = nullptr;
+    m_gainSliderRight = nullptr;
 
-    m_delayMsLabel2 = nullptr;
-    m_delayMsParamAttach2 = nullptr;
-    m_delayMsSlider2 = nullptr;
-    m_delayBpmParamAttach2 = nullptr;
-    m_delayBpmSlider2 = nullptr;
+    m_delayMsLabelRight = nullptr;
+    m_delayMsParamAttachRight = nullptr;
+    m_delayMsSliderRight = nullptr;
+    m_delayBpmParamAttachRight = nullptr;
+    m_delayBpmSliderRight = nullptr;
    
     m_drywetLabel = nullptr;
     m_drywetParamAttach = nullptr;
@@ -358,13 +358,13 @@ void DelayAudioProcessorEditor::destroyGUI()
     m_stereoDelayButParamAttach = nullptr;
     m_stereoDelayButton = nullptr;
 
-    m_bpmSyncButtonLabel = nullptr;
-    m_bpmSyncButParamAttach = nullptr;
-    m_bpmSyncButton2 = nullptr;
+    m_bpmSyncButtonLabelLeft = nullptr;
+    m_bpmSyncButParamAttachLeft = nullptr;
+    m_bpmSyncButtonLeft = nullptr;
 
-    m_bpmSync2ButtonLabel = nullptr;
-    m_bpmSyncButParamAttach = nullptr;
-    m_bpmSyncButton = nullptr;
+    m_bpmSyncButtonLabelRight = nullptr;
+    m_bpmSyncButParamAttachRight = nullptr;
+    m_bpmSyncButtonRight = nullptr;
 
     DBG("Destroyed GUI");
 }
@@ -373,19 +373,19 @@ void DelayAudioProcessorEditor::resizeGUI()
 {   
     DBG("Resizing GUI");
 
-    m_gainSlider->setBounds(GLOBAL_X + FB_GAIN_SLIDER_X, GLOBAL_Y + FB_GAIN_SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
-    m_gainLabel->setBounds(GLOBAL_X + FB_GAIN_LABEL_X, GLOBAL_Y + FB_GAIN_LABEL_Y, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
+    m_gainSliderLeft->setBounds(GLOBAL_X + FB_GAIN_SLIDER_X, GLOBAL_Y + FB_GAIN_SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
+    m_gainLabelLeft->setBounds(GLOBAL_X + FB_GAIN_LABEL_X, GLOBAL_Y + FB_GAIN_LABEL_Y, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
 
-    m_delayMsSlider->setBounds(GLOBAL_X + DELAYMS_SLIDER_X, GLOBAL_Y + DELAYMS_SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
-    m_delayBpmSlider->setBounds(GLOBAL_X + DELAYBPM_SLIDER_X, GLOBAL_Y + DELAYBPM_SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
-    m_delayMsLabel->setBounds(GLOBAL_X + DELAYMS_LABEL_X, GLOBAL_Y + DELAYMS_LABEL_Y, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
+    m_delayMsSliderLeft->setBounds(GLOBAL_X + DELAYMS_SLIDER_X, GLOBAL_Y + DELAYMS_SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
+    m_delayBpmSliderLeft->setBounds(GLOBAL_X + DELAYBPM_SLIDER_X, GLOBAL_Y + DELAYBPM_SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
+    m_delayMsLabelLeft->setBounds(GLOBAL_X + DELAYMS_LABEL_X, GLOBAL_Y + DELAYMS_LABEL_Y, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
 
-    m_gainSlider2->setBounds(GLOBAL_X + FB_GAIN_SLIDER_X2, GLOBAL_Y + FB_GAIN_SLIDER_Y2, SLIDER_WIDTH, SLIDER_HEIGHT);
-    m_gainLabel2->setBounds(GLOBAL_X + FB_GAIN_LABEL_X2, GLOBAL_Y + FB_GAIN_LABEL_Y2, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
+    m_gainSliderRight->setBounds(GLOBAL_X + FB_GAIN_SLIDER_X2, GLOBAL_Y + FB_GAIN_SLIDER_Y2, SLIDER_WIDTH, SLIDER_HEIGHT);
+    m_gainLabelRight->setBounds(GLOBAL_X + FB_GAIN_LABEL_X2, GLOBAL_Y + FB_GAIN_LABEL_Y2, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
 
-    m_delayMsSlider2->setBounds(GLOBAL_X + DELAYMS_SLIDER_X2, GLOBAL_Y + DELAYMS_SLIDER_Y2, SLIDER_WIDTH, SLIDER_HEIGHT);
-    m_delayBpmSlider2->setBounds(GLOBAL_X + DELAYBPM_SLIDER_X2, GLOBAL_Y + DELAYBPM_SLIDER_Y2, SLIDER_WIDTH, SLIDER_HEIGHT);
-    m_delayMsLabel2->setBounds(GLOBAL_X + DELAYMS_LABEL_X2, GLOBAL_Y + DELAYMS_LABEL_Y2, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
+    m_delayMsSliderRight->setBounds(GLOBAL_X + DELAYMS_SLIDER_X2, GLOBAL_Y + DELAYMS_SLIDER_Y2, SLIDER_WIDTH, SLIDER_HEIGHT);
+    m_delayBpmSliderRight->setBounds(GLOBAL_X + DELAYBPM_SLIDER_X2, GLOBAL_Y + DELAYBPM_SLIDER_Y2, SLIDER_WIDTH, SLIDER_HEIGHT);
+    m_delayMsLabelRight->setBounds(GLOBAL_X + DELAYMS_LABEL_X2, GLOBAL_Y + DELAYMS_LABEL_Y2, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
 
     m_drywetSlider->setBounds(GLOBAL_X + MIX_SLIDER_X, GLOBAL_Y + MIX_SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
     m_drywetLabel->setBounds(GLOBAL_X + MIX_LABEL_X, GLOBAL_Y + MIX_LABEL_Y, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
@@ -405,11 +405,11 @@ void DelayAudioProcessorEditor::resizeGUI()
     m_stereoDelayButton->setBounds(GLOBAL_X + STRODEL_BUT_X, GLOBAL_Y + STRODEL_BUT_Y, STRODEL_BUT_WIDTH, STRODEL_BUT_HEIGHT);
     m_stereoDelayLabel->setBounds(GLOBAL_X + STRODEL_LABEL_X, GLOBAL_Y + STRODEL_LABEL_Y, STRODEL_BUT_LAB_WIDTH, STRODEL_BUT_LAB_HEIGHT);
 
-    m_bpmSyncButton->setBounds(GLOBAL_X + BPMSYNC_BUT_X, GLOBAL_Y + BPMSYNC_BUT_Y, BPMSYNC_BUT_WIDTH, BPMSYNC_BUT_HEIGHT);
-    m_bpmSyncButtonLabel->setBounds(GLOBAL_X + BPMSYNC_LABEL_X, GLOBAL_Y + BPMSYNC_LABEL_Y, BPMSYNC_BUT_LAB_WIDTH, BPMSYNC_BUT_LAB_HEIGHT);
+    m_bpmSyncButtonLeft->setBounds(GLOBAL_X + BPMSYNC_BUT_X, GLOBAL_Y + BPMSYNC_BUT_Y, BPMSYNC_BUT_WIDTH, BPMSYNC_BUT_HEIGHT);
+    m_bpmSyncButtonLabelLeft->setBounds(GLOBAL_X + BPMSYNC_LABEL_X, GLOBAL_Y + BPMSYNC_LABEL_Y, BPMSYNC_BUT_LAB_WIDTH, BPMSYNC_BUT_LAB_HEIGHT);
 
-    m_bpmSyncButton2->setBounds(GLOBAL_X + BPMSYNC2_BUT_X, GLOBAL_Y + BPMSYNC2_BUT_Y, BPMSYNC2_BUT_WIDTH, BPMSYNC2_BUT_HEIGHT);
-    m_bpmSync2ButtonLabel->setBounds(GLOBAL_X + BPMSYNC2_LABEL_X, GLOBAL_Y + BPMSYNC2_LABEL_Y, BPMSYNC2_BUT_LAB_WIDTH, BPMSYNC2_BUT_LAB_HEIGHT);
+    m_bpmSyncButtonRight->setBounds(GLOBAL_X + BPMSYNC2_BUT_X, GLOBAL_Y + BPMSYNC2_BUT_Y, BPMSYNC2_BUT_WIDTH, BPMSYNC2_BUT_HEIGHT);
+    m_bpmSyncButtonLabelRight->setBounds(GLOBAL_X + BPMSYNC2_LABEL_X, GLOBAL_Y + BPMSYNC2_LABEL_Y, BPMSYNC2_BUT_LAB_WIDTH, BPMSYNC2_BUT_LAB_HEIGHT);
     
     DBG("Resized GUI");
 }
@@ -417,19 +417,20 @@ void DelayAudioProcessorEditor::resizeGUI()
 void DelayAudioProcessorEditor::paramAttacher()
 {
     DBG("Attaching Params");
-    m_gainParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "FEEDBACKGAIN", *m_gainSlider);
-    m_gainParamAttach2 = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "FEEDBACKGAIN2", *m_gainSlider2);
-    m_delayMsParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "DELAYMS", *m_delayMsSlider);
-    m_delayMsParamAttach2 = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "DELAYMS2", *m_delayMsSlider2);
-    m_delayBpmParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "DELAYBPM", *m_delayBpmSlider);
-    m_delayBpmParamAttach2 = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "DELAYBPM2", *m_delayBpmSlider2);
+    m_gainParamAttachLeft = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "FEEDBACKGAIN_LEFT", *m_gainSliderLeft);
+    m_gainParamAttachRight = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "FEEDBACKGAIN_RIGHT", *m_gainSliderRight);
+    m_delayMsParamAttachLeft = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "DELAYMS_LEFT", *m_delayMsSliderLeft);
+    m_delayMsParamAttachRight = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "DELAYMS_RIGHT", *m_delayMsSliderRight);
+    m_delayBpmParamAttachLeft = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "DELAYBPM_LEFT", *m_delayBpmSliderLeft);
+    m_delayBpmParamAttachRight = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "DELAYBPM_RIGHT", *m_delayBpmSliderRight);
     m_drywetParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "DRYWET", *m_drywetSlider);
     m_lfoButtonParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "LFOENA", *m_lfoButton);
     m_lfoFreqParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "LFOFREQ", *m_lfoFreqSlider);
     m_lfoAmtParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "LFOAMT", *m_lfoAmtSlider);
     m_testRvrbButParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "TESTRVRB", *m_testReverbButton);
     m_stereoDelayButParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "STRODEL", *m_stereoDelayButton);
-    m_bpmSyncButParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "BPMSYNC", *m_bpmSyncButton);
+    m_bpmSyncButParamAttachLeft = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "BPMSYNC_LEFT", *m_bpmSyncButtonLeft);
+    m_bpmSyncButParamAttachRight = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "BPMSYNC_RIGHT", *m_bpmSyncButtonRight);
 
     DBG("Attached Params");
 }
@@ -456,26 +457,26 @@ void DelayAudioProcessorEditor::paintBackground(juce::Graphics& g)
 
 void DelayAudioProcessorEditor::modifyDelaySliderForBpmSync()
 {
-    if (m_bpmSyncButton->getToggleState() == 1)
+    if (m_bpmSyncButtonLeft->getToggleState() == 1)
     {
-        m_delayMsSlider->setVisible(false);
-        addAndMakeVisible(m_delayBpmSlider.get());
+        m_delayMsSliderLeft->setVisible(false);
+        addAndMakeVisible(m_delayBpmSliderLeft.get());
     }
     else
     {
-        m_delayBpmSlider->setVisible(false);
-        addAndMakeVisible(m_delayMsSlider.get());
+        m_delayBpmSliderLeft->setVisible(false);
+        addAndMakeVisible(m_delayMsSliderLeft.get());
     }
 
-    if (m_bpmSyncButton2->getToggleState() == 1)
+    if (m_bpmSyncButtonRight->getToggleState() == 1)
     {
-        m_delayMsSlider2->setVisible(false);
-        addAndMakeVisible(m_delayBpmSlider2.get());
+        m_delayMsSliderRight->setVisible(false);
+        addAndMakeVisible(m_delayBpmSliderRight.get());
     }
     else
     {
-        m_delayBpmSlider2->setVisible(false);
-        addAndMakeVisible(m_delayMsSlider2.get());
+        m_delayBpmSliderRight->setVisible(false);
+        addAndMakeVisible(m_delayMsSliderRight.get());
     }
 }
 
