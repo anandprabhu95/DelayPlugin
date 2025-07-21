@@ -197,30 +197,31 @@ float DelayAudioProcessor::delayTimeFromBpmSlider()
     if (m_bpm.hasValue())
     {
         DBG("BPM: " << *m_bpm);
-        auto oneBeatTime = 60 / (*m_bpm);
+        float oneBeatTime = 60 / (*m_bpm);
+        DBG("One Beat Time: " << oneBeatTime);
 
         switch (static_cast<int>(delayNoteSetg->load()))
         {
         case 0:
-            delayTime = oneBeatTime * (1/64);
+            delayTime = oneBeatTime * (1.0f/16.0f);
             break;
         case 1:
-            delayTime = oneBeatTime * (1/32);
+            delayTime = oneBeatTime * (1.0f/8.0f);
             break;
         case 2:
-            delayTime = oneBeatTime * (1/16);
+            delayTime = oneBeatTime * (1.0f/4.0f);
             break;
         case 3:
-            delayTime = oneBeatTime * (1/8);
+            delayTime = oneBeatTime * (1.0f/2.0f);
             break;
         case 4:
-            delayTime = oneBeatTime * (1/4);
+            delayTime = oneBeatTime * (1.0f);
             break;
         case 5:
-            delayTime = oneBeatTime * (2/4);
+            delayTime = oneBeatTime * (2.0f);
             break;
         case 6:
-            delayTime = oneBeatTime * (4/4);
+            delayTime = oneBeatTime * (4.0f);
             break;
         }
     }
@@ -228,6 +229,7 @@ float DelayAudioProcessor::delayTimeFromBpmSlider()
     {
         delayTime = 120 * (60 / getSampleRate()); // Default 120 BPM
     }
+    DBG("DelayTimeBPM: " << delayTime);
     return delayTime;
 }
 
