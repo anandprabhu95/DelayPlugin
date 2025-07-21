@@ -268,7 +268,7 @@ void DelayAudioProcessorEditor::createGUI()
     m_bpmSyncButtonLeft->setClickingTogglesState(true);
 
     DBG("Attaching bpmSyncButtonLabel for Left channel");
-    m_bpmSyncButtonLabelLeft = std::make_unique<juce::Label>("bpmsyncbuttonlabelleft", "BPM Sync Left");
+    m_bpmSyncButtonLabelLeft = std::make_unique<juce::Label>("bpmsyncbuttonlabelleft", "BPM Sync");
     addAndMakeVisible(m_bpmSyncButtonLabelLeft.get());
     m_bpmSyncButtonLabelLeft->setFont(juce::Font(10.00f, juce::Font::plain));
     m_bpmSyncButtonLabelLeft->setJustificationType(juce::Justification::left);
@@ -284,7 +284,7 @@ void DelayAudioProcessorEditor::createGUI()
     m_bpmSyncButtonRight->setClickingTogglesState(true);
 
     DBG("Attaching bpmSync2ButtonLabel for Right Channel");
-    m_bpmSyncButtonLabelRight = std::make_unique<juce::Label>("bpmsync2buttonlabelright", "BPM Sync Right");
+    m_bpmSyncButtonLabelRight = std::make_unique<juce::Label>("bpmsync2buttonlabelright", "BPM Sync");
     addAndMakeVisible(m_bpmSyncButtonLabelRight.get());
     m_bpmSyncButtonLabelRight->setFont(juce::Font(10.00f, juce::Font::plain));
     m_bpmSyncButtonLabelRight->setJustificationType(juce::Justification::left);

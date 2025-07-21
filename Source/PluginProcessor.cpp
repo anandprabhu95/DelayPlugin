@@ -94,10 +94,10 @@ void DelayAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     m_wetBuffer.setSize(getTotalNumOutputChannels(), samplesPerBlock);
 
     // Ramp parameter values to target value at desired rate.
-    m_feedbackGainInterpolator.reset(sampleRate, 0.0001);
-    m_feedbackGain2Interpolator.reset(sampleRate, 0.0001);
-    m_delayTimeInterpolator.reset(sampleRate, 0.00005);
-    m_delayTime2Interpolator.reset(sampleRate, 0.00005);
+    m_feedbackGainInterpolatorLeft.reset(sampleRate, 0.0001);
+    m_feedbackGainInterpolatorRight.reset(sampleRate, 0.0001);
+    m_delayTimeInterpolatorLeft.reset(sampleRate, 0.00005);
+    m_delayTimeInterpolatorRight.reset(sampleRate, 0.00005);
     m_drywetInterpolator.reset(sampleRate, 0.005);
     m_lfoFreqInterpolator.reset(sampleRate, 0.0005);
     m_lfoAmtInterpolator.reset(sampleRate, 0.0005);
@@ -191,7 +191,7 @@ float DelayAudioProcessor::delayTimeFromBpmSlider()
     auto playHead = this->getPlayHead();
     m_bpm = playHead->getPosition()->getBpm();
 
-    auto* delayNoteSetg = params.getRawParameterValue("DELAYBPM");
+    auto* delayNoteSetg = params.getRawParameterValue("DELAYBPM_LEFT");
     float delayTime = 0.0f;
 
     if (m_bpm.hasValue())
@@ -274,8 +274,8 @@ void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& wetBuffer, ju
     if (isStereoOn->load() == 1) {
         if (channel == 0)
         {
-            auto* delayTimePointer = params.getRawParameterValue("DELAYMS");
-            m_delayTimeInterpolator.setTargetValue(delayTimePointer->load());
+            auto* delayTimePointer = params.getRawParameterValue("DELAYMS_LEFT");
+            m_delayTimeInterpolatorLeft.setTargetValue(delayTimePointer->load());
 
             if (isBpmSyncOn->load() == 1)
             {
@@ -283,18 +283,18 @@ void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& wetBuffer, ju
             }
             else
             {
-                delayTime = m_delayTimeInterpolator.getNextValue();
+                delayTime = m_delayTimeInterpolatorLeft.getNextValue();
             }
             
             delaySamples = delayTimeSecs2Samples(delayTime);
-            auto* feedbackGainPointer = params.getRawParameterValue("FEEDBACKGAIN");
-            m_feedbackGainInterpolator.setTargetValue(feedbackGainPointer->load());
-            feedbackGain = m_feedbackGainInterpolator.getNextValue();
+            auto* feedbackGainPointer = params.getRawParameterValue("FEEDBACKGAIN_LEFT");
+            m_feedbackGainInterpolatorLeft.setTargetValue(feedbackGainPointer->load());
+            feedbackGain = m_feedbackGainInterpolatorLeft.getNextValue();
         }
         else
         {
-            auto* delayTime2Pointer = params.getRawParameterValue("DELAYMS2");
-            m_delayTime2Interpolator.setTargetValue(delayTime2Pointer->load());
+            auto* delayTime2Pointer = params.getRawParameterValue("DELAYMS_RIGHT");
+            m_delayTimeInterpolatorRight.setTargetValue(delayTime2Pointer->load());
             
             if (isBpmSyncOn->load() == 1)
             {
@@ -302,19 +302,19 @@ void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& wetBuffer, ju
             }
             else
             {
-                delayTime = m_delayTime2Interpolator.getNextValue();
+                delayTime = m_delayTimeInterpolatorRight.getNextValue();
             }
             delaySamples = delayTimeSecs2Samples(delayTime);
     
-            auto* feedbackGain2Pointer = params.getRawParameterValue("FEEDBACKGAIN2");
-            m_feedbackGain2Interpolator.setTargetValue(feedbackGain2Pointer->load());
-            feedbackGain = m_feedbackGain2Interpolator.getNextValue();
+            auto* feedbackGain2Pointer = params.getRawParameterValue("FEEDBACKGAIN_RIGHT");
+            m_feedbackGainInterpolatorRight.setTargetValue(feedbackGain2Pointer->load());
+            feedbackGain = m_feedbackGainInterpolatorRight.getNextValue();
         }
     }
     else
     {
-        auto* delayTimePointer = params.getRawParameterValue("DELAYMS");
-        m_delayTimeInterpolator.setTargetValue(delayTimePointer->load());
+        auto* delayTimePointer = params.getRawParameterValue("DELAYMS_LEFT");
+        m_delayTimeInterpolatorLeft.setTargetValue(delayTimePointer->load());
         
         if (isBpmSyncOn->load() == 1)
         {
@@ -322,14 +322,14 @@ void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& wetBuffer, ju
         }
         else
         {
-            delayTime = m_delayTimeInterpolator.getNextValue();
+            delayTime = m_delayTimeInterpolatorLeft.getNextValue();
         }
 
         delaySamples = delayTimeSecs2Samples(delayTime);
 
-        auto* feedbackGainPointer = params.getRawParameterValue("FEEDBACKGAIN");
-        m_feedbackGainInterpolator.setTargetValue(feedbackGainPointer->load());
-        feedbackGain = m_feedbackGainInterpolator.getNextValue();
+        auto* feedbackGainPointer = params.getRawParameterValue("FEEDBACKGAIN_LEFT");
+        m_feedbackGainInterpolatorLeft.setTargetValue(feedbackGainPointer->load());
+        feedbackGain = m_feedbackGainInterpolatorLeft.getNextValue();
     }
     
 
@@ -375,11 +375,11 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createP
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
 
     // Sliders
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS", "Delay Ms", 0.0f, MAX_DELAY_TIME, 0.0f));
-    parameters.push_back(std::make_unique<juce::AudioParameterInt>("DELAYBPM", "Delay BPM", 0, 6, 6));
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS2", "Delay Ms 2", 0.0f, MAX_DELAY_TIME, 0.0f));
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN", "Feedback Gain", 0.0f, 1.0f, 0.7f));
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN2", "Feedback Gain 2", 0.0f, 1.0f, 0.7f));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS_LEFT", "Delay Ms Left", 0.0f, MAX_DELAY_TIME, 0.0f));
+    parameters.push_back(std::make_unique<juce::AudioParameterInt>("DELAYBPM_LEFT", "Delay BPM Left", 0, 6, 6));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS_RIGHT", "Delay Ms Right", 0.0f, MAX_DELAY_TIME, 0.0f));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN_LEFT", "Feedback Gain Left", 0.0f, 1.0f, 0.7f));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN_RIGHT", "Feedback Gain Right", 0.0f, 1.0f, 0.7f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DRYWET", "Dry/Wet", -1.0f, 1.0f, 0.0f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LFOFREQ", "LFO Freq", 1.f, 10.0f, 2.0f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LFOAMT", "LFO Amt", 0.0f, 1.0f, 0.2f));

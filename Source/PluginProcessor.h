@@ -68,10 +68,10 @@ private:
 
     int m_writePosition { 0 };
     int m_readPosition { 0 };
-    juce::LinearSmoothedValue<float> m_feedbackGainInterpolator { 0.0f };
-    juce::LinearSmoothedValue<float> m_feedbackGain2Interpolator{ 0.0f };
-    juce::LinearSmoothedValue<float> m_delayTimeInterpolator { 0.0f };
-    juce::LinearSmoothedValue<float> m_delayTime2Interpolator{ 0.0f };
+    juce::LinearSmoothedValue<float> m_feedbackGainInterpolatorLeft { 0.0f };
+    juce::LinearSmoothedValue<float> m_feedbackGainInterpolatorRight{ 0.0f };
+    juce::LinearSmoothedValue<float> m_delayTimeInterpolatorLeft { 0.0f };
+    juce::LinearSmoothedValue<float> m_delayTimeInterpolatorRight{ 0.0f };
     juce::LinearSmoothedValue<float> m_drywetInterpolator { 0.0f };
     juce::LinearSmoothedValue<float> m_lfoFreqInterpolator{ 0.0f };
     juce::LinearSmoothedValue<float> m_lfoAmtInterpolator{ 0.0f };
