@@ -197,7 +197,7 @@ float DelayAudioProcessor::delayTimeFromBpmSlider(juce::String parameterID)
     if (m_bpm.hasValue())
     {
         DBG("BPM: " << *m_bpm);
-        float oneBeatTime = 60 / (*m_bpm);
+        float oneBeatTime = 60.0f / (*m_bpm);
         DBG("One Beat Time: " << oneBeatTime);
 
         switch (static_cast<int>(delayNoteSetg->load()))
@@ -227,7 +227,7 @@ float DelayAudioProcessor::delayTimeFromBpmSlider(juce::String parameterID)
     }
     else
     {
-        delayTime = 120 * (60 / getSampleRate()); // Default 120 BPM
+        delayTime = 60.0f / 120.0f; // Default 120 BPM
     }
     return delayTime;
 }
