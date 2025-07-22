@@ -138,21 +138,21 @@ bool DelayAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) co
 void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
+    int totalNumInputChannels  = getTotalNumInputChannels();
+    int totalNumOutputChannels = getTotalNumOutputChannels();
 
-    auto bufferSize = buffer.getNumSamples();
-    auto delayBufferSize = m_delayBuffer.getNumSamples();
+    int bufferSize = buffer.getNumSamples();
+    int delayBufferSize = m_delayBuffer.getNumSamples();
 
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+    for (int i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
     {
         buffer.clear(i, 0, buffer.getNumSamples());
         m_wetBuffer.clear(i, 0, m_wetBuffer.getNumSamples());
     }
 
     // Create SinArray
-    auto sinArrayResult = createSinArray(m_wetBuffer, m_lfoSinIndexPrev);
-    auto amplVec = sinArrayResult.first;
+    std::pair<std::vector<float>, float> sinArrayResult = createSinArray(m_wetBuffer, m_lfoSinIndexPrev);
+    std::vector<float> amplVec = sinArrayResult.first;
     m_lfoSinIndexPrev = sinArrayResult.second;
     //DBG("Prev :" << lfoSinIndexPrev);
 
@@ -178,7 +178,7 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     // Loop the write position from 0 to delay buffer size.
     updateWritePositions(buffer, m_delayBuffer);
 
-    auto* isTestRvrbOn = params.getRawParameterValue("TESTRVRB");
+    std::atomic<float>* isTestRvrbOn = params.getRawParameterValue("TESTRVRB");
     if (isTestRvrbOn->load())
     {
         reverb->reverb(buffer, getNumInputChannels());
@@ -188,10 +188,10 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
 
 float DelayAudioProcessor::delayTimeFromBpmSlider(juce::String parameterID)
 {
-    auto playHead = this->getPlayHead();
+    juce::AudioPlayHead* playHead = this->getPlayHead();
     m_bpm = playHead->getPosition()->getBpm();
 
-    auto* delayNoteSetg = params.getRawParameterValue(parameterID);
+    std::atomic<float>* delayNoteSetg = params.getRawParameterValue(parameterID);
     float delayTime = 0.0f;
 
     if (m_bpm.hasValue())
@@ -234,8 +234,8 @@ float DelayAudioProcessor::delayTimeFromBpmSlider(juce::String parameterID)
 
 void DelayAudioProcessor::fillBuffer(juce::AudioBuffer<float>& wetBuffer, int channel)
 {   
-    auto bufferSize = wetBuffer.getNumSamples();
-    auto delayBufferSize = m_delayBuffer.getNumSamples();
+    int bufferSize = wetBuffer.getNumSamples();
+    int delayBufferSize = m_delayBuffer.getNumSamples();
 
     // Check if main buffer can be copied to delay buffer without wrapping around
     if (delayBufferSize >= bufferSize + m_writePosition)
@@ -246,8 +246,8 @@ void DelayAudioProcessor::fillBuffer(juce::AudioBuffer<float>& wetBuffer, int ch
     else
     {
         // Check how much space is left in the delay buffer.
-        auto numSamplesToEnd = delayBufferSize - m_writePosition;
-        auto numSamplesAtStart = bufferSize - numSamplesToEnd;
+        int numSamplesToEnd = delayBufferSize - m_writePosition;
+        int numSamplesAtStart = bufferSize - numSamplesToEnd;
 
         // Copy the samples to the end
         m_delayBuffer.copyFrom(channel, m_writePosition, wetBuffer.getReadPointer(channel), numSamplesToEnd);
@@ -259,22 +259,22 @@ void DelayAudioProcessor::fillBuffer(juce::AudioBuffer<float>& wetBuffer, int ch
 
 void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& wetBuffer, juce::AudioBuffer<float>& delayBuffer, int channel)
 {   
-    auto bufferSize = wetBuffer.getNumSamples();
-    auto delayBufferSize = delayBuffer.getNumSamples();
+    int bufferSize = wetBuffer.getNumSamples();
+    int delayBufferSize = delayBuffer.getNumSamples();
 
     float feedbackGain = 0.0f;
     float delayTime = 0.0f;
     float delaySamples = 0.0f;
 
-    auto* isBpmSyncLeftOn = params.getRawParameterValue("BPMSYNC_LEFT");
-    auto* isBpmSyncRightOn = params.getRawParameterValue("BPMSYNC_RIGHT");
+    std::atomic<float>* isBpmSyncLeftOn = params.getRawParameterValue("BPMSYNC_LEFT");
+    std::atomic<float>* isBpmSyncRightOn = params.getRawParameterValue("BPMSYNC_RIGHT");
     DBG("Is BPM SYNC right on" << isBpmSyncRightOn->load());
-    auto* isStereoOn = params.getRawParameterValue("STRODEL");
+    std::atomic<float>* isStereoOn = params.getRawParameterValue("STRODEL");
 
     if (isStereoOn->load() == 1) {
         if (channel == 0)
         {
-            auto* delayTimePointer = params.getRawParameterValue("DELAYMS_LEFT");
+            std::atomic<float>* delayTimePointer = params.getRawParameterValue("DELAYMS_LEFT");
             m_delayTimeInterpolatorLeft.setTargetValue(delayTimePointer->load());
 
             if (isBpmSyncLeftOn->load() == 1)
@@ -287,13 +287,13 @@ void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& wetBuffer, ju
             }
             
             delaySamples = delayTimeSecs2Samples(delayTime);
-            auto* feedbackGainPointer = params.getRawParameterValue("FEEDBACKGAIN_LEFT");
+            std::atomic<float>* feedbackGainPointer = params.getRawParameterValue("FEEDBACKGAIN_LEFT");
             m_feedbackGainInterpolatorLeft.setTargetValue(feedbackGainPointer->load());
             feedbackGain = m_feedbackGainInterpolatorLeft.getNextValue();
         }
         else
         {
-            auto* delayTime2Pointer = params.getRawParameterValue("DELAYMS_RIGHT");
+            std::atomic<float>* delayTime2Pointer = params.getRawParameterValue("DELAYMS_RIGHT");
             m_delayTimeInterpolatorRight.setTargetValue(delayTime2Pointer->load());
             
             if (isBpmSyncRightOn->load() == 1)
@@ -307,14 +307,14 @@ void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& wetBuffer, ju
             }
             delaySamples = delayTimeSecs2Samples(delayTime);
     
-            auto* feedbackGain2Pointer = params.getRawParameterValue("FEEDBACKGAIN_RIGHT");
+            std::atomic<float>* feedbackGain2Pointer = params.getRawParameterValue("FEEDBACKGAIN_RIGHT");
             m_feedbackGainInterpolatorRight.setTargetValue(feedbackGain2Pointer->load());
             feedbackGain = m_feedbackGainInterpolatorRight.getNextValue();
         }
     }
     else
     {
-        auto* delayTimePointer = params.getRawParameterValue("DELAYMS_LEFT");
+        std::atomic<float>* delayTimePointer = params.getRawParameterValue("DELAYMS_LEFT");
         m_delayTimeInterpolatorLeft.setTargetValue(delayTimePointer->load());
         
         if (isBpmSyncLeftOn->load() == 1)
@@ -328,7 +328,7 @@ void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& wetBuffer, ju
 
         delaySamples = delayTimeSecs2Samples(delayTime);
 
-        auto* feedbackGainPointer = params.getRawParameterValue("FEEDBACKGAIN_LEFT");
+        std::atomic<float>* feedbackGainPointer = params.getRawParameterValue("FEEDBACKGAIN_LEFT");
         m_feedbackGainInterpolatorLeft.setTargetValue(feedbackGainPointer->load());
         feedbackGain = m_feedbackGainInterpolatorLeft.getNextValue();
     }
@@ -349,10 +349,10 @@ void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& wetBuffer, ju
     }
     else
     {
-        auto numSamplesToEnd = delayBufferSize - m_readPosition;
+        int numSamplesToEnd = delayBufferSize - m_readPosition;
         wetBuffer.addFromWithRamp(channel, 0, delayBuffer.getReadPointer(channel, m_readPosition), numSamplesToEnd, feedbackGain, feedbackGain);
 
-        auto numSamplesAtStart = bufferSize - numSamplesToEnd;
+        int numSamplesAtStart = bufferSize - numSamplesToEnd;
         wetBuffer.addFromWithRamp(channel, numSamplesToEnd, delayBuffer.getReadPointer(channel, 0), numSamplesAtStart, feedbackGain, feedbackGain);
     }
 }
@@ -360,8 +360,8 @@ void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& wetBuffer, ju
 void DelayAudioProcessor::updateWritePositions(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& delayBuffer)
 {
     // Loop the write position from 0 to delay buffer size.
-    auto bufferSize = buffer.getNumSamples();
-    auto delayBufferSize = delayBuffer.getNumSamples();
+    int bufferSize = buffer.getNumSamples();
+    int delayBufferSize = delayBuffer.getNumSamples();
     m_writePosition += bufferSize;
     m_writePosition %= delayBufferSize;
 }
@@ -398,7 +398,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createP
 
 void DelayAudioProcessor::mixDryWet(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& wetBuffer, int channel)
 {
-    auto* drywetPointer = params.getRawParameterValue("DRYWET");
+    std::atomic<float>* drywetPointer = params.getRawParameterValue("DRYWET");
     m_drywetInterpolator.setTargetValue(drywetPointer->load());
     float drywetGain = m_drywetInterpolator.getNextValue();
 
@@ -424,7 +424,7 @@ void DelayAudioProcessor::lfoAmplitudeModulation(juce::AudioBuffer<float>& wetBu
     float lfoSample{ 0.0f };
     float amplitudeMod{ 0.0f };
 
-    auto isLfoOn = params.getRawParameterValue("LFOENA");
+    std::atomic<float>* isLfoOn = params.getRawParameterValue("LFOENA");
 
     if (isLfoOn->load() != 0) {
         for (channel = 0; channel < wetBuffer.getNumChannels(); ++channel)
@@ -441,22 +441,22 @@ void DelayAudioProcessor::lfoAmplitudeModulation(juce::AudioBuffer<float>& wetBu
 
 std::pair<std::vector<float>, float> DelayAudioProcessor::createSinArray(juce::AudioBuffer<float>& wetBuffer, float lfoSinIndexPrevious) const
 {   
-    auto wetBufferSize = wetBuffer.getNumSamples();
+    int wetBufferSize = wetBuffer.getNumSamples();
     std::vector<float> amplitudeVec;
-    auto sampleRate = static_cast<float>(getSampleRate());
-    auto deltaIndex = wetBufferSize / sampleRate ;
-    auto increment = 1.0f / sampleRate;
+    float sampleRate = static_cast<float>(getSampleRate());
+    float deltaIndex = wetBufferSize / sampleRate ;
+    float increment = 1.0f / sampleRate;
     float lfoSinIndexStart = lfoSinIndexPrevious;
-    auto lfoFreq = params.getRawParameterValue("LFOFREQ");
-    auto lfoAmt = params.getRawParameterValue("LFOAMT");
+    std::atomic<float>* lfoFreq = params.getRawParameterValue("LFOFREQ");
+    std::atomic<float>* lfoAmt = params.getRawParameterValue("LFOAMT");
     //DBG("LfoFreq: " << lfoFreq->load());
 
     float i = 0.0f;
     for (i = lfoSinIndexStart; i < lfoSinIndexStart + deltaIndex; i+=increment)
     {
-        auto mSinVal = sin(static_cast<float> (i) * (2 * PI) * lfoFreq->load());
+        double mSinVal = sin(static_cast<float> (i) * (2 * PI) * lfoFreq->load());
         mSinVal = lfoAmt->load() * mSinVal + (1 - lfoAmt->load());
-        amplitudeVec.push_back(mSinVal);
+        amplitudeVec.push_back(static_cast<float>(mSinVal));
     }
     if (i > 1/lfoFreq->load())
     {
