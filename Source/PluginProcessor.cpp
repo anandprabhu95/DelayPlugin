@@ -186,12 +186,12 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
 }
 
 
-float DelayAudioProcessor::delayTimeFromBpmSlider()
+float DelayAudioProcessor::delayTimeFromBpmSlider(juce::String parameterID)
 {
     auto playHead = this->getPlayHead();
     m_bpm = playHead->getPosition()->getBpm();
 
-    auto* delayNoteSetg = params.getRawParameterValue("DELAYBPM_LEFT");
+    auto* delayNoteSetg = params.getRawParameterValue(parameterID);
     float delayTime = 0.0f;
 
     if (m_bpm.hasValue())
@@ -229,7 +229,6 @@ float DelayAudioProcessor::delayTimeFromBpmSlider()
     {
         delayTime = 120 * (60 / getSampleRate()); // Default 120 BPM
     }
-    DBG("DelayTimeBPM: " << delayTime);
     return delayTime;
 }
 
@@ -267,8 +266,9 @@ void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& wetBuffer, ju
     float delayTime = 0.0f;
     float delaySamples = 0.0f;
 
-    auto* isBpmSyncOn = params.getRawParameterValue("BPMSYNC");
-
+    auto* isBpmSyncLeftOn = params.getRawParameterValue("BPMSYNC_LEFT");
+    auto* isBpmSyncRightOn = params.getRawParameterValue("BPMSYNC_RIGHT");
+    DBG("Is BPM SYNC right on" << isBpmSyncRightOn->load());
     auto* isStereoOn = params.getRawParameterValue("STRODEL");
 
     if (isStereoOn->load() == 1) {
@@ -277,9 +277,9 @@ void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& wetBuffer, ju
             auto* delayTimePointer = params.getRawParameterValue("DELAYMS_LEFT");
             m_delayTimeInterpolatorLeft.setTargetValue(delayTimePointer->load());
 
-            if (isBpmSyncOn->load() == 1)
+            if (isBpmSyncLeftOn->load() == 1)
             {
-                delayTime = delayTimeFromBpmSlider();
+                delayTime = delayTimeFromBpmSlider("DELAYBPM_LEFT");
             }
             else
             {
@@ -296,9 +296,10 @@ void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& wetBuffer, ju
             auto* delayTime2Pointer = params.getRawParameterValue("DELAYMS_RIGHT");
             m_delayTimeInterpolatorRight.setTargetValue(delayTime2Pointer->load());
             
-            if (isBpmSyncOn->load() == 1)
+            if (isBpmSyncRightOn->load() == 1)
             {
-                delayTime = delayTimeFromBpmSlider();
+                delayTime = delayTimeFromBpmSlider("DELAYBPM_RIGHT");
+                DBG("DelayTime BPM: " << delayTime);
             }
             else
             {
@@ -316,9 +317,9 @@ void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& wetBuffer, ju
         auto* delayTimePointer = params.getRawParameterValue("DELAYMS_LEFT");
         m_delayTimeInterpolatorLeft.setTargetValue(delayTimePointer->load());
         
-        if (isBpmSyncOn->load() == 1)
+        if (isBpmSyncLeftOn->load() == 1)
         {
-            delayTime = delayTimeFromBpmSlider();
+            delayTime = delayTimeFromBpmSlider("DELAYBPM_LEFT");
         }
         else
         {
@@ -376,8 +377,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createP
 
     // Sliders
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS_LEFT", "Delay Ms Left", 0.0f, MAX_DELAY_TIME, 0.0f));
-    parameters.push_back(std::make_unique<juce::AudioParameterInt>("DELAYBPM_LEFT", "Delay BPM Left", 0, 6, 6));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS_RIGHT", "Delay Ms Right", 0.0f, MAX_DELAY_TIME, 0.0f));
+    parameters.push_back(std::make_unique<juce::AudioParameterInt>("DELAYBPM_LEFT", "Delay BPM Left", 0, 6, 3));
+    parameters.push_back(std::make_unique<juce::AudioParameterInt>("DELAYBPM_RIGHT", "Delay BPM Right", 0, 6, 3));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN_LEFT", "Feedback Gain Left", 0.0f, 1.0f, 0.7f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN_RIGHT", "Feedback Gain Right", 0.0f, 1.0f, 0.7f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DRYWET", "Dry/Wet", -1.0f, 1.0f, 0.0f));
@@ -388,7 +390,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createP
     parameters.push_back(std::make_unique<juce::AudioParameterBool>("LFOENA", "Enable LFO", 0));
     parameters.push_back(std::make_unique<juce::AudioParameterBool>("TESTRVRB", "Test Reverb", 0));
     parameters.push_back(std::make_unique<juce::AudioParameterBool>("STRODEL", "Stereo Delay", 0));
-    parameters.push_back(std::make_unique<juce::AudioParameterBool>("BPMSYNC", "BPM Sync", 0));
+    parameters.push_back(std::make_unique<juce::AudioParameterBool>("BPMSYNC_LEFT", "BPM Sync Left", 0));
+    parameters.push_back(std::make_unique<juce::AudioParameterBool>("BPMSYNC_RIGHT", "BPM Sync Right", 0));
 
     return { parameters.begin(), parameters.end() };
 }
@@ -404,6 +407,7 @@ void DelayAudioProcessor::mixDryWet(juce::AudioBuffer<float>& buffer, juce::Audi
     
     // Reduce gain on the main buffer when as the wet gain increases.
     buffer.applyGain(1.0f - 0.5f * scaledDryWetGain);
+    DBG("Number of samples in main buffer: " << buffer.getNumSamples());
     buffer.addFromWithRamp(channel, 0, wetBuffer.getReadPointer(channel, 0), wetBuffer.getNumSamples(), scaledDryWetGain, scaledDryWetGain);
 }
 
