@@ -31,6 +31,8 @@ private:
     void DelayAudioProcessorEditor::componentDisable();
     void DelayAudioProcessorEditor::setTextBox(std::unique_ptr<juce::Slider>& slider);
     void DelayAudioProcessorEditor::modifyDelaySliderForBpmSync();
+    void DelayAudioProcessorEditor::setTextBoxLabel(std::unique_ptr<juce::Label>& label, std::unique_ptr<juce::Slider>& slider) const;
+    void DelayAudioProcessorEditor::initializeValueLabel(std::unique_ptr<juce::Label>& label);
 
 
     std::unique_ptr<juce::Slider> m_gainSliderLeft, m_delayMsSliderLeft, m_delayBpmSliderLeft, 
@@ -42,6 +44,10 @@ private:
     std::unique_ptr<juce::Label> m_gainLabelLeft, m_delayMsLabelLeft, m_gainLabelRight, m_delayMsLabelRight, m_stereoDelayLabel,
                                  m_drywetLabel, m_lfoButtonLabel, m_lfoFreqLabel, m_lfoAmtLabel, m_testRvrbLabel,
                                  m_bpmSyncButtonLabelLeft, m_bpmSyncButtonLabelRight;
+
+    std::unique_ptr<juce::Label> m_gainSliderValDispLeft, m_delayMsSliderValDispLeft, m_delayBpmSliderValDispLeft,
+                                 m_gainSliderValDispRight, m_delayMsSliderValDispRight, m_delayBpmSliderValDispRight,
+                                 m_drywetSliderValDisp, m_lfoFreqSliderValDisp;
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> m_gainParamAttachLeft, m_delayMsParamAttachLeft, m_delayBpmParamAttachLeft,
                                                                           m_gainParamAttachRight, m_delayMsParamAttachRight, m_delayBpmParamAttachRight,
