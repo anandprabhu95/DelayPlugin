@@ -43,6 +43,12 @@ void DelayAudioProcessorEditor::componentDisable()
         m_bpmSyncButtonRight->setEnabled(0);
         m_bpmSyncButtonRight->setAlpha(0.5f);
         m_bpmSyncButtonLabelRight->setAlpha(0.5f);
+
+        m_gainLabelLeft->setText("Gain", juce::dontSendNotification);
+        m_gainLabelRight->setText("", juce::dontSendNotification);
+
+        m_delayMsLabelLeft->setText("Delay Time", juce::dontSendNotification);
+        m_delayMsLabelRight->setText("", juce::dontSendNotification);
     }
     else
     {
@@ -58,6 +64,12 @@ void DelayAudioProcessorEditor::componentDisable()
         m_bpmSyncButtonRight->setEnabled(1);
         m_bpmSyncButtonRight->setAlpha(1.0f);
         m_bpmSyncButtonLabelRight->setAlpha(1.0f);
+
+        m_gainLabelLeft->setText("Gain L", juce::dontSendNotification);
+        m_gainLabelRight->setText("Gain R", juce::dontSendNotification);
+
+        m_delayMsLabelLeft->setText("Delay Time L", juce::dontSendNotification);
+        m_delayMsLabelRight->setText("Delay Time R", juce::dontSendNotification);
     }
 
     if (m_lfoButton->getToggleState() == 0)
