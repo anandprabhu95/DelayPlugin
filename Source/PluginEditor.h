@@ -37,21 +37,23 @@ private:
         }
     };
 
+    void DelayAudioProcessorEditor::paintBackground(juce::Graphics& g);
     void DelayAudioProcessorEditor::createGUI();
     void DelayAudioProcessorEditor::destroyGUI();
     void DelayAudioProcessorEditor::resizeGUI();
     void DelayAudioProcessorEditor::paramAttacher();
     void DelayAudioProcessorEditor::sliderValueChanged(juce::Slider* sliderMoved);
-    void DelayAudioProcessorEditor::componentDisable();
-    void DelayAudioProcessorEditor::createLabel(std::unique_ptr<juce::Label>& label, juce::String componentName, juce::String textToDisplay, juce::Justification justification);
-    void DelayAudioProcessorEditor::createToggleButton(std::unique_ptr<juce::ToggleButton>& button, juce::String componentName);
-    void DelayAudioProcessorEditor::createSlider(std::unique_ptr<juce::Slider>& slider, juce::Slider::SliderStyle sliderStyle,
-                                                 juce::String componentName, DelayAudioProcessorEditor::SliderRange sliderRange);
-    void DelayAudioProcessorEditor::setTextBox(std::unique_ptr<juce::Slider>& slider);
-    void DelayAudioProcessorEditor::modifyDelaySliderForBpmSync();
-    void DelayAudioProcessorEditor::setTextBoxLabel(std::unique_ptr<juce::Label>& label, std::unique_ptr<juce::Slider>& slider) const;
-    void DelayAudioProcessorEditor::initializeValueLabel(std::unique_ptr<juce::Label>& label);
 
+    void DelayAudioProcessorEditor::createSlider(std::unique_ptr<juce::Slider>& slider, juce::Slider::SliderStyle sliderStyle,
+                                                juce::String componentName, DelayAudioProcessorEditor::SliderRange sliderRange);
+    void DelayAudioProcessorEditor::createToggleButton(std::unique_ptr<juce::ToggleButton>& button, juce::String componentName);
+    void DelayAudioProcessorEditor::createLabel(std::unique_ptr<juce::Label>& label, juce::String componentName, juce::String textToDisplay, juce::Justification justification);
+    void DelayAudioProcessorEditor::setTextBox(std::unique_ptr<juce::Slider>& slider);
+    void DelayAudioProcessorEditor::initializeValueLabel(std::unique_ptr<juce::Label>& label);
+    void DelayAudioProcessorEditor::setValueLabel(std::unique_ptr<juce::Label>& label, std::unique_ptr<juce::Slider>& slider) const;
+
+    void DelayAudioProcessorEditor::componentDisable();
+    void DelayAudioProcessorEditor::hideDelayMsSliderIfBpmSync();
 
     std::unique_ptr<juce::Slider> m_gainSliderLeft, m_delayMsSliderLeft, m_delayBpmSliderLeft, 
                                   m_gainSliderRight, m_delayMsSliderRight, m_delayBpmSliderRight, 
@@ -76,8 +78,5 @@ private:
                                                                           m_bpmSyncButParamAttachLeft, m_bpmSyncButParamAttachRight;
 
     //======================================================================================================
-
-    void DelayAudioProcessorEditor::paintBackground(juce::Graphics& g);
-
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayAudioProcessorEditor)
 };
