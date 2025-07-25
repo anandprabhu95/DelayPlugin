@@ -178,15 +178,6 @@ void DelayAudioProcessorEditor::createGUI()
     createLabel(m_drywetLabel, "drywetlabel", "Mix", juce::Justification::centred);
 
     //====================================================================================
-    DBG("Attaching LfoButton");
-    m_lfoButton = std::make_unique<juce::ToggleButton>("");
-    addAndMakeVisible(m_lfoButton.get());
-    m_lfoButton->setSize(20, 20);
-    m_lfoButton->setClickingTogglesState(true);
-
-    createLabel(m_lfoButtonLabel, "lfobuttonlabel", "ENA", juce::Justification::centred);
-
-    //====================================================================================
     DBG("Attaching lfoFreqSlider");
     m_lfoFreqSlider = std::make_unique<juce::Slider>("lfofreqslider");
     addAndMakeVisible(m_lfoFreqSlider.get());
@@ -209,40 +200,21 @@ void DelayAudioProcessorEditor::createGUI()
     createLabel(m_lfoAmtLabel, "lfoamtlabel", "AMT", juce::Justification::centred);
 
     //====================================================================================
-    DBG("Attaching testReverbButton");
-    m_testReverbButton = std::make_unique<juce::ToggleButton>("");
-    addAndMakeVisible(m_testReverbButton.get());
-    m_testReverbButton->setSize(20, 20);
-    m_testReverbButton->setClickingTogglesState(true);
-
-    createLabel(m_testRvrbLabel, "testreverbbuttonlabel", "Test Reverb", juce::Justification::centred);
-
-    //====================================================================================
-    DBG("Attaching stereoDelayButton");
-    m_stereoDelayButton = std::make_unique<juce::ToggleButton>("");
-    addAndMakeVisible(m_stereoDelayButton.get());
-    m_stereoDelayButton->setSize(20, 20);
-    m_stereoDelayButton->setClickingTogglesState(true);
-
-    createLabel(m_stereoDelayLabel, "stereodelaybuttonlabel", "Stereo", juce::Justification::left);
-
-    //====================================================================================
-    DBG("Attaching bpmSyncButton for Left channel");
-    m_bpmSyncButtonLeft = std::make_unique<juce::ToggleButton>("");
-    addAndMakeVisible(m_bpmSyncButtonLeft.get());
-    m_bpmSyncButtonLeft->setSize(20, 20);
-    m_bpmSyncButtonLeft->setClickingTogglesState(true);
-
+    // BUTTONS
+    createToggleButton(m_bpmSyncButtonLeft, "bpmSyncButtonLeft");
     createLabel(m_bpmSyncButtonLabelLeft, "bpmsyncbuttonlabelleft", "BPM", juce::Justification::left);
 
-    //====================================================================================
-    DBG("Attaching bpmSyncButton for Right channel");
-    m_bpmSyncButtonRight = std::make_unique<juce::ToggleButton>("");
-    addAndMakeVisible(m_bpmSyncButtonRight.get());
-    m_bpmSyncButtonRight->setSize(20, 20);
-    m_bpmSyncButtonRight->setClickingTogglesState(true);
-
+    createToggleButton(m_bpmSyncButtonRight, "bpmSyncButtonRight");
     createLabel(m_bpmSyncButtonLabelRight, "bpmsync2buttonlabelright", "BPM", juce::Justification::left);
+
+    createToggleButton(m_stereoDelayButton, "stereoDelayButton");
+    createLabel(m_stereoDelayLabel, "stereodelaybuttonlabel", "Stereo", juce::Justification::left);
+
+    createToggleButton(m_testReverbButton, "testReverbButton");
+    createLabel(m_testRvrbLabel, "testreverbbuttonlabel", "Test Reverb", juce::Justification::centred);
+
+    createToggleButton(m_lfoButton, "lfoButton");
+    createLabel(m_lfoButtonLabel, "lfobuttonlabel", "ENA", juce::Justification::centred);
 
     //====================================================================================
     initializeValueLabel(m_delayMsSliderValDispLeft);
@@ -259,6 +231,15 @@ void DelayAudioProcessorEditor::createGUI()
     setSize(WIDTH, HEIGHT);
 
     DBG("Created GUI");
+}
+
+void DelayAudioProcessorEditor::createToggleButton(std::unique_ptr<juce::ToggleButton>& button, juce::String componentName)
+{
+    DBG("Attaching " << componentName);
+    button = std::make_unique<juce::ToggleButton>("");
+    addAndMakeVisible(button.get());
+    button->setSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+    button->setClickingTogglesState(true);
 }
 
 void DelayAudioProcessorEditor::createLabel(std::unique_ptr<juce::Label>& label, juce::String componentName, juce::String textToDisplay, juce::Justification justification)

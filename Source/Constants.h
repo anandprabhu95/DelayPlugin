@@ -26,6 +26,9 @@
 #define TEXTBOX_WIDTH					40
 #define TEXTBOX_HEIGHT					20
 
+#define BUTTON_WIDTH					20
+#define BUTTON_HEIGHT					20
+
 #define GLOBAL_X						50
 #define GLOBAL_Y						50
 

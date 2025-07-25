@@ -30,6 +30,7 @@ private:
     void DelayAudioProcessorEditor::sliderValueChanged(juce::Slider* sliderMoved);
     void DelayAudioProcessorEditor::componentDisable();
     void DelayAudioProcessorEditor::createLabel(std::unique_ptr<juce::Label>& label, juce::String componentName, juce::String textToDisplay, juce::Justification justification);
+    void DelayAudioProcessorEditor::createToggleButton(std::unique_ptr<juce::ToggleButton>& button, juce::String componentName);
     void DelayAudioProcessorEditor::setTextBox(std::unique_ptr<juce::Slider>& slider);
     void DelayAudioProcessorEditor::modifyDelaySliderForBpmSync();
     void DelayAudioProcessorEditor::setTextBoxLabel(std::unique_ptr<juce::Label>& label, std::unique_ptr<juce::Slider>& slider) const;
