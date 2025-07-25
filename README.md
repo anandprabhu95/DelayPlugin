@@ -2,11 +2,12 @@ Delay plugin made with JUCE Framework (v7.0.12).
 
 Parameter controls:
 1) Delay Time: 0 to 2 seconds [L and R channels].
-2) Feedback Gain: 0 to 1 [L and R channels].
-3) Dry/Wet mix
-4) Modulation frequency and amount
+2) BPM Sync delay
+3) Feedback Gain: 0 to 1 [L and R channels].
+4) Dry/Wet mix
+5) Modulated Delay
 
-![v1 2 0_2](https://github.com/user-attachments/assets/06f38731-0e5d-4da2-9228-214602adc695)
+![v1 3 0](https://github.com/user-attachments/assets/ab4f0723-c9cc-4003-815f-8742675d430e)
 
 
 Instructions to compile the source:
@@ -24,3 +25,9 @@ Instructions to compile the source:
 8) To build the Standalone plugin, right click on Delay_StandalonePlugin in the Solution Explorer and choose Build. The standalone plugin Delay.exe can be found in the directory $reporoot\Builds\VisualStudio2022\x64\Debug\Standalone Plugin
    
 ![Solution](https://github.com/user-attachments/assets/4e966c11-2093-45e7-8066-1656e79bbab1)
+
+
+Credits:
+The Audio Programmer: https://www.youtube.com/@TheAudioProgrammer
+
+
