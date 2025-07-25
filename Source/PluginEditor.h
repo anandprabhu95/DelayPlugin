@@ -23,6 +23,20 @@ private:
     // access the processor object that created it.
     DelayAudioProcessor& audioProcessor;
 
+    class DelayAudioProcessorEditor::SliderRange
+    {
+    public:
+        double minVal;
+        double maxVal;
+        double intervalVal;
+        SliderRange(double minimum, double maximum, double interval)
+        {
+            minVal = minimum;
+            maxVal = maximum;
+            intervalVal = interval;
+        }
+    };
+
     void DelayAudioProcessorEditor::createGUI();
     void DelayAudioProcessorEditor::destroyGUI();
     void DelayAudioProcessorEditor::resizeGUI();
@@ -31,6 +45,8 @@ private:
     void DelayAudioProcessorEditor::componentDisable();
     void DelayAudioProcessorEditor::createLabel(std::unique_ptr<juce::Label>& label, juce::String componentName, juce::String textToDisplay, juce::Justification justification);
     void DelayAudioProcessorEditor::createToggleButton(std::unique_ptr<juce::ToggleButton>& button, juce::String componentName);
+    void DelayAudioProcessorEditor::createSlider(std::unique_ptr<juce::Slider>& slider, juce::Slider::SliderStyle sliderStyle,
+                                                 juce::String componentName, DelayAudioProcessorEditor::SliderRange sliderRange);
     void DelayAudioProcessorEditor::setTextBox(std::unique_ptr<juce::Slider>& slider);
     void DelayAudioProcessorEditor::modifyDelaySliderForBpmSync();
     void DelayAudioProcessorEditor::setTextBoxLabel(std::unique_ptr<juce::Label>& label, std::unique_ptr<juce::Slider>& slider) const;
