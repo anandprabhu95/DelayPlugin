@@ -29,6 +29,9 @@
 #define GLOBAL_X						50
 #define GLOBAL_Y						50
 
+#define LABEL_FONTSIZE					10.0f
+#define VALUELABEL_FONTSIZE				20.0f
+
 #define FB_GAIN_SLIDER_X				0
 #define FB_GAIN_SLIDER_Y				15
 #define FB_GAIN_LABEL_X					0
@@ -78,9 +81,9 @@
 #define LFOENA_BUT_LAB_HEIGHT			10
 #define LFOENA_BUT_LAB_WIDTH			30
 
-#define LFOAMT_SLIDER_X					215
+#define LFOAMT_SLIDER_X					225
 #define LFOAMT_SLIDER_Y					265
-#define LFOAMT_LABEL_X					195
+#define LFOAMT_LABEL_X					205
 #define LFOAMT_LABEL_Y					271
 #define LFOAMT_LAB_HEIGHT				10
 #define LFOAMT_LAB_WIDTH				30

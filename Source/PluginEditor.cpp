@@ -115,14 +115,7 @@ void DelayAudioProcessorEditor::createGUI()
     setTextBox(m_gainSliderLeft);
     m_gainSliderLeft->addListener(this);
 
-    DBG("Attaching GainLabel Left Channel");
-    m_gainLabelLeft = std::make_unique<juce::Label>("gainlabelleft", "Gain L");
-    addAndMakeVisible(m_gainLabelLeft.get());
-    m_gainLabelLeft->setFont(juce::Font(10.00f, juce::Font::plain));
-    m_gainLabelLeft->setJustificationType(juce::Justification::centred);
-    m_gainLabelLeft->setEditable(false, false, false);
-    m_gainLabelLeft->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    m_gainLabelLeft->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+    createLabel(m_gainLabelLeft, "gainlabelleft", "Gain L", juce::Justification::centred);
 
     //====================================================================================
     DBG("Attaching DelayMsSlider Left Channel");
@@ -133,14 +126,7 @@ void DelayAudioProcessorEditor::createGUI()
     setTextBox(m_delayMsSliderLeft);
     m_delayMsSliderLeft->addListener(this);
 
-    DBG("Attaching DelayMsLabel Left Channel");
-    m_delayMsLabelLeft = std::make_unique<juce::Label>("delaylabelleft", "Delay Time L");
-    addAndMakeVisible(m_delayMsLabelLeft.get());
-    m_delayMsLabelLeft->setFont(juce::Font(10.00f, juce::Font::plain));
-    m_delayMsLabelLeft->setJustificationType(juce::Justification::centred);
-    m_delayMsLabelLeft->setEditable(false, false, false);
-    m_delayMsLabelLeft->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    m_delayMsLabelLeft->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+    createLabel(m_delayMsLabelLeft, "delaylabelleft", "Delay Time L", juce::Justification::centred);
 
     //====================================================================================
     DBG("Attaching DelayBpmSlider Left Channel");
@@ -159,14 +145,7 @@ void DelayAudioProcessorEditor::createGUI()
     setTextBox(m_gainSliderRight);
     m_gainSliderRight->addListener(this);
 
-    DBG("Attaching GainLabel Right Channel");
-    m_gainLabelRight = std::make_unique<juce::Label>("gainlabelright", "Gain R");
-    addAndMakeVisible(m_gainLabelRight.get());
-    m_gainLabelRight->setFont(juce::Font(10.00f, juce::Font::plain));
-    m_gainLabelRight->setJustificationType(juce::Justification::centred);
-    m_gainLabelRight->setEditable(false, false, false);
-    m_gainLabelRight->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    m_gainLabelRight->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+    createLabel(m_gainLabelRight, "gainlabelright", "Gain R", juce::Justification::centred);
 
     //====================================================================================
     DBG("Attaching DelayMsSlider Right Channel");
@@ -177,14 +156,7 @@ void DelayAudioProcessorEditor::createGUI()
     setTextBox(m_delayMsSliderRight);
     m_delayMsSliderRight->addListener(this);
 
-    DBG("Attaching DelayMsLabel Right Channel");
-    m_delayMsLabelRight = std::make_unique<juce::Label>("delaylabelright", "Delay Time R");
-    addAndMakeVisible(m_delayMsLabelRight.get());
-    m_delayMsLabelRight->setFont(juce::Font(10.00f, juce::Font::plain));
-    m_delayMsLabelRight->setJustificationType(juce::Justification::centred);
-    m_delayMsLabelRight->setEditable(false, false, false);
-    m_delayMsLabelRight->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    m_delayMsLabelRight->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+    createLabel(m_delayMsLabelRight, "delaylabelright", "Delay Time R", juce::Justification::centred);
 
     //====================================================================================
     DBG("Attaching DelayBpmSlider Right Channel");
@@ -203,14 +175,7 @@ void DelayAudioProcessorEditor::createGUI()
     setTextBox(m_drywetSlider);
     m_drywetSlider->addListener(this);
 
-    DBG("Attaching DryWetLabel");
-    m_drywetLabel = std::make_unique<juce::Label>("drywetlabel", "Mix");
-    addAndMakeVisible(m_drywetLabel.get());
-    m_drywetLabel->setFont(juce::Font(10.00f, juce::Font::plain));
-    m_drywetLabel->setJustificationType(juce::Justification::centred);
-    m_drywetLabel->setEditable(false, false, false);
-    m_drywetLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    m_drywetLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+    createLabel(m_drywetLabel, "drywetlabel", "Mix", juce::Justification::centred);
 
     //====================================================================================
     DBG("Attaching LfoButton");
@@ -219,14 +184,7 @@ void DelayAudioProcessorEditor::createGUI()
     m_lfoButton->setSize(20, 20);
     m_lfoButton->setClickingTogglesState(true);
 
-    DBG("Attaching LfoButtonLabel");
-    m_lfoButtonLabel = std::make_unique<juce::Label>("lfobuttonlabel", "ENA");
-    addAndMakeVisible(m_lfoButtonLabel.get());
-    m_lfoButtonLabel->setFont(juce::Font(10.00f, juce::Font::plain));
-    m_lfoButtonLabel->setJustificationType(juce::Justification::left);
-    m_lfoButtonLabel->setEditable(false, false, false);
-    m_lfoButtonLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    m_lfoButtonLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+    createLabel(m_lfoButtonLabel, "lfobuttonlabel", "ENA", juce::Justification::centred);
 
     //====================================================================================
     DBG("Attaching lfoFreqSlider");
@@ -237,14 +195,7 @@ void DelayAudioProcessorEditor::createGUI()
     setTextBox(m_lfoFreqSlider);
     m_lfoFreqSlider->addListener(this);
 
-    DBG("Attaching lfoFreqLabel");
-    m_lfoFreqLabel = std::make_unique<juce::Label>("lfoFreqlabel", "LFO Freq");
-    addAndMakeVisible(m_lfoFreqLabel.get());
-    m_lfoFreqLabel->setFont(juce::Font(10.00f, juce::Font::plain));
-    m_lfoFreqLabel->setJustificationType(juce::Justification::centred);
-    m_lfoFreqLabel->setEditable(false, false, false);
-    m_lfoFreqLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    m_lfoFreqLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+    createLabel(m_lfoFreqLabel, "lfofreqlabel", "LFO Freq", juce::Justification::centred);
 
     //====================================================================================
     DBG("Attaching lfoAmtSlider");
@@ -255,14 +206,7 @@ void DelayAudioProcessorEditor::createGUI()
     m_lfoAmtSlider->setSliderStyle(juce::Slider::LinearHorizontal);
     m_lfoAmtSlider->addListener(this);
 
-    DBG("Attaching lfoAmtLabel");
-    m_lfoAmtLabel = std::make_unique<juce::Label>("lfoamtlabel", "AMT");
-    addAndMakeVisible(m_lfoAmtLabel.get());
-    m_lfoAmtLabel->setFont(juce::Font(10.00f, juce::Font::plain));
-    m_lfoAmtLabel->setJustificationType(juce::Justification::centred);
-    m_lfoAmtLabel->setEditable(false, false, false);
-    m_lfoAmtLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    m_lfoAmtLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+    createLabel(m_lfoAmtLabel, "lfoamtlabel", "AMT", juce::Justification::centred);
 
     //====================================================================================
     DBG("Attaching testReverbButton");
@@ -271,14 +215,7 @@ void DelayAudioProcessorEditor::createGUI()
     m_testReverbButton->setSize(20, 20);
     m_testReverbButton->setClickingTogglesState(true);
 
-    DBG("Attaching testReverbButtonLabel");
-    m_testRvrbLabel = std::make_unique<juce::Label>("testreverbbuttonlabel", "Test Reverb");
-    addAndMakeVisible(m_testRvrbLabel.get());
-    m_testRvrbLabel->setFont(juce::Font(10.00f, juce::Font::plain));
-    m_testRvrbLabel->setJustificationType(juce::Justification::left);
-    m_testRvrbLabel->setEditable(false, false, false);
-    m_testRvrbLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    m_testRvrbLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+    createLabel(m_testRvrbLabel, "testreverbbuttonlabel", "Test Reverb", juce::Justification::centred);
 
     //====================================================================================
     DBG("Attaching stereoDelayButton");
@@ -287,14 +224,7 @@ void DelayAudioProcessorEditor::createGUI()
     m_stereoDelayButton->setSize(20, 20);
     m_stereoDelayButton->setClickingTogglesState(true);
 
-    DBG("Attaching stereoDelayButtonLabel");
-    m_stereoDelayLabel = std::make_unique<juce::Label>("stereodelaybuttonlabel", "Stereo");
-    addAndMakeVisible(m_stereoDelayLabel.get());
-    m_stereoDelayLabel->setFont(juce::Font(10.00f, juce::Font::plain));
-    m_stereoDelayLabel->setJustificationType(juce::Justification::left);
-    m_stereoDelayLabel->setEditable(false, false, false);
-    m_stereoDelayLabel->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    m_stereoDelayLabel->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+    createLabel(m_stereoDelayLabel, "stereodelaybuttonlabel", "Stereo", juce::Justification::left);
 
     //====================================================================================
     DBG("Attaching bpmSyncButton for Left channel");
@@ -303,14 +233,7 @@ void DelayAudioProcessorEditor::createGUI()
     m_bpmSyncButtonLeft->setSize(20, 20);
     m_bpmSyncButtonLeft->setClickingTogglesState(true);
 
-    DBG("Attaching bpmSyncButtonLabel for Left channel");
-    m_bpmSyncButtonLabelLeft = std::make_unique<juce::Label>("bpmsyncbuttonlabelleft", "BPM");
-    addAndMakeVisible(m_bpmSyncButtonLabelLeft.get());
-    m_bpmSyncButtonLabelLeft->setFont(juce::Font(10.00f, juce::Font::plain));
-    m_bpmSyncButtonLabelLeft->setJustificationType(juce::Justification::left);
-    m_bpmSyncButtonLabelLeft->setEditable(false, false, false);
-    m_bpmSyncButtonLabelLeft->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    m_bpmSyncButtonLabelLeft->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+    createLabel(m_bpmSyncButtonLabelLeft, "bpmsyncbuttonlabelleft", "BPM", juce::Justification::left);
 
     //====================================================================================
     DBG("Attaching bpmSyncButton for Right channel");
@@ -319,14 +242,7 @@ void DelayAudioProcessorEditor::createGUI()
     m_bpmSyncButtonRight->setSize(20, 20);
     m_bpmSyncButtonRight->setClickingTogglesState(true);
 
-    DBG("Attaching bpmSync2ButtonLabel for Right Channel");
-    m_bpmSyncButtonLabelRight = std::make_unique<juce::Label>("bpmsync2buttonlabelright", "BPM");
-    addAndMakeVisible(m_bpmSyncButtonLabelRight.get());
-    m_bpmSyncButtonLabelRight->setFont(juce::Font(10.00f, juce::Font::plain));
-    m_bpmSyncButtonLabelRight->setJustificationType(juce::Justification::left);
-    m_bpmSyncButtonLabelRight->setEditable(false, false, false);
-    m_bpmSyncButtonLabelRight->setColour(juce::TextEditor::textColourId, juce::Colours::black);
-    m_bpmSyncButtonLabelRight->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
+    createLabel(m_bpmSyncButtonLabelRight, "bpmsync2buttonlabelright", "BPM", juce::Justification::left);
 
     //====================================================================================
     initializeValueLabel(m_delayMsSliderValDispLeft);
@@ -340,11 +256,21 @@ void DelayAudioProcessorEditor::createGUI()
 
     //=====================================================================================
     getLookAndFeel().setColour(juce::Slider::thumbColourId, juce::Colours::silver);
-    //getLookAndFeel().setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::red.darker(10));
-    //getLookAndFeel().setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::red.darker(5));
     setSize(WIDTH, HEIGHT);
 
     DBG("Created GUI");
+}
+
+void DelayAudioProcessorEditor::createLabel(std::unique_ptr<juce::Label>& label, juce::String componentName, juce::String textToDisplay, juce::Justification justification)
+{
+    DBG("Attaching " <<  componentName);
+    label = std::make_unique<juce::Label>(componentName, textToDisplay);
+    addAndMakeVisible(label.get());
+    label->setFont(juce::Font(LABEL_FONTSIZE, juce::Font::plain));
+    label->setJustificationType(justification);
+    label->setEditable(false, false, false);
+    label->setColour(juce::TextEditor::textColourId, juce::Colours::black);
+    label->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 }
 
 void DelayAudioProcessorEditor::setTextBox(std::unique_ptr<juce::Slider>& slider)
@@ -360,7 +286,7 @@ void DelayAudioProcessorEditor::initializeValueLabel(std::unique_ptr<juce::Label
 {
     label = std::make_unique<juce::Label>("", "NULL");
     addAndMakeVisible(label.get());
-    label->setFont(juce::Font(20.00f, juce::Font::plain));
+    label->setFont(juce::Font(VALUELABEL_FONTSIZE, juce::Font::plain));
     label->setJustificationType(juce::Justification::centred);
     label->setEditable(false, false, false);
     label->setColour(juce::TextEditor::textColourId, juce::Colours::black);
