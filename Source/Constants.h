@@ -1,6 +1,6 @@
 #pragma once
 
-#define	VERSION							"Frecurse v1.2.0"
+#define	VERSION							"Frecurse v1.3.0"
 
 #define MAX_DELAY_TIME					2.0f
 
