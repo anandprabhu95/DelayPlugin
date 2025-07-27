@@ -37,6 +37,36 @@ private:
         }
     };
 
+    enum TrackStatus { DEFAULT, CHANGED, UNCHANGED };
+
+    class DelayAudioProcessorEditor::ButtonStatusUpdate
+    {
+    public:
+        bool value;
+        enum TrackStatus status;
+        ButtonStatusUpdate()
+        {
+            value = false;
+            status = DEFAULT;
+        }
+
+        TrackStatus check(std::unique_ptr<juce::ToggleButton>& button)
+        {
+            // WARNING: Do not call this function more than one in an iteration of a loop.
+            bool newValue = button->getToggleState();
+            if (newValue != value || status == DEFAULT)
+            {
+                status = CHANGED;
+                value = newValue;
+            }
+            else
+            {
+                status = UNCHANGED;
+            }
+            return status;
+        }
+    };
+
     void DelayAudioProcessorEditor::paintBackground(juce::Graphics& g);
     void DelayAudioProcessorEditor::createGUI();
     void DelayAudioProcessorEditor::destroyGUI();
@@ -77,6 +107,11 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> m_lfoButtonParamAttach, m_testRvrbButParamAttach, m_stereoDelayButParamAttach,
                                                                           m_bpmSyncButParamAttachLeft, m_bpmSyncButParamAttachRight;
 
+    
+    ButtonStatusUpdate m_StereoButtonUpdate;
+    ButtonStatusUpdate m_LfoButtonUpdate;
+    ButtonStatusUpdate m_BpmSyncLeftButtonUpdate;
+    ButtonStatusUpdate m_BpmSyncRightButtonUpdate;
     //======================================================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayAudioProcessorEditor)
 };

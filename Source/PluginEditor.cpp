@@ -26,7 +26,7 @@ void DelayAudioProcessorEditor::paint (juce::Graphics& g)
     setValueLabel(m_delayBpmSliderValDispRight, m_delayBpmSliderRight);
     setValueLabel(m_gainSliderValDispLeft, m_gainSliderLeft);
     setValueLabel(m_gainSliderValDispRight, m_gainSliderRight);
-    setValueLabel(m_drywetSliderValDisp, m_drywetSlider);
+    setValueLabel(m_drywetSliderValDisp, m_drywetSlider); 
     setValueLabel(m_lfoFreqSliderValDisp, m_lfoFreqSlider);
 }
 
@@ -357,102 +357,120 @@ void DelayAudioProcessorEditor::setValueLabel(std::unique_ptr<juce::Label>& labe
 
 void DelayAudioProcessorEditor::componentDisable()
 {
-    // Disable Slider2 when in mono modo.
-    if (!m_stereoDelayButton->getToggleState())
+    TrackStatus stereoButtonStatus = m_StereoButtonUpdate.check(m_stereoDelayButton);
+    if (stereoButtonStatus == CHANGED)
     {
-        m_gainSliderRight->setValue(m_gainSliderLeft->getValue(), juce::dontSendNotification);
-        m_gainSliderRight->setEnabled(0);
-        m_gainSliderRight->setAlpha(0.5f);
+        // Disable Slider2 when in mono modo.
+        if (!m_stereoDelayButton->getToggleState())
+        {
+            m_gainSliderRight->setValue(m_gainSliderLeft->getValue(), juce::dontSendNotification);
+            m_gainSliderRight->setEnabled(false);
+            m_gainSliderRight->setAlpha(0.5f);
 
-        m_delayMsSliderRight->setValue(m_delayMsSliderLeft->getValue(), juce::dontSendNotification);
-        m_delayMsSliderRight->setEnabled(0);
-        m_delayMsSliderRight->setAlpha(0.5f);
+            m_delayMsSliderRight->setValue(m_delayMsSliderLeft->getValue(), juce::dontSendNotification);
+            m_delayMsSliderRight->setEnabled(false);
+            m_delayMsSliderRight->setAlpha(0.5f);
 
-        m_delayBpmSliderRight->setValue(m_delayBpmSliderLeft->getValue(), juce::dontSendNotification);
-        m_delayBpmSliderRight->setEnabled(0);
-        m_delayBpmSliderRight->setAlpha(0.5f);
+            m_delayBpmSliderRight->setValue(m_delayBpmSliderLeft->getValue(), juce::dontSendNotification);
+            m_delayBpmSliderRight->setEnabled(false);
+            m_delayBpmSliderRight->setAlpha(0.5f);
 
-        m_bpmSyncButtonRight->setToggleState(m_bpmSyncButtonLeft->getToggleState(), juce::dontSendNotification);
-        m_bpmSyncButtonRight->setEnabled(0);
-        m_bpmSyncButtonRight->setAlpha(0.5f);
-        m_bpmSyncButtonLabelRight->setAlpha(0.5f);
+            m_bpmSyncButtonRight->setToggleState(m_bpmSyncButtonLeft->getToggleState(), juce::dontSendNotification);
+            m_bpmSyncButtonRight->setEnabled(false);
+            m_bpmSyncButtonRight->setAlpha(0.5f);
+            m_bpmSyncButtonLabelRight->setAlpha(0.5f);
 
-        m_gainLabelLeft->setText("Gain", juce::dontSendNotification);
-        m_gainLabelRight->setText("", juce::dontSendNotification);
+            m_gainLabelLeft->setText("Gain", juce::dontSendNotification);
+            m_gainLabelRight->setText("", juce::dontSendNotification);
 
-        m_delayMsLabelLeft->setText("Delay Time", juce::dontSendNotification);
-        m_delayMsLabelRight->setText("", juce::dontSendNotification);
+            m_delayMsLabelLeft->setText("Delay Time", juce::dontSendNotification);
+            m_delayMsLabelRight->setText("", juce::dontSendNotification);
+        }
+        else
+        {
+            m_gainSliderRight->setEnabled(true);
+            m_gainSliderRight->setAlpha(1.0f);
+
+            m_delayMsSliderRight->setEnabled(true);
+            m_delayMsSliderRight->setAlpha(1.0f);
+
+            m_delayBpmSliderRight->setEnabled(true);
+            m_delayBpmSliderRight->setAlpha(1.0f);
+
+            m_bpmSyncButtonRight->setEnabled(true);
+            m_bpmSyncButtonRight->setAlpha(1.0f);
+            m_bpmSyncButtonLabelRight->setAlpha(1.0f);
+
+            m_gainLabelLeft->setText("Gain L", juce::dontSendNotification);
+            m_gainLabelRight->setText("Gain R", juce::dontSendNotification);
+
+            m_delayMsLabelLeft->setText("Delay Time L", juce::dontSendNotification);
+            m_delayMsLabelRight->setText("Delay Time R", juce::dontSendNotification);
+        }
     }
-    else
+    
+
+    TrackStatus lfoButtonStatus = m_LfoButtonUpdate.check(m_lfoButton);
+    if (lfoButtonStatus == CHANGED)
     {
-        m_gainSliderRight->setEnabled(1);
-        m_gainSliderRight->setAlpha(1.0f);
+        if (!m_lfoButton->getToggleState())
+        {
+            m_lfoFreqSlider->setEnabled(false);
+            m_lfoFreqSlider->setAlpha(0.5f);
 
-        m_delayMsSliderRight->setEnabled(1);
-        m_delayMsSliderRight->setAlpha(1.0f);
+            m_lfoAmtSlider->setEnabled(false);
+            m_lfoAmtSlider->setAlpha(0.5f);
+        }
+        else
+        {
+            m_lfoFreqSlider->setEnabled(true);
+            m_lfoFreqSlider->setAlpha(1.0f);
 
-        m_delayBpmSliderRight->setEnabled(1);
-        m_delayBpmSliderRight->setAlpha(1.0f);
-
-        m_bpmSyncButtonRight->setEnabled(1);
-        m_bpmSyncButtonRight->setAlpha(1.0f);
-        m_bpmSyncButtonLabelRight->setAlpha(1.0f);
-
-        m_gainLabelLeft->setText("Gain L", juce::dontSendNotification);
-        m_gainLabelRight->setText("Gain R", juce::dontSendNotification);
-
-        m_delayMsLabelLeft->setText("Delay Time L", juce::dontSendNotification);
-        m_delayMsLabelRight->setText("Delay Time R", juce::dontSendNotification);
-    }
-
-    if (!m_lfoButton->getToggleState())
-    {
-        m_lfoFreqSlider->setEnabled(0);
-        m_lfoFreqSlider->setAlpha(0.5f);
-
-        m_lfoAmtSlider->setEnabled(0);
-        m_lfoAmtSlider->setAlpha(0.5f);
-    }
-    else
-    {
-        m_lfoFreqSlider->setEnabled(1);
-        m_lfoFreqSlider->setAlpha(1.0f);
-
-        m_lfoAmtSlider->setEnabled(1);
-        m_lfoAmtSlider->setAlpha(1.0f);
+            m_lfoAmtSlider->setEnabled(true);
+            m_lfoAmtSlider->setAlpha(1.0f);
+        }
     }
 }
 
 void DelayAudioProcessorEditor::hideDelayMsSliderIfBpmSync()
 {
-    if (m_bpmSyncButtonLeft->getToggleState())
+    TrackStatus bpmSyncLeftStatus = m_BpmSyncLeftButtonUpdate.check(m_bpmSyncButtonLeft);
+    if (bpmSyncLeftStatus == CHANGED)
     {
-        m_delayMsSliderLeft->setVisible(false);
-        m_delayBpmSliderLeft->setVisible(true);
-        m_delayMsSliderValDispLeft->setVisible(false);
-        m_delayBpmSliderValDispLeft->setVisible(true);
-    }
-    else
-    {
-        m_delayMsSliderLeft->setVisible(true);
-        m_delayBpmSliderLeft->setVisible(false);
-        m_delayMsSliderValDispLeft->setVisible(true);
-        m_delayBpmSliderValDispLeft->setVisible(false);
+        if (m_bpmSyncButtonLeft->getToggleState())
+        {
+            m_delayMsSliderLeft->setVisible(false);
+            m_delayBpmSliderLeft->setVisible(true);
+            m_delayMsSliderValDispLeft->setVisible(false);
+            m_delayBpmSliderValDispLeft->setVisible(true);
+        }
+        else
+        {
+            m_delayMsSliderLeft->setVisible(true);
+            m_delayBpmSliderLeft->setVisible(false);
+            m_delayMsSliderValDispLeft->setVisible(true);
+            m_delayBpmSliderValDispLeft->setVisible(false);
+        }
     }
 
-    if (m_bpmSyncButtonRight->getToggleState())
+
+    TrackStatus bpmSyncRightStatus = m_BpmSyncRightButtonUpdate.check(m_bpmSyncButtonRight);
+    if (bpmSyncRightStatus == CHANGED)
     {
-        m_delayMsSliderRight->setVisible(false);
-        m_delayBpmSliderRight->setVisible(true);
-        m_delayMsSliderValDispRight->setVisible(false);
-        m_delayBpmSliderValDispRight->setVisible(true);
-    }
-    else
-    {
-        m_delayMsSliderRight->setVisible(true);
-        m_delayBpmSliderRight->setVisible(false);
-        m_delayMsSliderValDispRight->setVisible(true);
-        m_delayBpmSliderValDispRight->setVisible(false);
+        if (m_bpmSyncButtonRight->getToggleState())
+        {
+            m_delayMsSliderRight->setVisible(false);
+            m_delayBpmSliderRight->setVisible(true);
+            m_delayMsSliderValDispRight->setVisible(false);
+            m_delayBpmSliderValDispRight->setVisible(true);
+        }
+        else
+        {
+            m_delayMsSliderRight->setVisible(true);
+            m_delayBpmSliderRight->setVisible(false);
+            m_delayMsSliderValDispRight->setVisible(true);
+            m_delayBpmSliderValDispRight->setVisible(false);
+        }
     }
 }
 
