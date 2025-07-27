@@ -382,7 +382,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createP
     parameters.push_back(std::make_unique<juce::AudioParameterInt>("DELAYBPM_RIGHT", "Delay BPM Right", 0, 6, 3));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN_LEFT", "Feedback Gain Left", 0.0f, 1.0f, 0.7f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN_RIGHT", "Feedback Gain Right", 0.0f, 1.0f, 0.7f));
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DRYWET", "Dry/Wet", -1.0f, 1.0f, 0.0f));
+    parameters.push_back(std::make_unique<juce::AudioParameterInt>("DRYWET", "Dry/Wet", 0, 100, 50));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LFOFREQ", "LFO Freq", 1.f, 10.0f, 2.0f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LFOAMT", "LFO Amt", 0.0f, 1.0f, 0.2f));
     
@@ -403,7 +403,7 @@ void DelayAudioProcessor::mixDryWet(juce::AudioBuffer<float>& buffer, juce::Audi
     float drywetGain = m_drywetInterpolator.getNextValue();
 
     // Scale dry wet gain from [-1,+1] to [0,+1]
-    float scaledDryWetGain = knobValRangeScaler(drywetGain, -1.0f, 1.0f, 0.0f, 1.0f);
+    float scaledDryWetGain = knobValRangeScaler(drywetGain, 0.0f, 100.0f, 0.0f, 1.0f);
     
     // Reduce gain on the main buffer when as the wet gain increases.
     buffer.applyGain(1.0f - 0.5f * scaledDryWetGain);

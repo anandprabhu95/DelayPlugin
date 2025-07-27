@@ -20,14 +20,14 @@ void DelayAudioProcessorEditor::paint (juce::Graphics& g)
     paintBackground(g);
     componentDisable();
     hideDelayMsSliderIfBpmSync();
-    setValueLabel(m_delayMsSliderValDispLeft, m_delayMsSliderLeft);
-    setValueLabel(m_delayMsSliderValDispRight, m_delayMsSliderRight);
-    setValueLabel(m_delayBpmSliderValDispLeft, m_delayBpmSliderLeft);
-    setValueLabel(m_delayBpmSliderValDispRight, m_delayBpmSliderRight);
-    setValueLabel(m_gainSliderValDispLeft, m_gainSliderLeft);
-    setValueLabel(m_gainSliderValDispRight, m_gainSliderRight);
-    setValueLabel(m_drywetSliderValDisp, m_drywetSlider); 
-    setValueLabel(m_lfoFreqSliderValDisp, m_lfoFreqSlider);
+    setValueLabel(m_delayMsSliderValDispLeft, m_delayMsSliderLeft, "s");
+    setValueLabel(m_delayMsSliderValDispRight, m_delayMsSliderRight, "s");
+    setValueLabel(m_delayBpmSliderValDispLeft, m_delayBpmSliderLeft, "");
+    setValueLabel(m_delayBpmSliderValDispRight, m_delayBpmSliderRight, "");
+    setValueLabel(m_gainSliderValDispLeft, m_gainSliderLeft, "");
+    setValueLabel(m_gainSliderValDispRight, m_gainSliderRight, "");
+    setValueLabel(m_drywetSliderValDisp, m_drywetSlider, "%");
+    setValueLabel(m_lfoFreqSliderValDisp, m_lfoFreqSlider, "");
 }
 
 void DelayAudioProcessorEditor::resized()
@@ -68,10 +68,10 @@ void DelayAudioProcessorEditor::createGUI()
     SliderRange delayBpmSliderRange(0, 6, 1);
     createSlider(m_delayBpmSliderLeft, juce::Slider::Rotary, "delayBpmSliderLeft", delayBpmSliderRange);
     createSlider(m_delayBpmSliderRight, juce::Slider::Rotary, "delayBpmSliderRight", delayBpmSliderRange);
-    createLabel(m_delayMsLabelLeft, "delaylabelleft", "Delay Time L", juce::Justification::centred);
-    createLabel(m_delayMsLabelRight, "delaylabelright", "Delay Time R", juce::Justification::centred);
+    createLabel(m_delayMsLabelLeft, "delaylabelleft", "Time L", juce::Justification::centred);
+    createLabel(m_delayMsLabelRight, "delaylabelright", "Time R", juce::Justification::centred);
 
-    SliderRange drywetSliderRange(-1.0f, 1.0f, 0.01f);
+    SliderRange drywetSliderRange(0.0f, 100.0f, 1.0f);
     createSlider(m_drywetSlider, juce::Slider::Rotary, "drywetSlider", drywetSliderRange);
     createLabel(m_drywetLabel, "drywetlabel", "Mix", juce::Justification::centred);
 
@@ -318,7 +318,7 @@ void DelayAudioProcessorEditor::initializeValueLabel(std::unique_ptr<juce::Label
     label->setColour(juce::TextEditor::backgroundColourId, juce::Colours::black);
 }
 
-void DelayAudioProcessorEditor::setValueLabel(std::unique_ptr<juce::Label>& label, std::unique_ptr<juce::Slider>& slider) const
+void DelayAudioProcessorEditor::setValueLabel(std::unique_ptr<juce::Label>& label, std::unique_ptr<juce::Slider>& slider, juce::String suffix) const
 {
     if (slider == m_delayBpmSliderLeft || slider == m_delayBpmSliderRight)
     {
@@ -351,7 +351,7 @@ void DelayAudioProcessorEditor::setValueLabel(std::unique_ptr<juce::Label>& labe
     }
     else
     {
-        label->setText(slider->getTextFromValue(slider->getValue()), juce::dontSendNotification);
+        label->setText(slider->getTextFromValue(slider->getValue()) + " " + suffix, juce::dontSendNotification);
     }
 }
 
@@ -383,7 +383,7 @@ void DelayAudioProcessorEditor::componentDisable()
             m_gainLabelLeft->setText("Gain", juce::dontSendNotification);
             m_gainLabelRight->setText("", juce::dontSendNotification);
 
-            m_delayMsLabelLeft->setText("Delay Time", juce::dontSendNotification);
+            m_delayMsLabelLeft->setText("Time", juce::dontSendNotification);
             m_delayMsLabelRight->setText("", juce::dontSendNotification);
         }
         else
@@ -404,8 +404,8 @@ void DelayAudioProcessorEditor::componentDisable()
             m_gainLabelLeft->setText("Gain L", juce::dontSendNotification);
             m_gainLabelRight->setText("Gain R", juce::dontSendNotification);
 
-            m_delayMsLabelLeft->setText("Delay Time L", juce::dontSendNotification);
-            m_delayMsLabelRight->setText("Delay Time R", juce::dontSendNotification);
+            m_delayMsLabelLeft->setText("Time L", juce::dontSendNotification);
+            m_delayMsLabelRight->setText("Time R", juce::dontSendNotification);
         }
     }
     

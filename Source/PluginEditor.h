@@ -80,7 +80,7 @@ private:
     void DelayAudioProcessorEditor::createLabel(std::unique_ptr<juce::Label>& label, juce::String componentName, juce::String textToDisplay, juce::Justification justification);
     void DelayAudioProcessorEditor::setTextBox(std::unique_ptr<juce::Slider>& slider);
     void DelayAudioProcessorEditor::initializeValueLabel(std::unique_ptr<juce::Label>& label);
-    void DelayAudioProcessorEditor::setValueLabel(std::unique_ptr<juce::Label>& label, std::unique_ptr<juce::Slider>& slider) const;
+    void DelayAudioProcessorEditor::setValueLabel(std::unique_ptr<juce::Label>& label, std::unique_ptr<juce::Slider>& slider, juce::String suffix) const;
 
     void DelayAudioProcessorEditor::componentDisable();
     void DelayAudioProcessorEditor::hideDelayMsSliderIfBpmSync();
