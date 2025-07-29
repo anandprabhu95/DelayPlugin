@@ -13,7 +13,8 @@ DelayAudioProcessor::DelayAudioProcessor()
                      #endif
                        ), 
                         params (*this, nullptr, "Parameters", createParameters()),
-                        lowPassFilter(juce::dsp::IIR::Coefficients<float>::makeLowPass(44100.0f, 20000.f, 0.1f)),
+                        m_lowPassFilterLeft(juce::dsp::IIR::Coefficients<float>::makeLowPass(44100.0f, 20000.f, 0.1f)),
+                        m_lowPassFilterRight(juce::dsp::IIR::Coefficients<float>::makeLowPass(44100.0f, 20000.f, 0.1f)),
                         reverb(new Reverb())
 #endif
 {
@@ -111,8 +112,11 @@ void DelayAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     spec.maximumBlockSize = samplesPerBlock;
     spec.numChannels = getTotalNumOutputChannels();
 
-    lowPassFilter.prepare(spec);
-    lowPassFilter.reset();
+    m_lowPassFilterLeft.prepare(spec);
+    m_lowPassFilterLeft.reset();
+
+    m_lowPassFilterRight.prepare(spec);
+    m_lowPassFilterRight.reset();
 }
 
 void DelayAudioProcessor::releaseResources()
@@ -212,13 +216,16 @@ void DelayAudioProcessor::lowPass(juce::AudioBuffer<float>& buffer)
 {
     juce::dsp::AudioBlock<float> inputBlock(buffer);
     updateFilter();
-    lowPassFilter.process(juce::dsp::ProcessContextReplacing<float>(inputBlock));
+    m_lowPassFilterLeft.process(juce::dsp::ProcessContextReplacing<float>(inputBlock.getSingleChannelBlock(0)));
+    m_lowPassFilterRight.process(juce::dsp::ProcessContextReplacing<float>(inputBlock.getSingleChannelBlock(1)));
 }
 
 void DelayAudioProcessor::updateFilter()
 {
-    std::atomic<float>* freq = params.getRawParameterValue("FILTER_CUTOFF_LEFT");
-    *lowPassFilter.state = *juce::dsp::IIR::Coefficients<float>::makeLowPass(lastSampleRate, freq->load());
+    std::atomic<float>* freqLeft = params.getRawParameterValue("FILTER_CUTOFF_LEFT");
+    std::atomic<float>* freqRight = params.getRawParameterValue("FILTER_CUTOFF_RIGHT");
+    *m_lowPassFilterLeft.state = *juce::dsp::IIR::Coefficients<float>::makeLowPass(lastSampleRate, freqLeft->load());
+    *m_lowPassFilterRight.state = *juce::dsp::IIR::Coefficients<float>::makeLowPass(lastSampleRate, freqRight->load());
 }
 
 
