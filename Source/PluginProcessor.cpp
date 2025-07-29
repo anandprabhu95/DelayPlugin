@@ -91,17 +91,17 @@ void DelayAudioProcessor::changeProgramName (int index, const juce::String& newN
 void DelayAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     auto delayBufferSize = sampleRate * MAX_DELAY_TIME; // 2 seconds of audio.
-    m_delayBuffer.setSize(getTotalNumOutputChannels(), static_cast<int>(delayBufferSize));
-    m_wetBuffer.setSize(getTotalNumOutputChannels(), samplesPerBlock);
+    m_delayBuffer.setSize(getTotalNumOutputChannels(), static_cast<int>(delayBufferSize), false, true, false);
+    m_wetBuffer.setSize(getTotalNumOutputChannels(), samplesPerBlock, false, true, false);
 
     // Ramp parameter values to target value at desired rate.
-    m_feedbackGainInterpolatorLeft.reset(sampleRate, 0.0001);
-    m_feedbackGainInterpolatorRight.reset(sampleRate, 0.0001);
-    m_delayTimeInterpolatorLeft.reset(sampleRate, 0.00005);
-    m_delayTimeInterpolatorRight.reset(sampleRate, 0.00005);
-    m_drywetInterpolator.reset(sampleRate, 0.005);
-    m_lfoFreqInterpolator.reset(sampleRate, 0.0005);
-    m_lfoAmtInterpolator.reset(sampleRate, 0.0005);
+    m_feedbackGainInterpolatorLeft.reset(sampleRate, 0.01);
+    m_feedbackGainInterpolatorRight.reset(sampleRate, 0.01);
+    m_delayTimeInterpolatorLeft.reset(sampleRate, 0.01);
+    m_delayTimeInterpolatorRight.reset(sampleRate, 0.01);
+    m_drywetInterpolator.reset(sampleRate, 0.1);
+    m_lfoFreqInterpolator.reset(sampleRate, 0.1);
+    m_lfoAmtInterpolator.reset(sampleRate, 0.1);
 
     lastSampleRate = sampleRate;
 
