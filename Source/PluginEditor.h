@@ -52,7 +52,7 @@ private:
 
         TrackStatus check(std::unique_ptr<juce::ToggleButton>& button)
         {
-            // WARNING: Do not call this function more than one in an iteration of a loop.
+            // WARNING: Do not call this function on the same object more than once in an execution cycle.
             bool newValue = button->getToggleState();
             if (newValue != value || status == DEFAULT)
             {
@@ -87,7 +87,8 @@ private:
 
     std::unique_ptr<juce::Slider> m_gainSliderLeft, m_delayMsSliderLeft, m_delayBpmSliderLeft, 
                                   m_gainSliderRight, m_delayMsSliderRight, m_delayBpmSliderRight, 
-                                  m_drywetSlider, m_lfoFreqSlider, m_lfoAmtSlider;
+                                  m_drywetSlider, m_lfoFreqSlider, m_lfoAmtSlider,
+                                  m_filtCutoffSlider;
 
     std::unique_ptr<juce::ToggleButton> m_lfoButton, m_testReverbButton, m_stereoDelayButton, m_bpmSyncButtonLeft, m_bpmSyncButtonRight;
 
@@ -101,8 +102,8 @@ private:
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> m_gainParamAttachLeft, m_delayMsParamAttachLeft, m_delayBpmParamAttachLeft,
                                                                           m_gainParamAttachRight, m_delayMsParamAttachRight, m_delayBpmParamAttachRight,
-                                                                          m_drywetParamAttach, m_lfoFreqParamAttach,
-                                                                          m_lfoAmtParamAttach;
+                                                                          m_drywetParamAttach, m_lfoFreqParamAttach, m_lfoAmtParamAttach,
+                                                                          m_filterCutoffParamAttach;
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> m_lfoButtonParamAttach, m_testRvrbButParamAttach, m_stereoDelayButParamAttach,
                                                                           m_bpmSyncButParamAttachLeft, m_bpmSyncButParamAttachRight;
@@ -112,6 +113,8 @@ private:
     ButtonStatusUpdate m_LfoButtonUpdate;
     ButtonStatusUpdate m_BpmSyncLeftButtonUpdate;
     ButtonStatusUpdate m_BpmSyncRightButtonUpdate;
+
+
     //======================================================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayAudioProcessorEditor)
 };

@@ -13,6 +13,7 @@ DelayAudioProcessor::DelayAudioProcessor()
                      #endif
                        ), 
                         params (*this, nullptr, "Parameters", createParameters()),
+                        lowPassFilter(juce::dsp::IIR::Coefficients<float>::makeLowPass(44100.0f, 20000.f, 0.1f)),
                         reverb(new Reverb())
 #endif
 {
@@ -101,6 +102,17 @@ void DelayAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     m_drywetInterpolator.reset(sampleRate, 0.005);
     m_lfoFreqInterpolator.reset(sampleRate, 0.0005);
     m_lfoAmtInterpolator.reset(sampleRate, 0.0005);
+
+    lastSampleRate = sampleRate;
+
+    // Process spec for LowPass Filter
+    juce::dsp::ProcessSpec spec;
+    spec.sampleRate = sampleRate;
+    spec.maximumBlockSize = samplesPerBlock;
+    spec.numChannels = getTotalNumOutputChannels();
+
+    lowPassFilter.prepare(spec);
+    lowPassFilter.reset();
 }
 
 void DelayAudioProcessor::releaseResources()
@@ -157,7 +169,7 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     //DBG("Prev :" << lfoSinIndexPrev);
 
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {   
+    {
         m_wetBuffer.copyFrom(channel, 0, buffer.getWritePointer(channel), bufferSize);
 
         // Copy main buffer to the delay buffer.
@@ -165,24 +177,50 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
 
         // Read from the past in delay buffer and add it to main buffer 
         readFromBuffer(m_wetBuffer, m_delayBuffer, channel);
-        
+    }
+    DBG("Before: " << m_wetBuffer.getSample(1, 20));
+    // Low-Pass the feedback
+    lowPass(m_wetBuffer);
+    DBG("After: " << m_wetBuffer.getSample(1, 20));
+    
+    for (int channel = 0; channel < totalNumInputChannels; ++channel)
+    {
         // Feedback the main buffer containing the contents of the delay buffer [ y(k) = x(k) + G*x(k-1) ]
-        fillBuffer(m_wetBuffer, channel);
-        
-        lfoAmplitudeModulation(m_wetBuffer, channel, amplVec);
+        fillBuffer(m_wetBuffer, channel);     
+    }
 
+    for (int channel = 0; channel < totalNumInputChannels; ++channel) 
+    {
+        lfoAmplitudeModulation(m_wetBuffer, channel, amplVec);
+        
         // Dry/Wet mix
         mixDryWet(buffer, m_wetBuffer, channel);
     }
 
+
     // Loop the write position from 0 to delay buffer size.
     updateWritePositions(buffer, m_delayBuffer);
+
+
 
     std::atomic<float>* isTestRvrbOn = params.getRawParameterValue("TESTRVRB");
     if (isTestRvrbOn->load())
     {
         reverb->reverb(buffer, getNumInputChannels());
     }
+}
+
+void DelayAudioProcessor::lowPass(juce::AudioBuffer<float>& buffer)
+{
+    juce::dsp::AudioBlock<float> inputBlock(buffer);
+    updateFilter();
+    lowPassFilter.process(juce::dsp::ProcessContextReplacing<float>(inputBlock));
+}
+
+void DelayAudioProcessor::updateFilter()
+{
+    std::atomic<float>* freq = params.getRawParameterValue("FILTER_CUTOFF");
+    *lowPassFilter.state = *juce::dsp::IIR::Coefficients<float>::makeLowPass(lastSampleRate, freq->load());
 }
 
 
@@ -376,8 +414,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createP
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
 
     // Sliders
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS_LEFT", "Delay Ms Left", 0.0f, MAX_DELAY_TIME, 0.0f));
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS_RIGHT", "Delay Ms Right", 0.0f, MAX_DELAY_TIME, 0.0f));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS_LEFT", "Delay Ms Left", 0.0f, MAX_DELAY_TIME, 1.0f));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS_RIGHT", "Delay Ms Right", 0.0f, MAX_DELAY_TIME, 1.0f));
     parameters.push_back(std::make_unique<juce::AudioParameterInt>("DELAYBPM_LEFT", "Delay BPM Left", 0, 6, 3));
     parameters.push_back(std::make_unique<juce::AudioParameterInt>("DELAYBPM_RIGHT", "Delay BPM Right", 0, 6, 3));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN_LEFT", "Feedback Gain Left", 0.0f, 1.0f, 0.7f));
@@ -385,6 +423,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createP
     parameters.push_back(std::make_unique<juce::AudioParameterInt>("DRYWET", "Dry/Wet", 0, 100, 50));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LFOFREQ", "LFO Freq", 1.f, 10.0f, 2.0f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LFOAMT", "LFO Amt", 0.0f, 1.0f, 0.2f));
+    parameters.push_back(std::make_unique<juce::AudioParameterInt>("FILTER_CUTOFF", "Filter Cutoff", 200.f, 20000.f, 1000.f));
     
     // Buttons
     parameters.push_back(std::make_unique<juce::AudioParameterBool>("LFOENA", "Enable LFO", 0));

@@ -83,6 +83,9 @@ void DelayAudioProcessorEditor::createGUI()
     createSlider(m_lfoAmtSlider, juce::Slider::LinearHorizontal, "lfoAmtSlider", lfoAmtSliderRange);
     createLabel(m_lfoAmtLabel, "lfoamtlabel", "AMT", juce::Justification::centred);
 
+    SliderRange filterCutoffSliderRange(200.0f, 20000.0f, 1.0f);
+    createSlider(m_filtCutoffSlider, juce::Slider::Rotary, "filterCutoffSlider", filterCutoffSliderRange);
+
 
     // BUTTONS 
 
@@ -183,6 +186,9 @@ void DelayAudioProcessorEditor::destroyGUI()
     m_drywetSliderValDisp = nullptr;
     m_lfoFreqSliderValDisp = nullptr;
 
+    m_filterCutoffParamAttach = nullptr;
+    m_filtCutoffSlider = nullptr;
+
     DBG("Destroyed GUI");
 }
 
@@ -215,6 +221,8 @@ void DelayAudioProcessorEditor::resizeGUI()
 
     m_lfoAmtSlider->setBounds(GLOBAL_X + LFOAMT_SLIDER_X, GLOBAL_Y + LFOAMT_SLIDER_Y, LIN_SLIDER_WIDTH, LIN_SLIDER_HEIGHT);
     m_lfoAmtLabel->setBounds(GLOBAL_X + LFOAMT_LABEL_X, GLOBAL_Y + LFOAMT_LABEL_Y, LFOAMT_LAB_WIDTH, LFOAMT_LAB_HEIGHT);
+
+    m_filtCutoffSlider->setBounds(GLOBAL_X + MIX_SLIDER_X + 100, GLOBAL_Y + MIX_SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
 
     m_testReverbButton->setBounds(GLOBAL_X + TESTRVRB_BUT_X, GLOBAL_Y + TESTRVRB_BUT_Y, TESTRVRB_BUT_WIDTH, TESTRVRB_BUT_HEIGHT);
     m_testRvrbLabel->setBounds(GLOBAL_X + TESTRVRB_LABEL_X, GLOBAL_Y + TESTRVRB_LABEL_Y, TESTRVRB_BUT_LAB_WIDTH, TESTRVRB_BUT_LAB_HEIGHT);
@@ -257,6 +265,7 @@ void DelayAudioProcessorEditor::paramAttacher()
     m_stereoDelayButParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "STRODEL", *m_stereoDelayButton);
     m_bpmSyncButParamAttachLeft = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "BPMSYNC_LEFT", *m_bpmSyncButtonLeft);
     m_bpmSyncButParamAttachRight = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "BPMSYNC_RIGHT", *m_bpmSyncButtonRight);
+    m_filterCutoffParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "FILTER_CUTOFF", *m_filtCutoffSlider);
 
     DBG("Attached Params");
 }

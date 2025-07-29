@@ -61,6 +61,8 @@ private:
     std::pair<std::vector<float>, float> DelayAudioProcessor::createSinArray(juce::AudioBuffer<float>& wetBuffer, float lfoSinIndexPrevious) const;
     void DelayAudioProcessor::lfoAmplitudeModulation(juce::AudioBuffer<float>& wetBuffer, int channel, std::vector<float> amplitudeVec);
     float DelayAudioProcessor::delayTimeFromBpmSlider(juce::String parameterID);
+    void DelayAudioProcessor::lowPass(juce::AudioBuffer<float>& buffer);
+    void DelayAudioProcessor::updateFilter();
     
 
     juce::AudioBuffer<float> m_wetBuffer;
@@ -79,6 +81,9 @@ private:
     float m_lfoSinIndexPrev {0.0f};
 
     juce::Optional<double> m_bpm;
+
+    float lastSampleRate;
+    juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, juce::dsp::IIR::Coefficients<float>> lowPassFilter;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayAudioProcessor)
