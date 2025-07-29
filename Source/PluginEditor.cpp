@@ -394,23 +394,18 @@ void DelayAudioProcessorEditor::componentDisable()
         // Disable Slider2 when in mono modo.
         if (!m_stereoDelayButton->getToggleState())
         {
-            m_gainSliderRight->setValue(m_gainSliderLeft->getValue(), juce::dontSendNotification);
             m_gainSliderRight->setEnabled(false);
             m_gainSliderRight->setAlpha(0.5f);
 
-            m_delayMsSliderRight->setValue(m_delayMsSliderLeft->getValue(), juce::dontSendNotification);
             m_delayMsSliderRight->setEnabled(false);
             m_delayMsSliderRight->setAlpha(0.5f);
 
-            m_delayBpmSliderRight->setValue(m_delayBpmSliderLeft->getValue(), juce::dontSendNotification);
             m_delayBpmSliderRight->setEnabled(false);
             m_delayBpmSliderRight->setAlpha(0.5f);
 
-            m_filtCutoffSliderRight->setValue(m_filtCutoffSliderLeft->getValue(), juce::dontSendNotification);
             m_filtCutoffSliderRight->setEnabled(false);
             m_filtCutoffSliderRight->setAlpha(0.5f);
 
-            m_bpmSyncButtonRight->setToggleState(m_bpmSyncButtonLeft->getToggleState(), juce::dontSendNotification);
             m_bpmSyncButtonRight->setEnabled(false);
             m_bpmSyncButtonRight->setAlpha(0.5f);
             m_bpmSyncButtonLabelRight->setAlpha(0.5f);
