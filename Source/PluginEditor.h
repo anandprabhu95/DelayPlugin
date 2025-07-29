@@ -75,7 +75,7 @@ private:
     void DelayAudioProcessorEditor::sliderValueChanged(juce::Slider* sliderMoved);
 
     void DelayAudioProcessorEditor::createSlider(std::unique_ptr<juce::Slider>& slider, juce::Slider::SliderStyle sliderStyle,
-                                                juce::String componentName, DelayAudioProcessorEditor::SliderRange sliderRange);
+                                                juce::String componentName, DelayAudioProcessorEditor::SliderRange sliderRange, bool skewAssymetric);
     void DelayAudioProcessorEditor::createToggleButton(std::unique_ptr<juce::ToggleButton>& button, juce::String componentName);
     void DelayAudioProcessorEditor::createLabel(std::unique_ptr<juce::Label>& label, juce::String componentName, juce::String textToDisplay, juce::Justification justification);
     void DelayAudioProcessorEditor::setTextBox(std::unique_ptr<juce::Slider>& slider);
