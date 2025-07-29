@@ -424,8 +424,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createP
     parameters.push_back(std::make_unique<juce::AudioParameterInt>("DRYWET", "Dry/Wet", 0, 100, 50));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LFOFREQ", "LFO Freq", 1.f, 10.0f, 2.0f));
     parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LFOAMT", "LFO Amt", 0.0f, 1.0f, 0.2f));
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FILTER_CUTOFF_LEFT", "Filter Cutoff Left", juce::NormalisableRange<float>(200.f, 20000.f, 1.0f, 0.2f), 2000.f));
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FILTER_CUTOFF_RIGHT", "Filter Cutoff Right", juce::NormalisableRange<float>(200.f, 20000.f, 1.0f, 0.2f), 2000.f));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FILTER_CUTOFF_LEFT", "Filter Cutoff Left", juce::NormalisableRange<float>(200.f, 20000.f, 1.0f, 0.2f), 20000.f));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FILTER_CUTOFF_RIGHT", "Filter Cutoff Right", juce::NormalisableRange<float>(200.f, 20000.f, 1.0f, 0.2f), 20000.f));
     
     // Buttons
     parameters.push_back(std::make_unique<juce::AudioParameterBool>("LFOENA", "Enable LFO", 0));

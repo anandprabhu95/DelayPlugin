@@ -1,6 +1,6 @@
 #pragma once
 
-#define	VERSION							"Frecurse v1.3.0"
+#define	VERSION							"Frecurse v1.4.0"
 
 #define MAX_DELAY_TIME					2.0f
 
@@ -33,7 +33,7 @@
 #define GLOBAL_Y						50
 
 #define LABEL_FONTSIZE					10.0f
-#define VALUELABEL_FONTSIZE				15.0f
+#define VALUELABEL_FONTSIZE				14.0f
 
 
 #define ROW1_Y							15
@@ -57,13 +57,13 @@
 #define VALUE_LABEL_WIDTH				100
 
 
-#define ROW1_LABEL_Y			-10
-#define ROW2_LABEL_Y			140
+#define ROW1_LABEL_Y					-10
+#define ROW2_LABEL_Y					140
 
-#define COLUMN1_LABEL_X			0
-#define COLUMN2_LABEL_X			100
-#define COLUMN3_LABEL_X			200
-#define COLUMN4_LABEL_X			300
+#define COLUMN1_LABEL_X					0
+#define COLUMN2_LABEL_X					100
+#define COLUMN3_LABEL_X					200
+#define COLUMN4_LABEL_X					300
 
 
 #define LFOENA_BUT_X					337
