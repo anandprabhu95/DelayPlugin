@@ -28,6 +28,8 @@ void DelayAudioProcessorEditor::paint (juce::Graphics& g)
     setValueLabel(m_gainSliderValDispRight, m_gainSliderRight, "");
     setValueLabel(m_drywetSliderValDisp, m_drywetSlider, "%");
     setValueLabel(m_lfoFreqSliderValDisp, m_lfoFreqSlider, "");
+    setValueLabel(m_toneSliderValDispLeft, m_filtCutoffSliderLeft, "Hz");
+    setValueLabel(m_toneSliderValDispRight, m_filtCutoffSliderRight, "Hz");
 }
 
 void DelayAudioProcessorEditor::resized()
@@ -84,8 +86,11 @@ void DelayAudioProcessorEditor::createGUI()
     createLabel(m_lfoAmtLabel, "lfoamtlabel", "AMT", juce::Justification::centred);
 
     SliderRange filterCutoffSliderRange(200.0f, 20000.0f, 1.0f);
-    createSlider(m_filtCutoffSlider, juce::Slider::Rotary, "filterCutoffSlider", filterCutoffSliderRange);
+    createSlider(m_filtCutoffSliderLeft, juce::Slider::Rotary, "filterCutoffSliderLeft", filterCutoffSliderRange);
+    createLabel(m_toneLabelLeft, "tonelabelleft", "Tone L", juce::Justification::centred);
 
+    createSlider(m_filtCutoffSliderRight, juce::Slider::Rotary, "filterCutoffSliderLeft", filterCutoffSliderRange);
+    createLabel(m_toneLabelRight, "tonelabelright", "Tone R", juce::Justification::centred);
 
     // BUTTONS 
 
@@ -114,6 +119,8 @@ void DelayAudioProcessorEditor::createGUI()
     initializeValueLabel(m_gainSliderValDispRight);
     initializeValueLabel(m_drywetSliderValDisp);
     initializeValueLabel(m_lfoFreqSliderValDisp);
+    initializeValueLabel(m_toneSliderValDispLeft);
+    initializeValueLabel(m_toneSliderValDispRight);
 
     getLookAndFeel().setColour(juce::Slider::thumbColourId, juce::Colours::silver); // Thumb Color
     setSize(WIDTH, HEIGHT); // Plugin Window Size
@@ -185,9 +192,16 @@ void DelayAudioProcessorEditor::destroyGUI()
     m_gainSliderValDispRight = nullptr;
     m_drywetSliderValDisp = nullptr;
     m_lfoFreqSliderValDisp = nullptr;
+    m_toneSliderValDispLeft = nullptr;
+    m_toneSliderValDispRight = nullptr;
 
-    m_filterCutoffParamAttach = nullptr;
-    m_filtCutoffSlider = nullptr;
+    m_toneLabelLeft = nullptr;
+    m_filterCutoffParamAttachLeft = nullptr;
+    m_filtCutoffSliderLeft = nullptr;
+
+    m_toneLabelRight = nullptr;
+    m_filterCutoffParamAttachRight = nullptr;
+    m_filtCutoffSliderRight = nullptr;
 
     DBG("Destroyed GUI");
 }
@@ -196,33 +210,37 @@ void DelayAudioProcessorEditor::resizeGUI()
 {
     DBG("Resizing GUI");
 
-    m_gainSliderLeft->setBounds(GLOBAL_X + FB_GAIN_SLIDER_X, GLOBAL_Y + FB_GAIN_SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
-    m_gainLabelLeft->setBounds(GLOBAL_X + FB_GAIN_LABEL_X, GLOBAL_Y + FB_GAIN_LABEL_Y, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
+    m_gainSliderLeft->setBounds(GLOBAL_X + COLUMN1_X, GLOBAL_Y + ROW1_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
+    m_gainLabelLeft->setBounds(GLOBAL_X + COLUMN1_LABEL_X, GLOBAL_Y + ROW1_LABEL_Y, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
 
-    m_delayMsSliderLeft->setBounds(GLOBAL_X + DELAYMS_SLIDER_X, GLOBAL_Y + DELAYMS_SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
-    m_delayBpmSliderLeft->setBounds(GLOBAL_X + DELAYBPM_SLIDER_X, GLOBAL_Y + DELAYBPM_SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
-    m_delayMsLabelLeft->setBounds(GLOBAL_X + DELAYMS_LABEL_X, GLOBAL_Y + DELAYMS_LABEL_Y, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
+    m_delayMsSliderLeft->setBounds(GLOBAL_X + COLUMN2_X, GLOBAL_Y + ROW1_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
+    m_delayBpmSliderLeft->setBounds(GLOBAL_X + COLUMN2_X, GLOBAL_Y + ROW1_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
+    m_delayMsLabelLeft->setBounds(GLOBAL_X + COLUMN2_LABEL_X, GLOBAL_Y + ROW1_LABEL_Y, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
 
-    m_gainSliderRight->setBounds(GLOBAL_X + FB_GAIN_SLIDER_X2, GLOBAL_Y + FB_GAIN_SLIDER_Y2, SLIDER_WIDTH, SLIDER_HEIGHT);
-    m_gainLabelRight->setBounds(GLOBAL_X + FB_GAIN_LABEL_X2, GLOBAL_Y + FB_GAIN_LABEL_Y2, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
+    m_gainSliderRight->setBounds(GLOBAL_X + COLUMN1_X, GLOBAL_Y + ROW2_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
+    m_gainLabelRight->setBounds(GLOBAL_X + COLUMN1_LABEL_X, GLOBAL_Y + ROW2_LABEL_Y, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
 
-    m_delayMsSliderRight->setBounds(GLOBAL_X + DELAYMS_SLIDER_X2, GLOBAL_Y + DELAYMS_SLIDER_Y2, SLIDER_WIDTH, SLIDER_HEIGHT);
-    m_delayBpmSliderRight->setBounds(GLOBAL_X + DELAYBPM_SLIDER_X2, GLOBAL_Y + DELAYBPM_SLIDER_Y2, SLIDER_WIDTH, SLIDER_HEIGHT);
-    m_delayMsLabelRight->setBounds(GLOBAL_X + DELAYMS_LABEL_X2, GLOBAL_Y + DELAYMS_LABEL_Y2, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
+    m_delayMsSliderRight->setBounds(GLOBAL_X + COLUMN2_X, GLOBAL_Y + ROW2_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
+    m_delayBpmSliderRight->setBounds(GLOBAL_X + COLUMN2_X, GLOBAL_Y + ROW2_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
+    m_delayMsLabelRight->setBounds(GLOBAL_X + COLUMN2_LABEL_X, GLOBAL_Y + ROW2_LABEL_Y, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
 
-    m_drywetSlider->setBounds(GLOBAL_X + MIX_SLIDER_X, GLOBAL_Y + MIX_SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
-    m_drywetLabel->setBounds(GLOBAL_X + MIX_LABEL_X, GLOBAL_Y + MIX_LABEL_Y, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
+    m_drywetSlider->setBounds(GLOBAL_X + COLUMN4_X, GLOBAL_Y + ROW1_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
+    m_drywetLabel->setBounds(GLOBAL_X + COLUMN4_LABEL_X, GLOBAL_Y + ROW1_LABEL_Y, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
 
     m_lfoButton->setBounds(GLOBAL_X + LFOENA_BUT_X, GLOBAL_Y + LFOENA_BUT_Y, LFOENA_BUT_WIDTH, LFOENA_BUT_HEIGHT);
     m_lfoButtonLabel->setBounds(GLOBAL_X + LFOENA_LABEL_X, GLOBAL_Y + LFOENA_LABEL_Y, LFOENA_BUT_LAB_WIDTH, LFOENA_BUT_LAB_HEIGHT);
 
-    m_lfoFreqSlider->setBounds(GLOBAL_X + LFOFREQ_SLIDER_X, GLOBAL_Y + LFOFREQ_SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
-    m_lfoFreqLabel->setBounds(GLOBAL_X + LFOFREQ_LABEL_X, GLOBAL_Y + LFOFREQ_LABEL_Y, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
+    m_lfoFreqSlider->setBounds(GLOBAL_X + COLUMN4_X, GLOBAL_Y + ROW2_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
+    m_lfoFreqLabel->setBounds(GLOBAL_X + COLUMN4_LABEL_X, GLOBAL_Y + ROW2_LABEL_Y, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
 
     m_lfoAmtSlider->setBounds(GLOBAL_X + LFOAMT_SLIDER_X, GLOBAL_Y + LFOAMT_SLIDER_Y, LIN_SLIDER_WIDTH, LIN_SLIDER_HEIGHT);
     m_lfoAmtLabel->setBounds(GLOBAL_X + LFOAMT_LABEL_X, GLOBAL_Y + LFOAMT_LABEL_Y, LFOAMT_LAB_WIDTH, LFOAMT_LAB_HEIGHT);
 
-    m_filtCutoffSlider->setBounds(GLOBAL_X + MIX_SLIDER_X + 100, GLOBAL_Y + MIX_SLIDER_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
+    m_filtCutoffSliderLeft->setBounds(GLOBAL_X + COLUMN3_X, GLOBAL_Y + ROW1_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
+    m_toneLabelLeft->setBounds(GLOBAL_X + COLUMN3_LABEL_X, GLOBAL_Y + ROW1_LABEL_Y, SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
+
+    m_filtCutoffSliderRight->setBounds(GLOBAL_X + COLUMN3_X, GLOBAL_Y + ROW2_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
+    m_toneLabelRight->setBounds(GLOBAL_X + COLUMN3_LABEL_X, GLOBAL_Y + ROW2_LABEL_Y , SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
 
     m_testReverbButton->setBounds(GLOBAL_X + TESTRVRB_BUT_X, GLOBAL_Y + TESTRVRB_BUT_Y, TESTRVRB_BUT_WIDTH, TESTRVRB_BUT_HEIGHT);
     m_testRvrbLabel->setBounds(GLOBAL_X + TESTRVRB_LABEL_X, GLOBAL_Y + TESTRVRB_LABEL_Y, TESTRVRB_BUT_LAB_WIDTH, TESTRVRB_BUT_LAB_HEIGHT);
@@ -236,14 +254,16 @@ void DelayAudioProcessorEditor::resizeGUI()
     m_bpmSyncButtonRight->setBounds(GLOBAL_X + BPMSYNC2_BUT_X, GLOBAL_Y + BPMSYNC2_BUT_Y, BPMSYNC2_BUT_WIDTH, BPMSYNC2_BUT_HEIGHT);
     m_bpmSyncButtonLabelRight->setBounds(GLOBAL_X + BPMSYNC2_LABEL_X, GLOBAL_Y + BPMSYNC2_LABEL_Y, BPMSYNC2_BUT_LAB_WIDTH, BPMSYNC2_BUT_LAB_HEIGHT);
 
-    m_delayMsSliderValDispLeft->setBounds(GLOBAL_X + DELAYMSLEFT_VALDISP_LABEL_X, GLOBAL_Y + DELAYMSLEFT_VALDISP_LABEL_Y, VALUE_LABEL_WIDTH, VALUE_LABEL_HEIGHT);
-    m_delayMsSliderValDispRight->setBounds(GLOBAL_X + DELAYMSRIGHT_VALDISP_LABEL_X, GLOBAL_Y + DELAYMSRIGHT_VALDISP_LABEL_Y, VALUE_LABEL_WIDTH, VALUE_LABEL_HEIGHT);
-    m_delayBpmSliderValDispLeft->setBounds(GLOBAL_X + DELAYBPMLEFT_VALDISP_LABEL_X, GLOBAL_Y + DELAYBPMLEFT_VALDISP_LABEL_Y, VALUE_LABEL_WIDTH, VALUE_LABEL_HEIGHT);
-    m_delayBpmSliderValDispRight->setBounds(GLOBAL_X + DELAYBPMRIGHT_VALDISP_LABEL_X, GLOBAL_Y + DELAYBPMRIGHT_VALDISP_LABEL_Y, VALUE_LABEL_WIDTH, VALUE_LABEL_HEIGHT);
-    m_gainSliderValDispLeft->setBounds(GLOBAL_X + GAINLEFT_VALDISP_LABEL_X, GLOBAL_Y + GAINLEFT_VALDISP_LABEL_Y, VALUE_LABEL_WIDTH, VALUE_LABEL_HEIGHT);
-    m_gainSliderValDispRight->setBounds(GLOBAL_X + GAINRIGHT_VALDISP_LABEL_X, GLOBAL_Y + GAINRIGHT_VALDISP_LABEL_Y, VALUE_LABEL_WIDTH, VALUE_LABEL_HEIGHT);
-    m_drywetSliderValDisp->setBounds(GLOBAL_X + DRYWET_VALDISP_LABEL_X, GLOBAL_Y + DRYWET_VALDISP_LABEL_Y, VALUE_LABEL_WIDTH, VALUE_LABEL_HEIGHT);
-    m_lfoFreqSliderValDisp->setBounds(GLOBAL_X + LFOFREQ_VALDISP_LABEL_X, GLOBAL_Y + LFOFREQ_VALDISP_LABEL_Y, VALUE_LABEL_WIDTH, VALUE_LABEL_HEIGHT);
+    m_delayMsSliderValDispLeft->setBounds(GLOBAL_X + COLUMN2_VALDISP_LABEL_X, GLOBAL_Y + ROW1_VALDISP_LABEL_Y, VALUE_LABEL_WIDTH, VALUE_LABEL_HEIGHT);
+    m_delayMsSliderValDispRight->setBounds(GLOBAL_X + COLUMN2_VALDISP_LABEL_X, GLOBAL_Y + ROW2_VALDISP_LABEL_Y, VALUE_LABEL_WIDTH, VALUE_LABEL_HEIGHT);
+    m_delayBpmSliderValDispLeft->setBounds(GLOBAL_X + COLUMN2_VALDISP_LABEL_X, GLOBAL_Y + ROW1_VALDISP_LABEL_Y, VALUE_LABEL_WIDTH, VALUE_LABEL_HEIGHT);
+    m_delayBpmSliderValDispRight->setBounds(GLOBAL_X + COLUMN2_VALDISP_LABEL_X, GLOBAL_Y + ROW2_VALDISP_LABEL_Y, VALUE_LABEL_WIDTH, VALUE_LABEL_HEIGHT);
+    m_gainSliderValDispLeft->setBounds(GLOBAL_X + COLUMN1_VALDISP_LABEL_X, GLOBAL_Y + ROW1_VALDISP_LABEL_Y, VALUE_LABEL_WIDTH, VALUE_LABEL_HEIGHT);
+    m_gainSliderValDispRight->setBounds(GLOBAL_X + COLUMN1_VALDISP_LABEL_X, GLOBAL_Y + ROW2_VALDISP_LABEL_Y, VALUE_LABEL_WIDTH, VALUE_LABEL_HEIGHT);
+    m_drywetSliderValDisp->setBounds(GLOBAL_X + COLUMN4_VALDISP_LABEL_X, GLOBAL_Y + ROW1_VALDISP_LABEL_Y, VALUE_LABEL_WIDTH, VALUE_LABEL_HEIGHT);
+    m_lfoFreqSliderValDisp->setBounds(GLOBAL_X + COLUMN4_VALDISP_LABEL_X, GLOBAL_Y + ROW2_VALDISP_LABEL_Y, VALUE_LABEL_WIDTH, VALUE_LABEL_HEIGHT);
+    m_toneSliderValDispLeft->setBounds(GLOBAL_X + COLUMN3_VALDISP_LABEL_X, GLOBAL_Y + ROW1_VALDISP_LABEL_Y, VALUE_LABEL_WIDTH, VALUE_LABEL_HEIGHT);
+    m_toneSliderValDispRight->setBounds(GLOBAL_X + COLUMN3_VALDISP_LABEL_X, GLOBAL_Y + ROW2_VALDISP_LABEL_Y, VALUE_LABEL_WIDTH, VALUE_LABEL_HEIGHT);
 
     DBG("Resized GUI");
 }
@@ -265,7 +285,8 @@ void DelayAudioProcessorEditor::paramAttacher()
     m_stereoDelayButParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "STRODEL", *m_stereoDelayButton);
     m_bpmSyncButParamAttachLeft = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "BPMSYNC_LEFT", *m_bpmSyncButtonLeft);
     m_bpmSyncButParamAttachRight = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "BPMSYNC_RIGHT", *m_bpmSyncButtonRight);
-    m_filterCutoffParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "FILTER_CUTOFF", *m_filtCutoffSlider);
+    m_filterCutoffParamAttachLeft = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "FILTER_CUTOFF_LEFT", *m_filtCutoffSliderLeft);
+    m_filterCutoffParamAttachRight = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "FILTER_CUTOFF_RIGHT", *m_filtCutoffSliderRight);
 
     DBG("Attached Params");
 }
@@ -384,6 +405,10 @@ void DelayAudioProcessorEditor::componentDisable()
             m_delayBpmSliderRight->setEnabled(false);
             m_delayBpmSliderRight->setAlpha(0.5f);
 
+            m_filtCutoffSliderRight->setValue(m_filtCutoffSliderLeft->getValue(), juce::dontSendNotification);
+            m_filtCutoffSliderRight->setEnabled(false);
+            m_filtCutoffSliderRight->setAlpha(0.5f);
+
             m_bpmSyncButtonRight->setToggleState(m_bpmSyncButtonLeft->getToggleState(), juce::dontSendNotification);
             m_bpmSyncButtonRight->setEnabled(false);
             m_bpmSyncButtonRight->setAlpha(0.5f);
@@ -394,6 +419,9 @@ void DelayAudioProcessorEditor::componentDisable()
 
             m_delayMsLabelLeft->setText("Time", juce::dontSendNotification);
             m_delayMsLabelRight->setText("", juce::dontSendNotification);
+
+            m_toneLabelLeft->setText("Tone", juce::dontSendNotification);
+            m_toneLabelRight->setText("", juce::dontSendNotification);
         }
         else
         {
@@ -406,6 +434,9 @@ void DelayAudioProcessorEditor::componentDisable()
             m_delayBpmSliderRight->setEnabled(true);
             m_delayBpmSliderRight->setAlpha(1.0f);
 
+            m_filtCutoffSliderRight->setEnabled(true);
+            m_filtCutoffSliderRight->setAlpha(1.0f);
+
             m_bpmSyncButtonRight->setEnabled(true);
             m_bpmSyncButtonRight->setAlpha(1.0f);
             m_bpmSyncButtonLabelRight->setAlpha(1.0f);
@@ -415,6 +446,9 @@ void DelayAudioProcessorEditor::componentDisable()
 
             m_delayMsLabelLeft->setText("Time L", juce::dontSendNotification);
             m_delayMsLabelRight->setText("Time R", juce::dontSendNotification);
+
+            m_toneLabelLeft->setText("Tone L", juce::dontSendNotification);
+            m_toneLabelRight->setText("Tone R", juce::dontSendNotification);
         }
     }
     

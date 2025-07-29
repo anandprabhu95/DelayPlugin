@@ -88,22 +88,24 @@ private:
     std::unique_ptr<juce::Slider> m_gainSliderLeft, m_delayMsSliderLeft, m_delayBpmSliderLeft, 
                                   m_gainSliderRight, m_delayMsSliderRight, m_delayBpmSliderRight, 
                                   m_drywetSlider, m_lfoFreqSlider, m_lfoAmtSlider,
-                                  m_filtCutoffSlider;
+                                  m_filtCutoffSliderLeft, m_filtCutoffSliderRight;
 
     std::unique_ptr<juce::ToggleButton> m_lfoButton, m_testReverbButton, m_stereoDelayButton, m_bpmSyncButtonLeft, m_bpmSyncButtonRight;
 
     std::unique_ptr<juce::Label> m_gainLabelLeft, m_delayMsLabelLeft, m_gainLabelRight, m_delayMsLabelRight, m_stereoDelayLabel,
                                  m_drywetLabel, m_lfoButtonLabel, m_lfoFreqLabel, m_lfoAmtLabel, m_testRvrbLabel,
-                                 m_bpmSyncButtonLabelLeft, m_bpmSyncButtonLabelRight;
+                                 m_bpmSyncButtonLabelLeft, m_bpmSyncButtonLabelRight,
+                                 m_toneLabelLeft, m_toneLabelRight;
 
     std::unique_ptr<juce::Label> m_gainSliderValDispLeft, m_delayMsSliderValDispLeft, m_delayBpmSliderValDispLeft,
                                  m_gainSliderValDispRight, m_delayMsSliderValDispRight, m_delayBpmSliderValDispRight,
-                                 m_drywetSliderValDisp, m_lfoFreqSliderValDisp;
+                                 m_drywetSliderValDisp, m_lfoFreqSliderValDisp,
+                                 m_toneSliderValDispLeft, m_toneSliderValDispRight;
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> m_gainParamAttachLeft, m_delayMsParamAttachLeft, m_delayBpmParamAttachLeft,
                                                                           m_gainParamAttachRight, m_delayMsParamAttachRight, m_delayBpmParamAttachRight,
                                                                           m_drywetParamAttach, m_lfoFreqParamAttach, m_lfoAmtParamAttach,
-                                                                          m_filterCutoffParamAttach;
+                                                                          m_filterCutoffParamAttachLeft, m_filterCutoffParamAttachRight;
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> m_lfoButtonParamAttach, m_testRvrbButParamAttach, m_stereoDelayButParamAttach,
                                                                           m_bpmSyncButParamAttachLeft, m_bpmSyncButParamAttachRight;
