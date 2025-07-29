@@ -166,7 +166,6 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     std::pair<std::vector<float>, float> sinArrayResult = createSinArray(m_wetBuffer, m_lfoSinIndexPrev);
     std::vector<float> amplVec = sinArrayResult.first;
     m_lfoSinIndexPrev = sinArrayResult.second;
-    //DBG("Prev :" << lfoSinIndexPrev);
 
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
@@ -233,9 +232,7 @@ float DelayAudioProcessor::delayTimeFromBpmSlider(juce::String parameterID)
 
     if (m_bpm.hasValue())
     {
-        DBG("BPM: " << *m_bpm);
         float oneBeatTime = 60.0f / (*m_bpm);
-        DBG("One Beat Time: " << oneBeatTime);
 
         switch (static_cast<int>(delayNoteSetg->load()))
         {
@@ -305,7 +302,6 @@ void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& wetBuffer, ju
 
     std::atomic<float>* isBpmSyncLeftOn = params.getRawParameterValue("BPMSYNC_LEFT");
     std::atomic<float>* isBpmSyncRightOn = params.getRawParameterValue("BPMSYNC_RIGHT");
-    DBG("Is BPM SYNC right on" << isBpmSyncRightOn->load());
     std::atomic<float>* isStereoOn = params.getRawParameterValue("STRODEL");
 
     if (isStereoOn->load() == 1) {
@@ -336,7 +332,6 @@ void DelayAudioProcessor::readFromBuffer(juce::AudioBuffer<float>& wetBuffer, ju
             if (isBpmSyncRightOn->load() == 1)
             {
                 delayTime = delayTimeFromBpmSlider("DELAYBPM_RIGHT");
-                DBG("DelayTime BPM: " << delayTime);
             }
             else
             {
@@ -446,7 +441,6 @@ void DelayAudioProcessor::mixDryWet(juce::AudioBuffer<float>& buffer, juce::Audi
     
     // Reduce gain on the main buffer when as the wet gain increases.
     buffer.applyGain(1.0f - 0.5f * scaledDryWetGain);
-    DBG("Number of samples in main buffer: " << buffer.getNumSamples());
     buffer.addFromWithRamp(channel, 0, wetBuffer.getReadPointer(channel, 0), wetBuffer.getNumSamples(), scaledDryWetGain, scaledDryWetGain);
 }
 
@@ -488,7 +482,6 @@ std::pair<std::vector<float>, float> DelayAudioProcessor::createSinArray(juce::A
     float lfoSinIndexStart = lfoSinIndexPrevious;
     std::atomic<float>* lfoFreq = params.getRawParameterValue("LFOFREQ");
     std::atomic<float>* lfoAmt = params.getRawParameterValue("LFOAMT");
-    //DBG("LfoFreq: " << lfoFreq->load());
 
     float i = 0.0f;
     for (i = lfoSinIndexStart; i < lfoSinIndexStart + deltaIndex; i+=increment)
@@ -499,7 +492,6 @@ std::pair<std::vector<float>, float> DelayAudioProcessor::createSinArray(juce::A
     }
     if (i > 1/lfoFreq->load())
     {
-        //DBG("Reset lfoIndex");
         i = 0.0f;
     }
     return std::pair<std::vector<float>, float>(amplitudeVec, i);
