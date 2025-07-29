@@ -6,8 +6,10 @@ Parameter controls:
 3) Feedback Gain: 0 to 1 [L and R channels].
 4) Dry/Wet mix
 5) Modulated Delay
+6) Echo Tone Control
 
-![v1 3 0](https://github.com/user-attachments/assets/ab4f0723-c9cc-4003-815f-8742675d430e)
+
+![v1 4 0](https://github.com/user-attachments/assets/3cdb8984-c126-4885-ad99-2d0156ee4340)
 
 
 Instructions to compile the source:
