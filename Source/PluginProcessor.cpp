@@ -414,25 +414,38 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createP
 {
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
 
+    float minDelayTime{ 0.0f }; float maxDelayTime{ MAX_DELAY_TIME }; float defaultDelayTime{ 1.0f };
+    int minDelayBpmMode{ 0 }; int maxDelayBpmMode{ 6 }; int defaultDelayBpmMode{ 3 };
+    float minGain{ 0.0f }; float maxGain{ 1.0f }; float defaultGain{ 0.6f };
+    int minMix{ 0 }; int maxMix{ 100 }; int defaultMix{ 50 };
+    float minLfoFreq{ 1.0f }; float maxLfoFreq{ 10.f }; float defaultLfoFreq{ 5 };
+    float minLfoAmt{ 0.0f }; float maxLfoAmt{ 1.0f }; float defaultLfoAmt{ 0.3f };
+    float minFiltCutoff{ 200.0f }; float maxFiltCutoff{ 20000.0f }; float defaultFiltCutoff{ 5000.0f }; float filterInterval{ 1.0f }; float filterSkewFactor{ 0.2f };
+    bool defaultButtonStatus{ false };
+
     // Sliders
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS_LEFT", "Delay Ms Left", 0.0f, MAX_DELAY_TIME, 1.0f));
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS_RIGHT", "Delay Ms Right", 0.0f, MAX_DELAY_TIME, 1.0f));
-    parameters.push_back(std::make_unique<juce::AudioParameterInt>("DELAYBPM_LEFT", "Delay BPM Left", 0, 6, 3));
-    parameters.push_back(std::make_unique<juce::AudioParameterInt>("DELAYBPM_RIGHT", "Delay BPM Right", 0, 6, 3));
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN_LEFT", "Feedback Gain Left", 0.0f, 1.0f, 0.7f));
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN_RIGHT", "Feedback Gain Right", 0.0f, 1.0f, 0.7f));
-    parameters.push_back(std::make_unique<juce::AudioParameterInt>("DRYWET", "Dry/Wet", 0, 100, 50));
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LFOFREQ", "LFO Freq", 1.f, 10.0f, 2.0f));
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LFOAMT", "LFO Amt", 0.0f, 1.0f, 0.2f));
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FILTER_CUTOFF_LEFT", "Filter Cutoff Left", juce::NormalisableRange<float>(200.f, 20000.f, 1.0f, 0.2f), 20000.f));
-    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FILTER_CUTOFF_RIGHT", "Filter Cutoff Right", juce::NormalisableRange<float>(200.f, 20000.f, 1.0f, 0.2f), 20000.f));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS_LEFT", "Delay Ms Left", minDelayTime, maxDelayTime, defaultDelayTime));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("DELAYMS_RIGHT", "Delay Ms Right", minDelayTime, maxDelayTime, defaultDelayTime));
+    parameters.push_back(std::make_unique<juce::AudioParameterInt>("DELAYBPM_LEFT", "Delay BPM Left", minDelayBpmMode, maxDelayBpmMode, defaultDelayBpmMode));
+    parameters.push_back(std::make_unique<juce::AudioParameterInt>("DELAYBPM_RIGHT", "Delay BPM Right", minDelayBpmMode, maxDelayBpmMode, defaultDelayBpmMode));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN_LEFT", "Feedback Gain Left", minGain, maxGain, defaultGain));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FEEDBACKGAIN_RIGHT", "Feedback Gain Right", minGain, maxGain, defaultGain));
+    parameters.push_back(std::make_unique<juce::AudioParameterInt>("DRYWET", "Dry/Wet", minMix, maxMix, defaultMix));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LFOFREQ", "LFO Freq", minLfoFreq, maxLfoFreq, defaultLfoFreq));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("LFOAMT", "LFO Amt", minLfoAmt, maxLfoAmt, defaultLfoAmt));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FILTER_CUTOFF_LEFT", "Filter Cutoff Left", 
+                                                                      juce::NormalisableRange<float>(minFiltCutoff, maxFiltCutoff, filterInterval, filterSkewFactor), 
+                                                                      defaultFiltCutoff));
+    parameters.push_back(std::make_unique<juce::AudioParameterFloat>("FILTER_CUTOFF_RIGHT", "Filter Cutoff Right", 
+                                                                      juce::NormalisableRange<float>(minFiltCutoff, maxFiltCutoff, filterInterval, filterSkewFactor), 
+                                                                      defaultFiltCutoff));
     
     // Buttons
-    parameters.push_back(std::make_unique<juce::AudioParameterBool>("LFOENA", "Enable LFO", 0));
-    parameters.push_back(std::make_unique<juce::AudioParameterBool>("TESTRVRB", "Test Reverb", 0));
-    parameters.push_back(std::make_unique<juce::AudioParameterBool>("STRODEL", "Stereo Delay", 0));
-    parameters.push_back(std::make_unique<juce::AudioParameterBool>("BPMSYNC_LEFT", "BPM Sync Left", 0));
-    parameters.push_back(std::make_unique<juce::AudioParameterBool>("BPMSYNC_RIGHT", "BPM Sync Right", 0));
+    parameters.push_back(std::make_unique<juce::AudioParameterBool>("LFOENA", "Enable LFO", defaultButtonStatus));
+    parameters.push_back(std::make_unique<juce::AudioParameterBool>("TESTRVRB", "Test Reverb", defaultButtonStatus));
+    parameters.push_back(std::make_unique<juce::AudioParameterBool>("STRODEL", "Stereo Delay", defaultButtonStatus));
+    parameters.push_back(std::make_unique<juce::AudioParameterBool>("BPMSYNC_LEFT", "BPM Sync Left", defaultButtonStatus));
+    parameters.push_back(std::make_unique<juce::AudioParameterBool>("BPMSYNC_RIGHT", "BPM Sync Right", defaultButtonStatus));
 
     return { parameters.begin(), parameters.end() };
 }

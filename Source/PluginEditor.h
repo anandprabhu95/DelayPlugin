@@ -23,20 +23,6 @@ private:
     // access the processor object that created it.
     DelayAudioProcessor& audioProcessor;
 
-    class DelayAudioProcessorEditor::SliderRange
-    {
-    public:
-        double minVal;
-        double maxVal;
-        double intervalVal;
-        SliderRange(double minimum, double maximum, double interval)
-        {
-            minVal = minimum;
-            maxVal = maximum;
-            intervalVal = interval;
-        }
-    };
-
     enum TrackStatus { DEFAULT, CHANGED, UNCHANGED };
 
     class DelayAudioProcessorEditor::ButtonStatusUpdate
@@ -75,7 +61,7 @@ private:
     void DelayAudioProcessorEditor::sliderValueChanged(juce::Slider* sliderMoved);
 
     void DelayAudioProcessorEditor::createSlider(std::unique_ptr<juce::Slider>& slider, juce::Slider::SliderStyle sliderStyle,
-                                                juce::String componentName, DelayAudioProcessorEditor::SliderRange sliderRange, bool skewAssymetric);
+                                                 juce::String componentName, juce::String propertyID);
     void DelayAudioProcessorEditor::createToggleButton(std::unique_ptr<juce::ToggleButton>& button, juce::String componentName);
     void DelayAudioProcessorEditor::createLabel(std::unique_ptr<juce::Label>& label, juce::String componentName, juce::String textToDisplay, juce::Justification justification);
     void DelayAudioProcessorEditor::setTextBox(std::unique_ptr<juce::Slider>& slider);

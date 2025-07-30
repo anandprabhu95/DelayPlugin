@@ -55,41 +55,32 @@ void DelayAudioProcessorEditor::paintBackground(juce::Graphics& g)
 void DelayAudioProcessorEditor::createGUI()
 {   
     DBG("Creating GUI");
-    
     // SLIDERS 
-
-    SliderRange gainSliderRange(0.0f, 1.0f, 0.1f);
-    createSlider(m_gainSliderLeft, juce::Slider::Rotary, "gainSliderLeft", gainSliderRange, false);
+    createSlider(m_gainSliderLeft, juce::Slider::Rotary, "gainSliderLeft", "FEEDBACKGAIN_LEFT");
     createLabel(m_gainLabelLeft, "gainlabelleft", "Gain L", juce::Justification::centred);
-    createSlider(m_gainSliderRight, juce::Slider::Rotary, "gainSliderRight", gainSliderRange, false);
+    createSlider(m_gainSliderRight, juce::Slider::Rotary, "gainSliderRight", "FEEDBACKGAIN_RIGHT");
     createLabel(m_gainLabelRight, "gainlabelright", "Gain R", juce::Justification::centred);
 
-    SliderRange delayMsSliderRange(0.0f, MAX_DELAY_TIME, 0.0001f);
-    createSlider(m_delayMsSliderLeft, juce::Slider::Rotary, "delayMsSliderLeft", delayMsSliderRange, false);
-    createSlider(m_delayMsSliderRight, juce::Slider::Rotary, "delayMsSliderRight", delayMsSliderRange, false);
-    SliderRange delayBpmSliderRange(0, 6, 1);
-    createSlider(m_delayBpmSliderLeft, juce::Slider::Rotary, "delayBpmSliderLeft", delayBpmSliderRange, false);
-    createSlider(m_delayBpmSliderRight, juce::Slider::Rotary, "delayBpmSliderRight", delayBpmSliderRange, false);
+    createSlider(m_delayMsSliderLeft, juce::Slider::Rotary, "delayMsSliderLeft", "DELAYMS_LEFT");
+    createSlider(m_delayMsSliderRight, juce::Slider::Rotary, "delayMsSliderRight", "DELAYMS_RIGHT");
+    createSlider(m_delayBpmSliderLeft, juce::Slider::Rotary, "delayBpmSliderLeft", "DELAYBPM_LEFT");
+    createSlider(m_delayBpmSliderRight, juce::Slider::Rotary, "delayBpmSliderRight", "DELAYBPM_RIGHT");
     createLabel(m_delayMsLabelLeft, "delaylabelleft", "Time L", juce::Justification::centred);
     createLabel(m_delayMsLabelRight, "delaylabelright", "Time R", juce::Justification::centred);
 
-    SliderRange drywetSliderRange(0.0f, 100.0f, 1.0f);
-    createSlider(m_drywetSlider, juce::Slider::Rotary, "drywetSlider", drywetSliderRange, false);
+    createSlider(m_drywetSlider, juce::Slider::Rotary, "drywetSlider", "DRYWET");
     createLabel(m_drywetLabel, "drywetlabel", "Mix", juce::Justification::centred);
 
-    SliderRange lfoFreqSliderRange(1.0f, 10.0f, 0.01f);
-    createSlider(m_lfoFreqSlider, juce::Slider::Rotary, "lfoFreqSlider", lfoFreqSliderRange, false);
+    createSlider(m_lfoFreqSlider, juce::Slider::Rotary, "lfoFreqSlider", "LFOFREQ");
     createLabel(m_lfoFreqLabel, "lfofreqlabel", "LFO Freq", juce::Justification::centred);
 
-    SliderRange lfoAmtSliderRange(0.5f, 1.0f, 0.01f);
-    createSlider(m_lfoAmtSlider, juce::Slider::LinearHorizontal, "lfoAmtSlider", lfoAmtSliderRange, false);
+    createSlider(m_lfoAmtSlider, juce::Slider::LinearHorizontal, "lfoAmtSlider", "LFOAMT");
     createLabel(m_lfoAmtLabel, "lfoamtlabel", "AMT", juce::Justification::centred);
 
-    SliderRange filterCutoffSliderRange(200.0f, 20000.0f, 1.0f);
-    createSlider(m_filtCutoffSliderLeft, juce::Slider::Rotary, "filterCutoffSliderLeft", filterCutoffSliderRange, true);
+    createSlider(m_filtCutoffSliderLeft, juce::Slider::Rotary, "filterCutoffSliderLeft", "FILTER_CUTOFF_LEFT");
     createLabel(m_toneLabelLeft, "tonelabelleft", "Tone L", juce::Justification::centred);
 
-    createSlider(m_filtCutoffSliderRight, juce::Slider::Rotary, "filterCutoffSliderRight", filterCutoffSliderRange, true);
+    createSlider(m_filtCutoffSliderRight, juce::Slider::Rotary, "filterCutoffSliderRight", "FILTER_CUTOFF_RIGHT");
     createLabel(m_toneLabelRight, "tonelabelright", "Tone R", juce::Justification::centred);
 
     // BUTTONS 
@@ -296,13 +287,14 @@ void DelayAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
 }
 
 void DelayAudioProcessorEditor::createSlider(std::unique_ptr<juce::Slider>& slider, juce::Slider::SliderStyle sliderStyle,
-                                                    juce::String componentName, DelayAudioProcessorEditor::SliderRange sliderRange, bool skewAssymetric)
+                                                    juce::String componentName, juce::String propertyID)
 {
     DBG("Attaching " << componentName);
     slider = std::make_unique<juce::Slider>(componentName);
     addAndMakeVisible(slider.get());
-    if (skewAssymetric) { slider->setSkewFactor(0.2f); }
-    slider->setRange(sliderRange.minVal, sliderRange.maxVal, sliderRange.intervalVal);
+    juce::RangedAudioParameter *prop = audioProcessor.params.getParameter(propertyID);
+    slider->setSkewFactor(prop->getNormalisableRange().skew);
+    slider->setRange(prop->getNormalisableRange().start,prop->getNormalisableRange().end,prop->getNormalisableRange().interval);
     slider->setSliderStyle(sliderStyle);
     setTextBox(slider);
     slider->addListener(this);
