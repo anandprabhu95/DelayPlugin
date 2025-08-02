@@ -3,6 +3,12 @@
 <JUCERPROJECT id="OMW8lP" name="Delay" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1">
   <MAINGROUP id="qmb2tA" name="Delay">
+    <GROUP id="{EBB7DD22-F661-064D-EA15-F403B02008C2}" name="modules">
+      <FILE id="QJfBzG" name="gui_components.cpp" compile="0" resource="0"
+            file="modules/gui_components.cpp"/>
+      <FILE id="IWHAr4" name="gui_components.h" compile="0" resource="0"
+            file="modules/gui_components.h"/>
+    </GROUP>
     <GROUP id="{AAE2B65E-7605-6E07-8A82-FD424FC83BEC}" name="Source">
       <GROUP id="{983AE491-C0BF-347E-DD63-E6CFB6E0FEDB}" name="Reverb">
         <FILE id="T2re76" name="Reverb.cpp" compile="1" resource="0" file="Source/Reverb.cpp"/>
