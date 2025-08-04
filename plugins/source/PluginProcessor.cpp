@@ -1,5 +1,5 @@
-#include "PluginProcessor.h"
-#include "PluginEditor.h"
+#include "Delay/PluginProcessor.h"
+#include "Delay/PluginEditor.h"
 
 //==============================================================================
 DelayAudioProcessor::DelayAudioProcessor()
@@ -14,8 +14,8 @@ DelayAudioProcessor::DelayAudioProcessor()
                        ), 
                         params (*this, nullptr, "Parameters", createParameters()),
                         m_lowPassFilterLeft(juce::dsp::IIR::Coefficients<float>::makeLowPass(44100.0f, 20000.f, 0.1f)),
-                        m_lowPassFilterRight(juce::dsp::IIR::Coefficients<float>::makeLowPass(44100.0f, 20000.f, 0.1f)),
-                        reverb(new Reverb())
+                        m_lowPassFilterRight(juce::dsp::IIR::Coefficients<float>::makeLowPass(44100.0f, 20000.f, 0.1f))
+                        //reverb(new Reverb())
 #endif
 {
     params.state = juce::ValueTree("savedParams");
@@ -23,7 +23,7 @@ DelayAudioProcessor::DelayAudioProcessor()
 
 DelayAudioProcessor::~DelayAudioProcessor()
 {
-    delete reverb;
+    //delete reverb;
 }
 
 //==============================================================================
@@ -208,7 +208,7 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     std::atomic<float>* isTestRvrbOn = params.getRawParameterValue("TESTRVRB");
     if (isTestRvrbOn->load())
     {
-        reverb->reverb(buffer, getNumInputChannels());
+        //reverb->reverb(buffer, getNumInputChannels());
     }
 }
 

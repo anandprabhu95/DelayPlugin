@@ -48,7 +48,7 @@ public:
 
     //==============================================================================
     juce::AudioProcessorValueTreeState params;
-    Reverb* reverb;
+    //Reverb* reverb;
 
 private:
     void DelayAudioProcessor::fillBuffer(juce::AudioBuffer<float>& wetBuffer, int channel);

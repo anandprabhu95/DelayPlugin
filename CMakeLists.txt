@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 
 project(AudioPlugins)
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 17)
 
 message("Compiler: ${CMAKE_CXX_COMPILER_ID}")
 
@@ -19,7 +19,7 @@ CPMAddPackage(
 
 
 if(MSVC)
-    add_compile_options(/WX)
+    add_compile_options(/Wall)
 else()
     add_compile_options(-Wall -Wextra -Wpedantic)
 endif()

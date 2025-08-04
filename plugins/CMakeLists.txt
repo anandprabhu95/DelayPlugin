@@ -11,7 +11,7 @@ juce_add_plugin(${PROJECT_NAME}
     NEEDS_MIDI_OUTPUT FALSE
     PLUGIN_MANUFACTURER_CODE Aupl
     PLUGIN_CODE Aupl
-    FORMATS VST3
+    FORMATS VST3 Standalone
     PRODUCT_NAME "Frecurse"
 )
 
@@ -62,6 +62,7 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
 target_compile_definitions(${PROJECT_NAME}
     PUBLIC
+        JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1
         JUCE_WEB_BROWSER=0
         JUCE_USE_CURL=0
         JUCE_VST3_CAN_REPLACE_VST2=0
@@ -70,6 +71,6 @@ target_compile_definitions(${PROJECT_NAME}
 if(MSVC)
     target_compile_definitions(${PROJECT_NAME}
         PRIVATE
-            _SILENCE_CXX23_ALIGNED_STORAGE_DEPRICATION_WARNING
+            _SILENCE_CXX17_ALIGNED_STORAGE_DEPRICATION_WARNING
     )
 endif()

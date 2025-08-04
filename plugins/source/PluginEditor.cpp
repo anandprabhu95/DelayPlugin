@@ -1,5 +1,5 @@
-#include "PluginProcessor.h"
-#include "PluginEditor.h"
+#include "Delay/PluginProcessor.h"
+#include "Delay/PluginEditor.h"
 
 //==============================================================================
 DelayAudioProcessorEditor::DelayAudioProcessorEditor (DelayAudioProcessor& p)
