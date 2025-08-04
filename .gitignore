@@ -2,3 +2,5 @@
 Delay/.vs
 Builds/
 output/
+build/
+libs/
