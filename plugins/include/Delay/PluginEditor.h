@@ -1,6 +1,6 @@
 #pragma once
 
-#include <JuceHeader.h>
+#include "Headers.h"
 #include "PluginProcessor.h"
 #include "Constants.h"
 
