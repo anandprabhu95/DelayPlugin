@@ -3,8 +3,8 @@
 rm -rf output
 mkdir -p output/{VST3,Standalone}
 
-res_vst3="./Builds/VisualStudio2022/x64/Debug/VST3/Delay.vst3/Contents/x86_64-win/Delay.vst3"
-res_sa="./Builds/VisualStudio2022/x64/Debug/Standalone Plugin/Delay.exe"
+res_vst3="./build/plugins/AudioPlugin_artefacts/Debug/VST3/Frecurse.vst3/Contents/x86_64-win/Frecurse.vst3"
+res_sa="./build/plugins/AudioPlugin_artefacts/Debug/Standalone/Frecurse.exe"
 
 cp "$res_vst3" ./output/VST3
 cp "$res_sa" ./output/Standalone

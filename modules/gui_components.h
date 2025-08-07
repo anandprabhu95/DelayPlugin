@@ -1,6 +1,26 @@
 #include <JuceHeader.h>
-#include "../Source/PluginProcessor.h"
 
+
+#define SLIDER_WIDTH					100
+#define SLIDER_HEIGHT					100
+
+#define LIN_SLIDER_WIDTH				70
+#define LIN_SLIDER_HEIGHT				24
+
+#define SLIDER_LABEL_WIDTH				100
+#define SLIDER_LABEL_HEIGHT				24
+
+#define TEXTBOX_WIDTH					40
+#define TEXTBOX_HEIGHT					20
+
+#define BUTTON_WIDTH					20
+#define BUTTON_HEIGHT					20
+
+#define GLOBAL_X						100
+#define GLOBAL_Y						50
+
+#define LABEL_FONTSIZE					10.0f
+#define VALUELABEL_FONTSIZE				14.0f
 
 class GUI : public juce::AudioProcessorEditor, 
             public juce::Slider::Listener           
