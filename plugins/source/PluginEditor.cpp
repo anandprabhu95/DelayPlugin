@@ -348,25 +348,34 @@ void DelayAudioProcessorEditor::setValueLabel(std::unique_ptr<juce::Label>& labe
         switch (static_cast<int>(slider->getValue()))
         {
         case 0:
-            label->setText("1/64", juce::dontSendNotification);
-            break;
-        case 1:
-            label->setText("1/32", juce::dontSendNotification);
-            break;
-        case 2:
             label->setText("1/16", juce::dontSendNotification);
             break;
-        case 3:
+        case 1:
             label->setText("1/8", juce::dontSendNotification);
             break;
-        case 4:
+        case 2:
             label->setText("1/4", juce::dontSendNotification);
             break;
-        case 5:
+        case 3:
             label->setText("2/4", juce::dontSendNotification);
             break;
-        case 6:
+        case 4:
             label->setText("4/4", juce::dontSendNotification);
+            break;
+        case 5:
+            label->setText("1/16D", juce::dontSendNotification);
+            break;
+        case 6:
+            label->setText("1/8D", juce::dontSendNotification);
+            break;
+        case 7:
+            label->setText("1/4D", juce::dontSendNotification);
+            break;
+        case 8:
+            label->setText("2/4D", juce::dontSendNotification);
+            break;
+        case 9:
+            label->setText("4/4D", juce::dontSendNotification);
             break;
         default:
             label->setText("Err", juce::dontSendNotification);

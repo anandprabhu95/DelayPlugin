@@ -91,7 +91,7 @@ void DelayAudioProcessor::changeProgramName (int index, const juce::String& newN
 //==============================================================================
 void DelayAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    auto delayBufferSize = sampleRate * MAX_DELAY_TIME; // 2 seconds of audio.
+    auto delayBufferSize = sampleRate * MAX_DELAY_TIME; // X seconds of audio.
     m_delayBuffer.setSize(getTotalNumOutputChannels(), static_cast<int>(delayBufferSize), false, true, false);
     m_wetBuffer.setSize(getTotalNumOutputChannels(), samplesPerBlock, false, true, false);
 
@@ -244,26 +244,37 @@ float DelayAudioProcessor::delayTimeFromBpmSlider(juce::String parameterID)
         switch (static_cast<int>(delayNoteSetg->load()))
         {
         case 0:
-            delayTime = oneBeatTime * (1.0f/16.0f);
-            break;
-        case 1:
-            delayTime = oneBeatTime * (1.0f/8.0f);
-            break;
-        case 2:
             delayTime = oneBeatTime * (1.0f/4.0f);
             break;
-        case 3:
+        case 1:
             delayTime = oneBeatTime * (1.0f/2.0f);
             break;
-        case 4:
+        case 2:
             delayTime = oneBeatTime * (1.0f);
             break;
-        case 5:
+        case 3:
             delayTime = oneBeatTime * (2.0f);
             break;
-        case 6:
+        case 4:
             delayTime = oneBeatTime * (4.0f);
             break;
+        case 5:
+            delayTime = oneBeatTime * (1.5f/4.0f);
+            break;
+        case 6:
+            delayTime = oneBeatTime * (1.5f/2.0f);
+            break;
+        case 7:
+            delayTime = oneBeatTime * (1.5f);
+            break;
+        case 8:
+            delayTime = oneBeatTime * (1.5f*2.0f);
+            break;
+        case 9:
+            delayTime = oneBeatTime * (1.5f*4.0f);
+            break;
+        default:
+            delayTime = 60.0f / 120.0f;
         }
     }
     else
@@ -415,7 +426,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createP
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
 
     float minDelayTime{ 0.0f }; float maxDelayTime{ MAX_DELAY_TIME }; float defaultDelayTime{ 1.0f };
-    int minDelayBpmMode{ 0 }; int maxDelayBpmMode{ 6 }; int defaultDelayBpmMode{ 3 };
+    int minDelayBpmMode{ 0 }; int maxDelayBpmMode{ 9 }; int defaultDelayBpmMode{ 3 };
     float minGain{ 0.0f }; float maxGain{ 1.0f }; float defaultGain{ 0.6f };
     int minMix{ 0 }; int maxMix{ 100 }; int defaultMix{ 50 };
     float minLfoFreq{ 1.0f }; float maxLfoFreq{ 10.f }; float defaultLfoFreq{ 5 };
