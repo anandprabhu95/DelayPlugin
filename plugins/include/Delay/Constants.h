@@ -2,7 +2,8 @@
 
 #define	VERSION							"Frecurse v1.4.0"
 
-#define MAX_DELAY_TIME					10.0f
+#define MAX_DELAY_TIME					2.0f	//Seconds
+#define DELAY_BUF_SIZE					10.0f	//Seconds
 
 #define BG_RED							0.58f
 #define BG_GREEN						0.18f

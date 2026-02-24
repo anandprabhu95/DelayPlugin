@@ -273,6 +273,21 @@ float DelayAudioProcessor::delayTimeFromBpmSlider(juce::String parameterID)
         case 9:
             delayTime = oneBeatTime * (1.5f*4.0f);
             break;
+        case 10:
+            delayTime = oneBeatTime * (1.0f/6.0f);
+            break;
+        case 11:
+            delayTime = oneBeatTime * (1.0f/3.0f);
+            break;
+        case 12:
+            delayTime = oneBeatTime * (2.0f/3.0f);
+            break;
+        case 13:
+            delayTime = oneBeatTime * (4.0f/3.0f);
+            break;
+        case 14:
+            delayTime = oneBeatTime * (8.0f/3.0f);
+            break;
         default:
             delayTime = 60.0f / 120.0f;
         }
@@ -426,7 +441,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createP
     std::vector<std::unique_ptr<juce::RangedAudioParameter>> parameters;
 
     float minDelayTime{ 0.0f }; float maxDelayTime{ MAX_DELAY_TIME }; float defaultDelayTime{ 1.0f };
-    int minDelayBpmMode{ 0 }; int maxDelayBpmMode{ 9 }; int defaultDelayBpmMode{ 3 };
+    int minDelayBpmMode{ 0 }; int maxDelayBpmMode{ 14 }; int defaultDelayBpmMode{ 3 };
     float minGain{ 0.0f }; float maxGain{ 1.0f }; float defaultGain{ 0.6f };
     int minMix{ 0 }; int maxMix{ 100 }; int defaultMix{ 50 };
     float minLfoFreq{ 1.0f }; float maxLfoFreq{ 10.f }; float defaultLfoFreq{ 5 };

@@ -377,6 +377,21 @@ void DelayAudioProcessorEditor::setValueLabel(std::unique_ptr<juce::Label>& labe
         case 9:
             label->setText("4/4D", juce::dontSendNotification);
             break;
+        case 10:
+            label->setText("1/16T", juce::dontSendNotification);
+            break;
+        case 11:
+            label->setText("1/8T", juce::dontSendNotification);
+            break;
+        case 12:
+            label->setText("1/4T", juce::dontSendNotification);
+            break;
+        case 13:
+            label->setText("2/4T", juce::dontSendNotification);
+            break;
+        case 14:
+            label->setText("4/4T", juce::dontSendNotification);
+            break;
         default:
             label->setText("Err", juce::dontSendNotification);
         }
