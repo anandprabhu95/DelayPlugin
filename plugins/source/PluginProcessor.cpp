@@ -91,7 +91,7 @@ void DelayAudioProcessor::changeProgramName (int index, const juce::String& newN
 //==============================================================================
 void DelayAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    auto delayBufferSize = sampleRate * MAX_DELAY_TIME; // X seconds of audio.
+    auto delayBufferSize = sampleRate * DELAY_BUF_SIZE; // X seconds of audio.
     m_delayBuffer.setSize(getTotalNumOutputChannels(), static_cast<int>(delayBufferSize), false, true, false);
     m_wetBuffer.setSize(getTotalNumOutputChannels(), samplesPerBlock, false, true, false);
 
