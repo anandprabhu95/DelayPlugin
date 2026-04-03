@@ -5,12 +5,15 @@ import matplotlib.pyplot as plt
 
 gSampleRate = 48000
 gBuffLen = 512
-gBuff = np.zeros(gBuffLen)
+gChannels = 2
+gBuff = np.zeros((gChannels, gBuffLen), np.float32)
 gAllpassBuff = np.zeros(3*gSampleRate)
 gSecsOfAudio = 10
 PI = 3.1416
 
-def sineArray(freq):
+
+#=============================================================================================================        
+def sineArray(freq: float):
     arr = []
     k = 0
     time = []
@@ -23,34 +26,52 @@ def sineArray(freq):
     return np.array(arr)
     
     
-def stageBuffer(aud,start):
-    global gBuff
+def stageBuffer(aud: np.ndarray, readPos: int, channel: int):
+    global gBuff   
     for i in range(0,gBuffLen):
-        gBuff[i] = aud[start+1]
-        assert(len(gBuff) == gBuffLen)
+        gBuff[channel,i] = aud[readPos+i]
+        assert(len(gBuff[channel,:]) == gBuffLen)
     
- 
+
+def writeOutput(buff: np.ndarray, writePos: int, channel: int):
+    global output
+    for i in range(0,len(buff[channel,:])):
+        output[channel, writePos+i] = buff[channel, i]
+        
     
-#def yourAlg(buffer):
-    #do Something
+def processBuffer(buff: np.ndarray):
+    # youtAlg
+    return 0
 
     
 #=============================================================================================================   
 aud = sineArray(10)
 samples = len(aud)
 start = 0
+output = np.zeros((gChannels, len(aud)), np.float32)
+
 
 while(samples > 0):
+    if (start > len(aud)-gSampleRate):
+        print("Finished")
+        break
     
-    stageBuffer(aud,start)
+    for channel in range(0, gChannels):
+        stageBuffer(aud, start, channel)
     
-    #allPass(delaySamples)
+    processBuffer(gBuff)
+    
+    for channel in range(0, gChannels):
+        writeOutput(gBuff, start, channel)
     
     start = start + gBuffLen
     samples = samples - gBuffLen
+
     
-
-
+plt.plot(range(0,len(aud)),aud[:],'-',label='Input')
+plt.plot(range(0,len(aud)),output[0,:],'--',label='Output')
+plt.legend(loc='upper right')
+plt.show()
     
 
     
