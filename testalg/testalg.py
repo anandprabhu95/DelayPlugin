@@ -27,13 +27,20 @@ def sineArray(freq: float, sampleRate):
 
 
 def loadWav(file: str):
-    wav = scipy.io.wavfile.read(file)
-    print(str(type(wav[1][1])))
-    sampleRate = wav[0]
-    audioData = np.ndarray((gChannels, len(wav[1])),  np.float32)
+    sampleRate, wav = scipy.io.wavfile.read(file)
+    audioData = np.ndarray((gChannels, len(wav)),  np.float32)
+    
+    if (wav.dtype == 'int16'):
+        normFactor = 15
+    elif(wav.dtype == 'int32'):
+        normFactor = 31
+    else:
+        raise ValueError("Bit-depth not supported. Load a 16 or 32 bit int wav file.")
+    
     for channel in range(0,gChannels):
-        for i in range(0,len(wav[1])):
-            audioData[channel,i] = wav[1][i,channel]/(2**31)
+        for i in range(0,len(wav)):
+            audioData[channel,i] = wav[i,channel]/(2**normFactor)
+
     return sampleRate, audioData
     
     
