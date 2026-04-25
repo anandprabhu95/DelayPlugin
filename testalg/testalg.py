@@ -12,7 +12,44 @@ gBuff = np.zeros((gChannels, gBuffLen), np.float32)
 gSecsOfAudio = 10
 PI = 3.1416
 
-#=============================================================================================================        
+#=============================================================================================================   
+class ProcessBlockContext:
+    pass
+
+
+class DelayLine:
+    def __init__(self, delayTime: float, sampleRate: int):
+        self.delaySamples = int(delayTime*sampleRate)
+        self.delayBufferSize = 5 * sampleRate
+        self.delayBuffer = np.ndarray((gChannels, self.delayBufferSize), np.float32)
+        self.readPosition = 0
+        self.writePosition = self.delaySamples
+    
+    def __updateWritePosition__(self):        
+            self.writePosition = self.writePosition + self.buffSize
+            self.writePosition = self.writePosition % self.delayBufferSize
+            
+    def delay(self, buffer: np.ndarray):
+        self.buffSize = len(buffer[0,:])
+        self.__updateWritePosition__()       
+        for channel in range(0, gChannels):
+            if(self.writePosition + self.buffSize < self.delayBufferSize):
+                for i in range(0,self.buffSize):
+                    self.delayBuffer[channel, self.writePosition+i] = buffer[channel, i]
+            else:
+                tempPos = self.writePosition
+                end = self.delayBufferSize - self.writePosition
+                for i in range(0,end):                                        
+                    self.delayBuffer[channel, tempPos] = buffer[channel, i]
+                    tempPos = tempPos + 1
+                
+                tempPos = 0
+                start = end                
+                for i in range(start,self.buffSize):                                        
+                    self.delayBuffer[channel, tempPos] = buffer[channel, i]
+                    tempPos = tempPos + 1
+                    
+    
 def sineArray(freq: float, sampleRate):
     arr = []
     k = 0
@@ -57,11 +94,11 @@ def writeOutput(buff: np.ndarray, writePos: int, channel: int):
         output[channel, writePos+i] = buff[channel, i]
         
     
-def processBuffer(buff: np.ndarray):
-    # youtAlg
+def processBuffer(buff: np.ndarray, context: ProcessBlockContext):
+    context.delayLine.delay(buff)
     return 0
     
-    
+                       
 #=============================================================================================================
 wavData = loadWav(r"untitled.wav")
 aud = wavData[1]
@@ -70,7 +107,8 @@ start = 0
 output = np.zeros((gChannels, len(aud[0,:])), np.float32)
 samples = len(aud[0,:])
 
-
+c = ProcessBlockContext()
+c.delayLine = DelayLine(1,sampleRate)
 
 while(samples > 0):
     if (start > len(aud[0,:])-gBuffLen):
@@ -80,7 +118,7 @@ while(samples > 0):
     for channel in range(0, gChannels):
         stageBuffer(aud, start, channel)
 
-    processBuffer(gBuff)
+    processBuffer(gBuff, c)
     
     for channel in range(0, gChannels):
         writeOutput(gBuff, start, channel)
@@ -91,6 +129,7 @@ while(samples > 0):
 
 plt.plot(range(0,len(aud[0,:])),aud[0,:],'-',label='Input')
 plt.plot(range(0,len(aud[0,:])),output[0,:],'--',label='Output')
+plt.plot(range(0,len(c.delayLine.delayBuffer[0,:])),c.delayLine.delayBuffer[0,:],'--',label='DelayLine')
 plt.legend(loc='upper right')
 plt.show()
 
