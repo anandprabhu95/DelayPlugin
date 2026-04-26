@@ -10,7 +10,7 @@ gBuffLen = 512
 gChannels = 2
 gBuff = np.zeros((gChannels, gBuffLen), np.float32)
 gSecsOfAudio = 10
-gSimTime = 3
+gSimTime = 5
 PI = 3.1416
 
 #=============================================================================================================   
@@ -51,6 +51,29 @@ class DelayLine:
                     self.delayBuffer[channel, tempPos] = buffer[channel, i]
                     tempPos = tempPos + 1
                     
+    def addToMainBuffer(self, feedbackGain):
+        global gBuff
+        self.readPosition = self.writePosition - self.delaySamples
+        
+        if (self.readPosition < 0):
+            self.readPosition = self.readPosition + self.delayBufferSize
+            
+        if (self.readPosition + gBuffLen < self.delayBufferSize):
+            for channel in range(0, self.nChannels):
+                for i in range(0,gBuffLen):
+                    gBuff[channel,i] = gBuff[channel,i] + self.delayBuffer[channel,self.readPosition+i]*feedbackGain
+        else:
+            end = self.delayBufferSize - self.readPosition 
+            for channel in range(0, self.nChannels):
+                for i in range(0,end):
+                    gBuff[channel,i] = gBuff[channel,i] + self.delayBuffer[channel,self.readPosition+i]*feedbackGain
+
+            for channel in range(0, self.nChannels):
+                for i in range(0,gBuffLen-end):
+                    print(end+i)
+                    print(len(self.delayBuffer[channel,:]))
+                    gBuff[channel,end+i] = gBuff[channel,end+i] + self.delayBuffer[channel,0+i]*feedbackGain
+
 
 class Stream():
     def __init__(self, audioData: np.ndarray, sampleRate: int, nChannels: int, streamTime: float):
@@ -63,7 +86,7 @@ class Stream():
         self.streamSamples = streamTime * sampleRate
         self.wavSamples = len(audioData[0,:])
         self.endOfWavData = False
-        self.out = np.zeros((nChannels, self.streamSamples+sampleRate), np.float32)
+        self.out = np.zeros((nChannels, self.streamSamples+gBuffLen), np.float32)
     
     def startStream(self): 
         global gBuff
@@ -100,6 +123,7 @@ class Stream():
             for i in range(0,gBuffLen):
                 self.out[channel, self.writePosition+i] = gBuff[channel,i]
         self.writePosition = self.writePosition + gBuffLen
+        assert(self.writePosition % gBuffLen == 0)
         
         
 def sineArray(freq: float, sampleRate):
@@ -134,10 +158,16 @@ def loadWav(file: str):
     
     
 def processBuffer(buff: np.ndarray, context: ProcessBlockContext):
+    context.delayLine.addToMainBuffer(0.6)
     context.delayLine.delay(buff)
+    
+    #context.delayLine2.delay(buff)
+    #context.delayLine2.addToMainBuffer()
     return 0
     
-                       
+
+
+    
 #=============================================================================================================
 wavData = loadWav(r"untitled.wav")
 aud = wavData[1]
@@ -148,8 +178,8 @@ samples = len(aud[0,:])
 stream = Stream(aud, sampleRate, gChannels, gSimTime)
 
 c = ProcessBlockContext()
-c.delayLine = DelayLine(1,sampleRate, gChannels)
-
+c.delayLine = DelayLine(0.5,sampleRate, gChannels)
+#c.delayLine2 = DelayLine(2,sampleRate, gChannels)
 flag = True
 
 while(flag):    
@@ -161,8 +191,9 @@ while(flag):
 
 
 plt.plot(range(0,len(aud[0,:])),aud[0,:],'-',label='WaveFile')
-plt.plot(range(0,len(stream.data[0,:])),stream.data[0,:],'--',label='Stream')
-plt.plot(range(0,len(stream.out[0,:])),stream.out[0,:],'--',label='Output')
-plt.plot(range(0,len(c.delayLine.delayBuffer[0,:])),c.delayLine.delayBuffer[0,:],'--',label='DelayLine')
+#plt.plot(range(0,len(stream.data[0,:])),stream.data[0,:],'-',label='Stream')
+plt.plot(range(0,len(stream.out[0,:])),stream.out[0,:],'--',label='Output',linewidth=0.5)
+#plt.plot(range(0,len(c.delayLine.delayBuffer[0,:])),c.delayLine.delayBuffer[0,:],'--',label='DelayLine')
+#plt.plot(range(0,len(c.delayLine2.delayBuffer[0,:])),c.delayLine2.delayBuffer[0,:],'--',label='DelayLine2')
 plt.legend(loc='upper right')
 plt.show()
