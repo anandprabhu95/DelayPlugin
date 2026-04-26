@@ -10,20 +10,22 @@ gBuffLen = 512
 gChannels = 2
 gBuff = np.zeros((gChannels, gBuffLen), np.float32)
 gSecsOfAudio = 10
+gSimTime = 3
 PI = 3.1416
 
 #=============================================================================================================   
 class ProcessBlockContext:
     pass
 
-
+        
 class DelayLine:
-    def __init__(self, delayTime: float, sampleRate: int):
+    def __init__(self, delayTime: float, sampleRate: int, nChannels: int):
         self.delaySamples = int(delayTime*sampleRate)
         self.delayBufferSize = 5 * sampleRate
         self.delayBuffer = np.ndarray((gChannels, self.delayBufferSize), np.float32)
         self.readPosition = 0
         self.writePosition = self.delaySamples
+        self.nChannels = nChannels
     
     def __updateWritePosition__(self):        
             self.writePosition = self.writePosition + self.buffSize
@@ -32,7 +34,7 @@ class DelayLine:
     def delay(self, buffer: np.ndarray):
         self.buffSize = len(buffer[0,:])
         self.__updateWritePosition__()       
-        for channel in range(0, gChannels):
+        for channel in range(0, self.nChannels):
             if(self.writePosition + self.buffSize < self.delayBufferSize):
                 for i in range(0,self.buffSize):
                     self.delayBuffer[channel, self.writePosition+i] = buffer[channel, i]
@@ -49,7 +51,57 @@ class DelayLine:
                     self.delayBuffer[channel, tempPos] = buffer[channel, i]
                     tempPos = tempPos + 1
                     
+
+class Stream():
+    def __init__(self, audioData: np.ndarray, sampleRate: int, nChannels: int, streamTime: float):
+        self.data = audioData
+        self.sampleRate = sampleRate
+        self.nChannels = nChannels
+        self.readPosition = 0
+        self.writePosition = 0
+        self.streamTime = streamTime
+        self.streamSamples = streamTime * sampleRate
+        self.wavSamples = len(audioData[0,:])
+        self.endOfWavData = False
+        self.out = np.zeros((nChannels, self.streamSamples+sampleRate), np.float32)
     
+    def startStream(self): 
+        global gBuff
+        if (self.readPosition + gBuffLen > self.streamSamples):
+            print("Finished")
+            return False
+
+        if (self.readPosition + gBuffLen < self.wavSamples):
+            for channel in range(0, self.nChannels):
+                for i in range(0,gBuffLen):
+                    gBuff[channel,i] = self.data[channel,self.readPosition + i]
+                    assert(len(gBuff[channel,:]) == gBuffLen)
+        else:
+            if (self.endOfWavData == False):
+                end = self.wavSamples - self.readPosition
+                for channel in range(0, self.nChannels):
+                    for i in range(0,end):
+                        gBuff[channel,i] = self.data[channel,self.readPosition + i]
+                    for i in range(end,gBuffLen):
+                        gBuff[channel,i] = 0
+                    assert(len(gBuff[channel,:]) == gBuffLen)
+                
+                self.endOfWavData = True
+            else:
+                for channel in range(0, self.nChannels):
+                    for i in range(0,gBuffLen):
+                        gBuff[channel,i] = 0
+                        
+        self.readPosition = self.readPosition + gBuffLen
+        return True
+        
+    def output(self):
+        for channel in range(0, self.nChannels):
+            for i in range(0,gBuffLen):
+                self.out[channel, self.writePosition+i] = gBuff[channel,i]
+        self.writePosition = self.writePosition + gBuffLen
+        
+        
 def sineArray(freq: float, sampleRate):
     arr = []
     k = 0
@@ -81,19 +133,6 @@ def loadWav(file: str):
     return sampleRate, audioData
     
     
-def stageBuffer(aud: np.ndarray, readPos: int, channel: int):
-    global gBuff   
-    for i in range(0,gBuffLen):
-        gBuff[channel,i] = aud[channel,readPos+i]
-        assert(len(gBuff[channel,:]) == gBuffLen)
-    
-
-def writeOutput(buff: np.ndarray, writePos: int, channel: int):
-    global output
-    for i in range(0,len(buff[channel,:])):
-        output[channel, writePos+i] = buff[channel, i]
-        
-    
 def processBuffer(buff: np.ndarray, context: ProcessBlockContext):
     context.delayLine.delay(buff)
     return 0
@@ -104,37 +143,26 @@ wavData = loadWav(r"untitled.wav")
 aud = wavData[1]
 sampleRate = wavData[0]
 start = 0
-output = np.zeros((gChannels, len(aud[0,:])), np.float32)
 samples = len(aud[0,:])
 
-c = ProcessBlockContext()
-c.delayLine = DelayLine(1,sampleRate)
+stream = Stream(aud, sampleRate, gChannels, gSimTime)
 
-while(samples > 0):
-    if (start > len(aud[0,:])-gBuffLen):
-        print("Finished")
-        break
-    
-    for channel in range(0, gChannels):
-        stageBuffer(aud, start, channel)
+c = ProcessBlockContext()
+c.delayLine = DelayLine(1,sampleRate, gChannels)
+
+flag = True
+
+while(flag):    
+    flag = stream.startStream()
 
     processBuffer(gBuff, c)
     
-    for channel in range(0, gChannels):
-        writeOutput(gBuff, start, channel)
-    
-    start = start + gBuffLen
-    samples = samples - gBuffLen
+    stream.output()   
 
 
-plt.plot(range(0,len(aud[0,:])),aud[0,:],'-',label='Input')
-plt.plot(range(0,len(aud[0,:])),output[0,:],'--',label='Output')
+plt.plot(range(0,len(aud[0,:])),aud[0,:],'-',label='WaveFile')
+plt.plot(range(0,len(stream.data[0,:])),stream.data[0,:],'--',label='Stream')
+plt.plot(range(0,len(stream.out[0,:])),stream.out[0,:],'--',label='Output')
 plt.plot(range(0,len(c.delayLine.delayBuffer[0,:])),c.delayLine.delayBuffer[0,:],'--',label='DelayLine')
 plt.legend(loc='upper right')
 plt.show()
-
-
-    
-
-    
-    
