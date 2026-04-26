@@ -10,7 +10,7 @@ gBuffLen = 512
 gChannels = 2
 gBuff = np.zeros((gChannels, gBuffLen), np.float32)
 gSecsOfAudio = 10
-gSimTime = 5
+gSimTime = 10
 PI = 3.1416
 
 #=============================================================================================================   
@@ -51,7 +51,7 @@ class DelayLine:
                     self.delayBuffer[channel, tempPos] = buffer[channel, i]
                     tempPos = tempPos + 1
                     
-    def addToMainBuffer(self, feedbackGain):
+    def addToMainBuffer(self, feedbackGain: float):
         global gBuff
         self.readPosition = self.writePosition - self.delaySamples
         
@@ -70,9 +70,8 @@ class DelayLine:
 
             for channel in range(0, self.nChannels):
                 for i in range(0,gBuffLen-end):
-                    print(end+i)
-                    print(len(self.delayBuffer[channel,:]))
                     gBuff[channel,end+i] = gBuff[channel,end+i] + self.delayBuffer[channel,0+i]*feedbackGain
+                            
 
 
 class Stream():
@@ -123,7 +122,7 @@ class Stream():
             for i in range(0,gBuffLen):
                 self.out[channel, self.writePosition+i] = gBuff[channel,i]
         self.writePosition = self.writePosition + gBuffLen
-        assert(self.writePosition % gBuffLen == 0)
+
         
         
 def sineArray(freq: float, sampleRate):
@@ -157,12 +156,26 @@ def loadWav(file: str):
     return sampleRate, audioData
     
     
-def processBuffer(buff: np.ndarray, context: ProcessBlockContext):
-    context.delayLine.addToMainBuffer(0.6)
-    context.delayLine.delay(buff)
+def writeWav(file: str, data: np.ndarray, sampleRate):
+    amplitude = np.iinfo(np.int16).max
+    data = np.clip(data, -1,1)
+    writeData = amplitude * data
+    writeData = np.clip(writeData, -amplitude, amplitude).T
+    print(np.min(writeData))
+    print(np.max(writeData))
+    scipy.io.wavfile.write(file, sampleRate, writeData.astype(np.int16))
     
-    #context.delayLine2.delay(buff)
-    #context.delayLine2.addToMainBuffer()
+    
+def processBuffer(buff: np.ndarray, context: ProcessBlockContext):
+    context.delayLine.addToMainBuffer(0.5)
+    context.delayLine.delay(buff)
+    context.delayLine2.addToMainBuffer(0.6)
+    context.delayLine2.delay(buff)
+    context.delayLine3.addToMainBuffer(0.7)
+    context.delayLine3.delay(buff)
+    context.delayLine4.addToMainBuffer(0.4)
+    context.delayLine4.delay(buff)
+
     return 0
     
 
@@ -178,8 +191,10 @@ samples = len(aud[0,:])
 stream = Stream(aud, sampleRate, gChannels, gSimTime)
 
 c = ProcessBlockContext()
-c.delayLine = DelayLine(0.5,sampleRate, gChannels)
-#c.delayLine2 = DelayLine(2,sampleRate, gChannels)
+c.delayLine = DelayLine(0.01,sampleRate, gChannels)
+c.delayLine2 = DelayLine(0.03,sampleRate, gChannels)
+c.delayLine3 = DelayLine(0.04,sampleRate, gChannels)
+c.delayLine4 = DelayLine(0.01,sampleRate, gChannels)
 flag = True
 
 while(flag):    
@@ -189,6 +204,8 @@ while(flag):
     
     stream.output()   
 
+
+writeWav(r"output.wav", stream.out, sampleRate)
 
 plt.plot(range(0,len(aud[0,:])),aud[0,:],'-',label='WaveFile')
 #plt.plot(range(0,len(stream.data[0,:])),stream.data[0,:],'-',label='Stream')
