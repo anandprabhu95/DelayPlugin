@@ -6,8 +6,8 @@ import scipy
 
 
 #=============================================================================================================   
-class ProcessBlockContext:
-    pass
+class Items:
+        pass
 
         
 class DelayLine:
@@ -77,7 +77,7 @@ class Stream():
         self.readPosition = 0
         self.writePosition = 0
         self.streamTime = streamTime
-        self.streamSamples = streamTime * sampleRate
+        self.streamSamples = int(streamTime * sampleRate)
         self.wavSamples = len(audioData[0,:])
         self.endOfWavData = False
         self.buffer = np.zeros((self.nChannels, bufferSize), np.float32)
@@ -145,43 +145,115 @@ def writeWav(file: str, data: np.ndarray, sampleRate):
     scipy.io.wavfile.write(file, sampleRate, writeData.astype(np.int16))
     
     
-def processBuffer(buff: np.ndarray, context: ProcessBlockContext):
-    context.delayLine1.addToBuffer(buff,0.2)
-    context.delayLine1.delay(buff)       
-    context.delayLine2.addToBuffer(buff,0.15030)
-    context.delayLine2.delay(buff)
-    context.delayLine3.addToBuffer(buff,0.0862)
-    context.delayLine3.delay(buff)    
-    context.delayLine4.addToBuffer(buff,0.128437)
-    context.delayLine4.delay(buff)    
-    context.delayLine5.addToBuffer(buff,0.175703)
-    context.delayLine5.delay(buff)
-    context.delayLine6.addToBuffer(buff,0.148844)
-    context.delayLine6.delay(buff)    
+def processBuffer(buff: np.ndarray, dl: Items):
     
+    df = Items()
+    
+    i = 1
+    for i in range(1,9):
+        exec(f"df.buffer{str(i)} = np.zeros((2, 512))",locals(),globals())
+        
+    dl.delayLine1.delay(buff)       
+    dl.delayLine1.addToBuffer(df.buffer1,0.125)
+    dl.delayLine2.delay(buff)
+    dl.delayLine2.addToBuffer(df.buffer2,0.125)
+    dl.delayLine3.delay(buff)    
+    dl.delayLine3.addToBuffer(df.buffer3,0.125)
+    dl.delayLine4.delay(buff)    
+    dl.delayLine4.addToBuffer(df.buffer4,0.125)
+    dl.delayLine5.delay(buff)
+    dl.delayLine5.addToBuffer(df.buffer5,0.125)
+    dl.delayLine6.delay(buff)
+    dl.delayLine6.addToBuffer(df.buffer6,0.125)
+    dl.delayLine7.delay(buff)
+    dl.delayLine7.addToBuffer(df.buffer7,0.125)
+    dl.delayLine8.delay(buff)
+    dl.delayLine8.addToBuffer(df.buffer8,0.125)
+    
+    
+    diffuse(df)
+    
+    for k in range(1,9):
+        for channel in range(0, 2):
+            for i in range(0,512):
+                exec(f"buff[{channel},{i}] = buff[{channel},{i}] + df.buffer{k}[{channel},{i}]")
+        
     return 0
+  
+
+def diffuse(d: Items):
+    bufferSize = 512
+    nChannels = 2
+    assert(nChannels == 2)
+    diffuserChannels = 8
+    
+    bufferMatrix = np.zeros((nChannels*diffuserChannels, bufferSize))
+    mixMatrix = np.array([[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                          [1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1],
+                          [1, 1,-1,-1, 1, 1,-1,-1, 1, 1,-1,-1, 1, 1,-1,-1],
+                          [1,-1,-1, 1, 1,-1,-1, 1, 1,-1,-1, 1, 1,-1,-1, 1],
+                          [1, 1, 1, 1,-1,-1,-1,-1, 1, 1, 1, 1,-1,-1,-1,-1],
+                          [1,-1, 1,-1,-1, 1,-1, 1, 1,-1, 1,-1,-1, 1,-1, 1],
+                          [1, 1,-1,-1,-1,-1,-1, 1, 1, 1,-1,-1,-1,-1,-1, 1],
+                          [1,-1,-1, 1,-1, 1, 1,-1, 1,-1,-1, 1,-1, 1, 1,-1],
+                          [1, 1, 1, 1, 1, 1, 1, 1,-1,-1,-1,-1,-1,-1,-1,-1],
+                          [1,-1, 1,-1, 1,-1, 1,-1,-1, 1,-1, 1,-1, 1,-1, 1],
+                          [1, 1,-1,-1, 1, 1,-1,-1,-1,-1, 1, 1,-1,-1, 1, 1],
+                          [1,-1,-1, 1, 1,-1,-1, 1,-1, 1, 1,-1,-1, 1, 1,-1],
+                          [1, 1, 1, 1,-1,-1,-1,-1,-1,-1,-1,-1, 1, 1, 1, 1],
+                          [1,-1, 1,-1,-1, 1,-1, 1,-1, 1,-1, 1, 1,-1, 1,-1],
+                          [1, 1,-1,-1,-1,-1, 1, 1,-1,-1, 1, 1, 1, 1,-1,-1],
+                          [1,-1,-1, 1,-1, 1, 1,-1,-1, 1, 1,-1, 1,-1,-1, 1]])
+    
+    
+    for j in range(0,bufferSize): 
+        for i in range(0,diffuserChannels,2):
+            for channel in range(0,nChannels):         
+                exec(f"bufferMatrix[{i}+{channel},{j}] = d.buffer{i+1}[{channel},{j}]")
+        
+        
+        #print(bufferMatrix[:,300])
+    
+    
+    diffused = Items()
+    
+    for i in range(0,diffuserChannels):       
+        exec(f"diffused.channel{str(i)} = np.zeros((nChannels, bufferSize))",locals(),globals())
+        
+    for j in range(0,bufferSize):       
+        result = np.dot(np.array(bufferMatrix[:,j]), mixMatrix)
+        for i in range(0,diffuserChannels,2):
+            for channel in range(0,nChannels):
+                exec(f"diffused.channel{str(i)}[{channel},{j}] = result[{i+channel}]") 
+           
+    return diffused   
+    
     
     
 #=============================================================================================================
 sampleRate, aud = loadWav(r"untitled.wav")
 bufferSize = 512
-SimTime = 10
+SimTime = 5
 
 stream = Stream(aud, sampleRate, bufferSize, SimTime)
 
-c = ProcessBlockContext()
-c.delayLine1 = DelayLine(0.061,sampleRate, stream.nChannels)
-c.delayLine2 = DelayLine(0.04923,sampleRate, stream.nChannels)
-c.delayLine3 = DelayLine(0.060925,sampleRate, stream.nChannels)
-c.delayLine4 = DelayLine(0.04927,sampleRate, stream.nChannels)
-c.delayLine5 = DelayLine(0.05929,sampleRate, stream.nChannels)
-c.delayLine6 = DelayLine(0.05931,sampleRate, stream.nChannels)
+c = Items()
+c.delayLine1 = DelayLine(0.02,sampleRate, stream.nChannels)
+c.delayLine2 = DelayLine(0.04,sampleRate, stream.nChannels)
+c.delayLine3 = DelayLine(0.06,sampleRate, stream.nChannels)
+c.delayLine4 = DelayLine(0.08,sampleRate, stream.nChannels)
+c.delayLine5 = DelayLine(0.10,sampleRate, stream.nChannels)
+c.delayLine6 = DelayLine(0.12,sampleRate, stream.nChannels)
+c.delayLine7 = DelayLine(0.14,sampleRate, stream.nChannels)
+c.delayLine8 = DelayLine(0.16,sampleRate, stream.nChannels)
 
 flag = True
 
 while(flag):    
     flag = stream.startStream()
-
+    
+    #d = diffuse(stream.buffer)
+    
     processBuffer(stream.buffer, c)
     
     stream.output()   
@@ -190,9 +262,10 @@ while(flag):
 writeWav(r"output.wav", stream.out, sampleRate)
 
 plt.plot(range(0,len(aud[0,:])),aud[0,:],'-',label='WaveFile')
-#plt.plot(range(0,len(stream.data[0,:])),stream.data[0,:],'-',label='Stream')
+##plt.plot(range(0,len(stream.data[0,:])),stream.data[0,:],'-',label='Stream')
 plt.plot(range(0,len(stream.out[0,:])),stream.out[0,:],'--',label='Output',linewidth=0.5)
-#plt.plot(range(0,len(c.delayLine1.delayBuffer[0,:])),c.delayLine1.delayBuffer[0,:],'--',label='DelayLine1')
-#plt.plot(range(0,len(c.delayLine2.delayBuffer[0,:])),c.delayLine2.delayBuffer[0,:],'--',label='DelayLine2')
+##plt.plot(range(0,len(c.delayLine1.delayBuffer[0,:])),c.delayLine1.delayBuffer[0,:],'--',label='DelayLine1')
+##plt.plot(range(0,len(c.delayLine2.delayBuffer[0,:])),c.delayLine2.delayBuffer[0,:],'--',label='DelayLine2')
 plt.legend(loc='upper right')
+#plt.plot(range(0,len(d.channel1[0,:])),d.channel1[0,:],'-',label='Stream')
 plt.show()
