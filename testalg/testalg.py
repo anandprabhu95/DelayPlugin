@@ -77,12 +77,16 @@ class Stream():
         self.readPosition = 0
         self.writePosition = 0
         self.streamTime = streamTime
+        self.time = 0
         self.streamSamples = int(streamTime * sampleRate)
         self.wavSamples = len(audioData[0,:])
         self.endOfWavData = False
         self.buffer = np.zeros((self.nChannels, bufferSize), np.float32)
         self.out = np.zeros((self.nChannels, self.streamSamples+self.bufferSize), np.float32)
     
+    def __elapsedTime__(self):
+        self.time = self.time + (self.bufferSize/self.sampleRate)
+               
     def startStream(self): 
         if (self.readPosition + self.bufferSize > self.streamSamples):
             print("Finished")
@@ -109,6 +113,7 @@ class Stream():
                         self.buffer[channel,i] = 0
                         
         self.readPosition = self.readPosition + self.bufferSize
+        self.__elapsedTime__()
         return True
         
     def output(self):
@@ -118,7 +123,48 @@ class Stream():
         self.writePosition = self.writePosition + self.bufferSize
 
         
+class Diffuse8():
+    def __init__(self, bufferSize: int):
+        self.bufferSize = bufferSize
+        self.nChannels = 2
+        self.diffuserChannels = 8
+        self.mixMatrix = np.array([[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                                   [1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1],
+                                   [1, 1,-1,-1, 1, 1,-1,-1, 1, 1,-1,-1, 1, 1,-1,-1],
+                                   [1,-1,-1, 1, 1,-1,-1, 1, 1,-1,-1, 1, 1,-1,-1, 1],
+                                   [1, 1, 1, 1,-1,-1,-1,-1, 1, 1, 1, 1,-1,-1,-1,-1],
+                                   [1,-1, 1,-1,-1, 1,-1, 1, 1,-1, 1,-1,-1, 1,-1, 1],
+                                   [1, 1,-1,-1,-1,-1,-1, 1, 1, 1,-1,-1,-1,-1,-1, 1],
+                                   [1,-1,-1, 1,-1, 1, 1,-1, 1,-1,-1, 1,-1, 1, 1,-1],
+                                   [1, 1, 1, 1, 1, 1, 1, 1,-1,-1,-1,-1,-1,-1,-1,-1],
+                                   [1,-1, 1,-1, 1,-1, 1,-1,-1, 1,-1, 1,-1, 1,-1, 1],
+                                   [1, 1,-1,-1, 1, 1,-1,-1,-1,-1, 1, 1,-1,-1, 1, 1],
+                                   [1,-1,-1, 1, 1,-1,-1, 1,-1, 1, 1,-1,-1, 1, 1,-1],
+                                   [1, 1, 1, 1,-1,-1,-1,-1,-1,-1,-1,-1, 1, 1, 1, 1],
+                                   [1,-1, 1,-1,-1, 1,-1, 1,-1, 1,-1, 1, 1,-1, 1,-1],
+                                   [1, 1,-1,-1,-1,-1, 1, 1,-1,-1, 1, 1, 1, 1,-1,-1],
+                                   [1,-1,-1, 1,-1, 1, 1,-1,-1, 1, 1,-1, 1,-1,-1, 1]])
+                                   
+        self.bufferMatrix = np.zeros((self.nChannels*self.diffuserChannels, self.bufferSize))
+    
+    def diffuse(self, d: Items):                           
+        for j in range(0,self.bufferSize): 
+            for i in range(0,self.diffuserChannels):
+                for channel in range(0,self.nChannels):         
+                    exec(f"self.bufferMatrix[2*{i}+{channel},{j}] = d.buffer{i}[{channel},{j}]")
 
+        
+        for i in range(0,self.diffuserChannels):       
+            exec(f"d.buffer{str(i)} = np.zeros((self.nChannels, self.bufferSize))",locals(),globals())
+        
+        
+        for j in range(0,self.bufferSize):       
+            result = np.dot(np.array(self.bufferMatrix[:,j]), self.mixMatrix)
+            for i in range(0,self.diffuserChannels):
+                for channel in range(0,self.nChannels):
+                    exec(f"d.buffer{str(i)}[{channel},{j}] = result[{2*i+channel}]") 
+                    
+                    
 def loadWav(file: str):
     sampleRate, wav = scipy.io.wavfile.read(file)
     audioData = np.ndarray((2, len(wav)),  np.float32)
@@ -145,111 +191,67 @@ def writeWav(file: str, data: np.ndarray, sampleRate):
     scipy.io.wavfile.write(file, sampleRate, writeData.astype(np.int16))
     
     
-def processBuffer(buff: np.ndarray, dl: Items):
+def processBuffer(buff: np.ndarray, processorItems: Items):
     
     bufferForDiffusion = Items()
     
     i = 1
     for i in range(0,8):
         exec(f"bufferForDiffusion.buffer{str(i)} = np.zeros((2, 512))",locals(),globals())
-        
-    dl.delayLine1.delay(buff)       
-    dl.delayLine1.addToBuffer(bufferForDiffusion.buffer0,0.125)
-    dl.delayLine2.delay(buff)
-    dl.delayLine2.addToBuffer(bufferForDiffusion.buffer1,0.125)
-    dl.delayLine3.delay(buff)    
-    dl.delayLine3.addToBuffer(bufferForDiffusion.buffer2,0.125)
-    dl.delayLine4.delay(buff)    
-    dl.delayLine4.addToBuffer(bufferForDiffusion.buffer3,0.125)
-    dl.delayLine5.delay(buff)
-    dl.delayLine5.addToBuffer(bufferForDiffusion.buffer4,0.125)
-    dl.delayLine6.delay(buff)
-    dl.delayLine6.addToBuffer(bufferForDiffusion.buffer5,0.125)
-    dl.delayLine7.delay(buff)
-    dl.delayLine7.addToBuffer(bufferForDiffusion.buffer6,0.125)
-    dl.delayLine8.delay(buff)
-    dl.delayLine8.addToBuffer(bufferForDiffusion.buffer7,0.125)
     
+    print("INFO: Populating delay buffers")   
+    processorItems.delayLine1.delay(buff)       
+    processorItems.delayLine1.addToBuffer(bufferForDiffusion.buffer0,0.125)
+    processorItems.delayLine2.delay(buff)
+    processorItems.delayLine2.addToBuffer(bufferForDiffusion.buffer1,0.125)
+    processorItems.delayLine3.delay(buff)    
+    processorItems.delayLine3.addToBuffer(bufferForDiffusion.buffer2,0.125)
+    processorItems.delayLine4.delay(buff)    
+    processorItems.delayLine4.addToBuffer(bufferForDiffusion.buffer3,0.125)
+    processorItems.delayLine5.delay(buff)
+    processorItems.delayLine5.addToBuffer(bufferForDiffusion.buffer4,0.125)
+    processorItems.delayLine6.delay(buff)
+    processorItems.delayLine6.addToBuffer(bufferForDiffusion.buffer5,0.125)
+    processorItems.delayLine7.delay(buff)
+    processorItems.delayLine7.addToBuffer(bufferForDiffusion.buffer6,0.125)
+    processorItems.delayLine8.delay(buff)
+    processorItems.delayLine8.addToBuffer(bufferForDiffusion.buffer7,0.125)
     
-    diffusedBuffer = diffuse8(bufferForDiffusion)
+    print("INFO: Mixing buffers")
+    processorItems.diffuser.diffuse(bufferForDiffusion)
     
     for k in range(0,8):
         for channel in range(0, 2):
             for i in range(0,512):
-                exec(f"buff[{channel},{i}] = buff[{channel},{i}] + diffusedBuffer.buffer{k}[{channel},{i}]")
+                exec(f"buff[{channel},{i}] = buff[{channel},{i}] + bufferForDiffusion.buffer{k}[{channel},{i}]")
         
     return 0
   
 
-def diffuse8(d: Items):
-    bufferSize = 512
-    nChannels = 2
-    diffuserChannels = 8
-    
-    bufferMatrix = np.zeros((nChannels*diffuserChannels, bufferSize))
-    mixMatrix = np.array([[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                          [1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1],
-                          [1, 1,-1,-1, 1, 1,-1,-1, 1, 1,-1,-1, 1, 1,-1,-1],
-                          [1,-1,-1, 1, 1,-1,-1, 1, 1,-1,-1, 1, 1,-1,-1, 1],
-                          [1, 1, 1, 1,-1,-1,-1,-1, 1, 1, 1, 1,-1,-1,-1,-1],
-                          [1,-1, 1,-1,-1, 1,-1, 1, 1,-1, 1,-1,-1, 1,-1, 1],
-                          [1, 1,-1,-1,-1,-1,-1, 1, 1, 1,-1,-1,-1,-1,-1, 1],
-                          [1,-1,-1, 1,-1, 1, 1,-1, 1,-1,-1, 1,-1, 1, 1,-1],
-                          [1, 1, 1, 1, 1, 1, 1, 1,-1,-1,-1,-1,-1,-1,-1,-1],
-                          [1,-1, 1,-1, 1,-1, 1,-1,-1, 1,-1, 1,-1, 1,-1, 1],
-                          [1, 1,-1,-1, 1, 1,-1,-1,-1,-1, 1, 1,-1,-1, 1, 1],
-                          [1,-1,-1, 1, 1,-1,-1, 1,-1, 1, 1,-1,-1, 1, 1,-1],
-                          [1, 1, 1, 1,-1,-1,-1,-1,-1,-1,-1,-1, 1, 1, 1, 1],
-                          [1,-1, 1,-1,-1, 1,-1, 1,-1, 1,-1, 1, 1,-1, 1,-1],
-                          [1, 1,-1,-1,-1,-1, 1, 1,-1,-1, 1, 1, 1, 1,-1,-1],
-                          [1,-1,-1, 1,-1, 1, 1,-1,-1, 1, 1,-1, 1,-1,-1, 1]])
-    
-    
-    for j in range(0,bufferSize): 
-        for i in range(0,diffuserChannels,2):
-            for channel in range(0,nChannels):         
-                exec(f"bufferMatrix[{i}+{channel},{j}] = d.buffer{i+1}[{channel},{j}]")
-    
-    
-    diffused = Items()
-    
-    for i in range(0,diffuserChannels):       
-        exec(f"diffused.buffer{str(i)} = np.zeros((nChannels, bufferSize))",locals(),globals())
-        
-    for j in range(0,bufferSize):       
-        result = np.dot(np.array(bufferMatrix[:,j]), mixMatrix)
-        for i in range(0,diffuserChannels,2):
-            for channel in range(0,nChannels):
-                exec(f"diffused.buffer{str(i)}[{channel},{j}] = result[{i+channel}]") 
-           
-    return diffused   
-    
-    
+       
     
 #=============================================================================================================
-sampleRate, aud = loadWav(r"untitled.wav")
-bufferSize = 512
-SimTime = 5
+sampleRate, aud = loadWav(r"untitledpiano.wav")
 
-stream = Stream(aud, sampleRate, bufferSize, SimTime)
+stream = Stream(audioData=aud, sampleRate=sampleRate, bufferSize=512, streamTime=3)
 
 c = Items()
-c.delayLine1 = DelayLine(0.05,sampleRate, stream.nChannels)
-c.delayLine2 = DelayLine(0.06,sampleRate, stream.nChannels)
-c.delayLine3 = DelayLine(0.07,sampleRate, stream.nChannels)
-c.delayLine4 = DelayLine(0.08,sampleRate, stream.nChannels)
-c.delayLine5 = DelayLine(0.10,sampleRate, stream.nChannels)
-c.delayLine6 = DelayLine(0.12,sampleRate, stream.nChannels)
-c.delayLine7 = DelayLine(0.14,sampleRate, stream.nChannels)
-c.delayLine8 = DelayLine(0.16,sampleRate, stream.nChannels)
+c.delayLine1 = DelayLine(0.05,stream.sampleRate, stream.nChannels)
+c.delayLine2 = DelayLine(0.06,stream.sampleRate, stream.nChannels)
+c.delayLine3 = DelayLine(0.07,stream.sampleRate, stream.nChannels)
+c.delayLine4 = DelayLine(0.08,stream.sampleRate, stream.nChannels)
+c.delayLine5 = DelayLine(0.10,stream.sampleRate, stream.nChannels)
+c.delayLine6 = DelayLine(0.12,stream.sampleRate, stream.nChannels)
+c.delayLine7 = DelayLine(0.14,stream.sampleRate, stream.nChannels)
+c.delayLine8 = DelayLine(0.16,stream.sampleRate, stream.nChannels)
+c.diffuser = Diffuse8(stream.bufferSize)
 
 flag = True
 
 while(flag):    
     flag = stream.startStream()
-    
-    #d = diffuse(stream.buffer)
-    
+    print("Time: " + str(round(stream.time,4)) + "s")
+       
     processBuffer(stream.buffer, c)
     
     stream.output()   
