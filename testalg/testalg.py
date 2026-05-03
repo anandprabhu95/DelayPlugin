@@ -134,7 +134,7 @@ class Diffuse8():
                                    [1,-1,-1, 1, 1,-1,-1, 1, 1,-1,-1, 1, 1,-1,-1, 1],
                                    [1, 1, 1, 1,-1,-1,-1,-1, 1, 1, 1, 1,-1,-1,-1,-1],
                                    [1,-1, 1,-1,-1, 1,-1, 1, 1,-1, 1,-1,-1, 1,-1, 1],
-                                   [1, 1,-1,-1,-1,-1,-1, 1, 1, 1,-1,-1,-1,-1,-1, 1],
+                                   [1, 1,-1,-1,-1,-1, 1, 1, 1, 1,-1,-1,-1,-1, 1, 1],
                                    [1,-1,-1, 1,-1, 1, 1,-1, 1,-1,-1, 1,-1, 1, 1,-1],
                                    [1, 1, 1, 1, 1, 1, 1, 1,-1,-1,-1,-1,-1,-1,-1,-1],
                                    [1,-1, 1,-1, 1,-1, 1,-1,-1, 1,-1, 1,-1, 1,-1, 1],
@@ -156,11 +156,12 @@ class Diffuse8():
         for i in range(0,self.diffuserChannels):
             exec(f"d.buffer{str(i)} = np.zeros((self.nChannels, self.bufferSize))",locals(),globals())        
         
-        for j in range(0,self.bufferSize):       
-            result = np.dot(np.array(self.bufferMatrix[:,j]), self.mixMatrix)
+        result = np.dot(self.mixMatrix, self.bufferMatrix)
+        
+        for j in range(0,self.bufferSize):                   
             for i in range(0,self.diffuserChannels):
                 for channel in range(0,self.nChannels):
-                    exec(f"d.buffer{str(i)}[{channel},{j}] = result[{2*i+channel}]",locals(),globals()) 
+                    exec(f"d.buffer{str(i)}[{channel},{j}] = result[{2*i+channel},{j}]",locals(),globals()) 
                     
                     
 def loadWav(file: str):
@@ -193,7 +194,6 @@ def processBuffer(buff: np.ndarray, processorItems: Items):
     
     bufferForDiffusion = Items()
     
-    i = 1
     for i in range(0,8):
         exec(f"bufferForDiffusion.buffer{str(i)} = np.zeros((processorItems.nChannels, processorItems.bufferSize))",locals(),globals())
     
@@ -219,11 +219,9 @@ def processBuffer(buff: np.ndarray, processorItems: Items):
     
     processorItems.diffuser.diffuse(bufferForDiffusion)
     
-    result = buff
     #print(buff)
     for k in range(0,8):
-        exec(f"np.add(buff,bufferForDiffusion.buffer{k},out=result)",locals(),globals())
-        buff = result 
+        exec(f"np.add(buff,bufferForDiffusion.buffer{k},out=buff)",locals(),globals())
     #print(buff)
     return 0
   
@@ -233,7 +231,7 @@ def processBuffer(buff: np.ndarray, processorItems: Items):
 #=============================================================================================================
 sampleRate, aud = loadWav(r"untitledpiano.wav")
 
-stream = Stream(audioData=aud, sampleRate=sampleRate, bufferSize=512, streamTime=3)
+stream = Stream(audioData=aud, sampleRate=sampleRate, bufferSize=512, streamTime=5)
 
 c = Items()
 c.sampleRate = stream.sampleRate
