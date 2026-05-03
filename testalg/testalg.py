@@ -3,7 +3,7 @@ import random
 import math
 import matplotlib.pyplot as plt
 import scipy
-
+import time
 
 #=============================================================================================================   
 class Items:
@@ -151,18 +151,16 @@ class Diffuse8():
         for j in range(0,self.bufferSize): 
             for i in range(0,self.diffuserChannels):
                 for channel in range(0,self.nChannels):         
-                    exec(f"self.bufferMatrix[2*{i}+{channel},{j}] = d.buffer{i}[{channel},{j}]")
-
-        
-        for i in range(0,self.diffuserChannels):       
-            exec(f"d.buffer{str(i)} = np.zeros((self.nChannels, self.bufferSize))",locals(),globals())
-        
+                    exec(f"self.bufferMatrix[2*{i}+{channel},{j}] = d.buffer{i}[{channel},{j}]",locals(),globals())
+                    
+        for i in range(0,self.diffuserChannels):
+            exec(f"d.buffer{str(i)} = np.zeros((self.nChannels, self.bufferSize))",locals(),globals())        
         
         for j in range(0,self.bufferSize):       
             result = np.dot(np.array(self.bufferMatrix[:,j]), self.mixMatrix)
             for i in range(0,self.diffuserChannels):
                 for channel in range(0,self.nChannels):
-                    exec(f"d.buffer{str(i)}[{channel},{j}] = result[{2*i+channel}]") 
+                    exec(f"d.buffer{str(i)}[{channel},{j}] = result[{2*i+channel}]",locals(),globals()) 
                     
                     
 def loadWav(file: str):
@@ -197,10 +195,10 @@ def processBuffer(buff: np.ndarray, processorItems: Items):
     
     i = 1
     for i in range(0,8):
-        exec(f"bufferForDiffusion.buffer{str(i)} = np.zeros((2, 512))",locals(),globals())
+        exec(f"bufferForDiffusion.buffer{str(i)} = np.zeros((processorItems.nChannels, processorItems.bufferSize))",locals(),globals())
     
     print("INFO: Populating delay buffers")   
-    processorItems.delayLine1.delay(buff)       
+    processorItems.delayLine1.delay(buff)
     processorItems.delayLine1.addToBuffer(bufferForDiffusion.buffer0,0.125)
     processorItems.delayLine2.delay(buff)
     processorItems.delayLine2.addToBuffer(bufferForDiffusion.buffer1,0.125)
@@ -218,13 +216,15 @@ def processBuffer(buff: np.ndarray, processorItems: Items):
     processorItems.delayLine8.addToBuffer(bufferForDiffusion.buffer7,0.125)
     
     print("INFO: Mixing buffers")
+    
     processorItems.diffuser.diffuse(bufferForDiffusion)
     
+    result = buff
+    #print(buff)
     for k in range(0,8):
-        for channel in range(0, 2):
-            for i in range(0,512):
-                exec(f"buff[{channel},{i}] = buff[{channel},{i}] + bufferForDiffusion.buffer{k}[{channel},{i}]")
-        
+        exec(f"np.add(buff,bufferForDiffusion.buffer{k},out=result)",locals(),globals())
+        buff = result 
+    #print(buff)
     return 0
   
 
@@ -236,6 +236,9 @@ sampleRate, aud = loadWav(r"untitledpiano.wav")
 stream = Stream(audioData=aud, sampleRate=sampleRate, bufferSize=512, streamTime=3)
 
 c = Items()
+c.sampleRate = stream.sampleRate
+c.bufferSize = stream.bufferSize
+c.nChannels = stream.nChannels
 c.delayLine1 = DelayLine(0.05,stream.sampleRate, stream.nChannels)
 c.delayLine2 = DelayLine(0.06,stream.sampleRate, stream.nChannels)
 c.delayLine3 = DelayLine(0.07,stream.sampleRate, stream.nChannels)
@@ -251,11 +254,11 @@ flag = True
 while(flag):    
     flag = stream.startStream()
     print("Time: " + str(round(stream.time,4)) + "s")
-       
+    starttime = time.process_time()
     processBuffer(stream.buffer, c)
-    
+    endtime = time.process_time()
     stream.output()   
-
+    print("ExecTime: " + str(endtime-starttime))
 
 writeWav(r"output.wav", stream.out, sampleRate)
 
