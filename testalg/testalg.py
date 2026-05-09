@@ -148,20 +148,19 @@ class Diffuse8():
         self.bufferMatrix = np.zeros((self.nChannels*self.diffuserChannels, self.bufferSize))
     
     def diffuse(self, d: Items):                           
-        for j in range(0,self.bufferSize): 
-            for i in range(0,self.diffuserChannels):
-                for channel in range(0,self.nChannels):         
-                    exec(f"self.bufferMatrix[2*{i}+{channel},{j}] = d.buffer{i}[{channel},{j}]",locals(),globals())
+
+        for i in range(0,self.diffuserChannels):
+            for channel in range(0,self.nChannels):         
+                exec(f"self.bufferMatrix[2*{i}+{channel},:] = d.buffer{i}[{channel},:]",locals(),globals())
                     
         for i in range(0,self.diffuserChannels):
             exec(f"d.buffer{str(i)} = np.zeros((self.nChannels, self.bufferSize))",locals(),globals())        
         
         result = np.dot(self.mixMatrix, self.bufferMatrix)
-        
-        for j in range(0,self.bufferSize):                   
-            for i in range(0,self.diffuserChannels):
-                for channel in range(0,self.nChannels):
-                    exec(f"d.buffer{str(i)}[{channel},{j}] = result[{2*i+channel},{j}]",locals(),globals()) 
+                        
+        for i in range(0,self.diffuserChannels):
+            for channel in range(0,self.nChannels):
+                exec(f"d.buffer{str(i)}[{channel},:] = result[{2*i+channel},:]",locals(),globals()) 
                     
                     
 def loadWav(file: str):
