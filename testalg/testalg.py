@@ -43,6 +43,7 @@ class DelayLine:
                     self.delayBuffer[channel, tempPos] = buffer[channel, i]
                     tempPos = tempPos + 1
                     
+                    
         self.__updateWritePosition__()
                     
     def addToBuffer(self, buffer: np.ndarray, feedbackGain: float):
@@ -65,8 +66,29 @@ class DelayLine:
             for channel in range(0, self.nChannels):
                 for i in range(0,bufferSize-end):
                     buffer[channel,end+i] = buffer[channel,end+i] + self.delayBuffer[channel,0+i]*feedbackGain
-                            
+                    
+                    
+    def copyToBuffer(self, buffer: np.ndarray, gain: float):
+        bufferSize = len(buffer[0,:])
+        self.readPosition = self.writePosition - self.delaySamples
+        
+        if (self.readPosition < 0):
+            self.readPosition = self.readPosition + self.delayBufferSize
+            
+        if (self.readPosition + bufferSize < self.delayBufferSize):
+            for channel in range(0, self.nChannels):
+                for i in range(0,bufferSize):
+                    buffer[channel,i] = self.delayBuffer[channel,self.readPosition+i]*gain
+        else:
+            end = self.delayBufferSize - self.readPosition 
+            for channel in range(0, self.nChannels):
+                for i in range(0,end):
+                    buffer[channel,i] = self.delayBuffer[channel,self.readPosition+i]*gain
 
+            for channel in range(0, self.nChannels):
+                for i in range(0,bufferSize-end):
+                    buffer[channel,end+i] = self.delayBuffer[channel,0+i]*gain
+                            
 
 class Stream():
     def __init__(self, audioData: np.ndarray, sampleRate: int, bufferSize: int, streamTime: float):
@@ -151,16 +173,16 @@ class Diffuse8():
 
         for i in range(0,self.diffuserChannels):
             for channel in range(0,self.nChannels):         
-                exec(f"self.bufferMatrix[2*{i}+{channel},:] = d.buffer{i}[{channel},:]",locals(),globals())
+                exec(f"self.bufferMatrix[2*{i}+{channel},:] = d.buffer{i}[{channel},:]",locals())
                     
         for i in range(0,self.diffuserChannels):
-            exec(f"d.buffer{str(i)} = np.zeros((self.nChannels, self.bufferSize))",locals(),globals())        
+            exec(f"d.buffer{str(i)}.fill(0)",locals())        
         
         result = np.dot(self.mixMatrix, self.bufferMatrix)
                         
         for i in range(0,self.diffuserChannels):
             for channel in range(0,self.nChannels):
-                exec(f"d.buffer{str(i)}[{channel},:] = result[{2*i+channel},:]",locals(),globals()) 
+                exec(f"d.buffer{str(i)}[{channel},:] = result[{2*i+channel},:]",locals()) 
                     
                     
 def loadWav(file: str):
@@ -189,44 +211,80 @@ def writeWav(file: str, data: np.ndarray, sampleRate):
     scipy.io.wavfile.write(file, sampleRate, writeData.astype(np.int16))
     
     
-def processBuffer(buff: np.ndarray, processorItems: Items):
-    
-    bufferForDiffusion = Items()
+def processBuffer(buff: np.ndarray, proc: Items):
     
     for i in range(0,8):
-        exec(f"bufferForDiffusion.buffer{str(i)} = np.zeros((processorItems.nChannels, processorItems.bufferSize))",locals(),globals())
+        exec(f"proc.bufferForDiffusion.buffer{str(i)}.fill(0)",locals())
     
+    for i in range(0,8):
+        exec(f"proc.bufferForFdBkDelay.buffer{str(i)}.fill(0)",locals())
+   
     print("INFO: Populating delay buffers")   
-    processorItems.delayLine1.delay(buff)
-    processorItems.delayLine1.addToBuffer(bufferForDiffusion.buffer0,0.125)
-    processorItems.delayLine2.delay(buff)
-    processorItems.delayLine2.addToBuffer(bufferForDiffusion.buffer1,0.125)
-    processorItems.delayLine3.delay(buff)    
-    processorItems.delayLine3.addToBuffer(bufferForDiffusion.buffer2,0.125)
-    processorItems.delayLine4.delay(buff)    
-    processorItems.delayLine4.addToBuffer(bufferForDiffusion.buffer3,0.125)
-    processorItems.delayLine5.delay(buff)
-    processorItems.delayLine5.addToBuffer(bufferForDiffusion.buffer4,0.125)
-    processorItems.delayLine6.delay(buff)
-    processorItems.delayLine6.addToBuffer(bufferForDiffusion.buffer5,0.125)
-    processorItems.delayLine7.delay(buff)
-    processorItems.delayLine7.addToBuffer(bufferForDiffusion.buffer6,0.125)
-    processorItems.delayLine8.delay(buff)
-    processorItems.delayLine8.addToBuffer(bufferForDiffusion.buffer7,0.125)
     
-    print("INFO: Mixing buffers")
+    splitGain = 0.0125
     
-    processorItems.diffuser.diffuse(bufferForDiffusion)
-    
-    #print(buff)
-    for k in range(0,8):
-        exec(f"np.add(buff,bufferForDiffusion.buffer{k},out=buff)",locals(),globals())
-    #print(buff)
-    return 0
-  
+    proc.delayLine0.delay(buff)
+    proc.delayLine0.copyToBuffer(proc.bufferForDiffusion.buffer0,splitGain)
+    proc.delayLine1.delay(buff)
+    proc.delayLine1.copyToBuffer(proc.bufferForDiffusion.buffer1,splitGain)
+    proc.delayLine2.delay(buff)    
+    proc.delayLine2.copyToBuffer(proc.bufferForDiffusion.buffer2,splitGain)
+    proc.delayLine3.delay(buff)    
+    proc.delayLine3.copyToBuffer(proc.bufferForDiffusion.buffer3,splitGain)
+    proc.delayLine4.delay(buff)
+    proc.delayLine4.copyToBuffer(proc.bufferForDiffusion.buffer4,splitGain)
+    proc.delayLine5.delay(buff)
+    proc.delayLine5.copyToBuffer(proc.bufferForDiffusion.buffer5,splitGain)
+    proc.delayLine6.delay(buff)
+    proc.delayLine6.copyToBuffer(proc.bufferForDiffusion.buffer6,splitGain)
+    proc.delayLine7.delay(buff)
+    proc.delayLine7.copyToBuffer(proc.bufferForDiffusion.buffer7,splitGain)
 
-       
+    print("INFO: Mixing buffers")   
+    proc.diffuser.diffuse(proc.bufferForDiffusion)
     
+    print("INFO: Feedback Delay")
+    np.add(proc.bufferForDiffusion.buffer0,proc.bufferForFdBkDelay.buffer0,out=proc.bufferForFdBkDelay.buffer0)
+    np.add(proc.bufferForDiffusion.buffer1,proc.bufferForFdBkDelay.buffer1,out=proc.bufferForFdBkDelay.buffer1)
+    np.add(proc.bufferForDiffusion.buffer2,proc.bufferForFdBkDelay.buffer2,out=proc.bufferForFdBkDelay.buffer2)
+    np.add(proc.bufferForDiffusion.buffer3,proc.bufferForFdBkDelay.buffer3,out=proc.bufferForFdBkDelay.buffer3)
+    np.add(proc.bufferForDiffusion.buffer4,proc.bufferForFdBkDelay.buffer4,out=proc.bufferForFdBkDelay.buffer4)
+    np.add(proc.bufferForDiffusion.buffer5,proc.bufferForFdBkDelay.buffer5,out=proc.bufferForFdBkDelay.buffer5)
+    np.add(proc.bufferForDiffusion.buffer6,proc.bufferForFdBkDelay.buffer6,out=proc.bufferForFdBkDelay.buffer6)
+    np.add(proc.bufferForDiffusion.buffer7,proc.bufferForFdBkDelay.buffer7,out=proc.bufferForFdBkDelay.buffer7)
+    
+    gain = 0.8
+    
+    proc.delayLineFdBk0.addToBuffer(proc.bufferForFdBkDelay.buffer0,gain)
+    proc.delayLineFdBk0.delay(proc.bufferForFdBkDelay.buffer0)
+    
+    proc.delayLineFdBk1.addToBuffer(proc.bufferForFdBkDelay.buffer1,gain)
+    proc.delayLineFdBk1.delay(proc.bufferForFdBkDelay.buffer1)
+        
+    proc.delayLineFdBk2.addToBuffer(proc.bufferForFdBkDelay.buffer2,gain)
+    proc.delayLineFdBk2.delay(proc.bufferForFdBkDelay.buffer2)    
+        
+    proc.delayLineFdBk3.addToBuffer(proc.bufferForFdBkDelay.buffer3,gain)
+    proc.delayLineFdBk3.delay(proc.bufferForFdBkDelay.buffer3)    
+        
+    proc.delayLineFdBk4.addToBuffer(proc.bufferForFdBkDelay.buffer4,gain)
+    proc.delayLineFdBk4.delay(proc.bufferForFdBkDelay.buffer4)
+        
+    proc.delayLineFdBk5.addToBuffer(proc.bufferForFdBkDelay.buffer5,gain)
+    proc.delayLineFdBk5.delay(proc.bufferForFdBkDelay.buffer5)
+        
+    proc.delayLineFdBk6.addToBuffer(proc.bufferForFdBkDelay.buffer6,gain)
+    proc.delayLineFdBk6.delay(proc.bufferForFdBkDelay.buffer6)
+    
+    proc.delayLineFdBk7.addToBuffer(proc.bufferForFdBkDelay.buffer7,gain)
+    proc.delayLineFdBk7.delay(proc.bufferForFdBkDelay.buffer7)
+        
+        
+    for k in range(0,8):
+        exec(f"np.add(buff,proc.bufferForFdBkDelay.buffer{k},out=buff)",locals(),globals())
+    return 0
+
+   
 #=============================================================================================================
 sampleRate, aud = loadWav(r"untitledpiano.wav")
 
@@ -236,15 +294,38 @@ c = Items()
 c.sampleRate = stream.sampleRate
 c.bufferSize = stream.bufferSize
 c.nChannels = stream.nChannels
+
+c.bufferForDiffusion = Items()
+
+for i in range(0,8):
+    exec(f"c.bufferForDiffusion.buffer{str(i)} = np.zeros((stream.nChannels, stream.bufferSize))")
+    
+c.bufferForFdBkDelay = Items()
+
+for i in range(0,8):
+    exec(f"c.bufferForFdBkDelay.buffer{str(i)} = np.zeros((stream.nChannels, stream.bufferSize))")
+    
+c.delayLine0 = DelayLine(0.06,stream.sampleRate, stream.nChannels)
 c.delayLine1 = DelayLine(0.05,stream.sampleRate, stream.nChannels)
-c.delayLine2 = DelayLine(0.06,stream.sampleRate, stream.nChannels)
+c.delayLine2 = DelayLine(0.09,stream.sampleRate, stream.nChannels)
 c.delayLine3 = DelayLine(0.07,stream.sampleRate, stream.nChannels)
 c.delayLine4 = DelayLine(0.08,stream.sampleRate, stream.nChannels)
 c.delayLine5 = DelayLine(0.10,stream.sampleRate, stream.nChannels)
 c.delayLine6 = DelayLine(0.12,stream.sampleRate, stream.nChannels)
 c.delayLine7 = DelayLine(0.14,stream.sampleRate, stream.nChannels)
-c.delayLine8 = DelayLine(0.16,stream.sampleRate, stream.nChannels)
+
+
 c.diffuser = Diffuse8(stream.bufferSize)
+
+c.delayLineFdBk0 = DelayLine(0.02,stream.sampleRate, stream.nChannels)
+c.delayLineFdBk1 = DelayLine(0.03,stream.sampleRate, stream.nChannels)
+c.delayLineFdBk2 = DelayLine(0.04,stream.sampleRate, stream.nChannels)
+c.delayLineFdBk3 = DelayLine(0.05,stream.sampleRate, stream.nChannels)
+c.delayLineFdBk4 = DelayLine(0.06,stream.sampleRate, stream.nChannels)
+c.delayLineFdBk5 = DelayLine(0.07,stream.sampleRate, stream.nChannels)
+c.delayLineFdBk6 = DelayLine(0.09,stream.sampleRate, stream.nChannels)
+c.delayLineFdBk7 = DelayLine(0.12,stream.sampleRate, stream.nChannels)
+
 
 flag = True
 
