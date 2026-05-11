@@ -15,7 +15,6 @@ class DelayLine:
         self.delaySamples = int(delayTime*sampleRate)
         self.delayBufferSize = 5 * sampleRate
         self.delayBuffer = np.ndarray((nChannels, self.delayBufferSize), np.float32)
-        self.readPosition = 0
         self.writePosition = 0
         self.nChannels = nChannels
     
@@ -46,48 +45,48 @@ class DelayLine:
                     
         self.__updateWritePosition__()
                     
-    def addToBuffer(self, buffer: np.ndarray, feedbackGain: float):
+    def addToBuffer(self, buffer: np.ndarray, gain: float):
         bufferSize = len(buffer[0,:])
-        self.readPosition = self.writePosition - self.delaySamples
+        readPosition = self.writePosition - self.delaySamples
         
-        if (self.readPosition < 0):
-            self.readPosition = self.readPosition + self.delayBufferSize
+        if (readPosition < 0):
+            readPosition = readPosition + self.delayBufferSize
             
-        if (self.readPosition + bufferSize < self.delayBufferSize):
+        if (readPosition + bufferSize < self.delayBufferSize):
             for channel in range(0, self.nChannels):
                 for i in range(0,bufferSize):
-                    buffer[channel,i] = buffer[channel,i] + self.delayBuffer[channel,self.readPosition+i]*feedbackGain
+                    buffer[channel,i] = buffer[channel,i] + self.delayBuffer[channel,readPosition+i]*gain
         else:
-            end = self.delayBufferSize - self.readPosition 
+            end = self.delayBufferSize - readPosition 
             for channel in range(0, self.nChannels):
                 for i in range(0,end):
-                    buffer[channel,i] = buffer[channel,i] + self.delayBuffer[channel,self.readPosition+i]*feedbackGain
+                    buffer[channel,i] = buffer[channel,i] + self.delayBuffer[channel,readPosition+i]*gain
 
             for channel in range(0, self.nChannels):
                 for i in range(0,bufferSize-end):
-                    buffer[channel,end+i] = buffer[channel,end+i] + self.delayBuffer[channel,0+i]*feedbackGain
+                    buffer[channel,end+i] = buffer[channel,end+i] + self.delayBuffer[channel,i]*gain
                     
                     
     def copyToBuffer(self, buffer: np.ndarray, gain: float):
         bufferSize = len(buffer[0,:])
-        self.readPosition = self.writePosition - self.delaySamples
+        readPosition = self.writePosition - self.delaySamples
         
-        if (self.readPosition < 0):
-            self.readPosition = self.readPosition + self.delayBufferSize
+        if (readPosition < 0):
+            readPosition = readPosition + self.delayBufferSize
             
-        if (self.readPosition + bufferSize < self.delayBufferSize):
+        if (readPosition + bufferSize < self.delayBufferSize):
             for channel in range(0, self.nChannels):
                 for i in range(0,bufferSize):
-                    buffer[channel,i] = self.delayBuffer[channel,self.readPosition+i]*gain
+                    buffer[channel,i] = self.delayBuffer[channel,readPosition+i]*gain
         else:
-            end = self.delayBufferSize - self.readPosition 
+            end = self.delayBufferSize - readPosition 
             for channel in range(0, self.nChannels):
                 for i in range(0,end):
-                    buffer[channel,i] = self.delayBuffer[channel,self.readPosition+i]*gain
+                    buffer[channel,i] = self.delayBuffer[channel,readPosition+i]*gain
 
             for channel in range(0, self.nChannels):
                 for i in range(0,bufferSize-end):
-                    buffer[channel,end+i] = self.delayBuffer[channel,0+i]*gain
+                    buffer[channel,end+i] = self.delayBuffer[channel,i]*gain
                             
 
 class Stream():
@@ -173,7 +172,7 @@ class Diffuse8():
 
         for i in range(0,self.diffuserChannels):
             for channel in range(0,self.nChannels):         
-                exec(f"self.bufferMatrix[2*{i}+{channel},:] = d.buffer{i}[{channel},:]",locals())
+                exec(f"self.bufferMatrix[self.nChannels*{i}+{channel},:] = d.buffer{i}[{channel},:]",locals())
                     
         for i in range(0,self.diffuserChannels):
             exec(f"d.buffer{str(i)}.fill(0)",locals())        
@@ -182,7 +181,7 @@ class Diffuse8():
                         
         for i in range(0,self.diffuserChannels):
             for channel in range(0,self.nChannels):
-                exec(f"d.buffer{str(i)}[{channel},:] = result[{2*i+channel},:]",locals()) 
+                exec(f"d.buffer{str(i)}[{channel},:] = result[{self.nChannels*i+channel},:]",locals()) 
                     
                     
 def loadWav(file: str):
