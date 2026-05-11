@@ -5,6 +5,14 @@ name: Windows Build
 on:
   push:
     branches: [ "main" ]
+    paths_ignore:
+    - '.gitignore'
+    - 'testalg/**'
+    - 'LICENSE'
+    - 'README.md'
+    - 'TestDelay.filtergraph'
+    - 'TestingHostApp.exe'
+    - 'getBuild'
   pull_request:
     branches: [ "main" ]
 
