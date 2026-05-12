@@ -183,31 +183,39 @@ class Diffuse8():
             for channel in range(0,self.nChannels):
                 exec(f"d.buffer{str(i)}[{channel},:] = result[{self.nChannels*i+channel},:]",locals()) 
                     
-                    
-def loadWav(file: str):
-    sampleRate, wav = scipy.io.wavfile.read(file)
-    audioData = np.ndarray((2, len(wav)),  np.float32)
-    
-    if (wav.dtype == 'int16'):
-        normFactor = 15
-    elif(wav.dtype == 'int32'):
-        normFactor = 31
-    else:
-        raise ValueError("Bit-depth not supported. Load a 16 or 32 bit int wav file.")
-    
-    for channel in range(0,2):
-        for i in range(0,len(wav)):
-            audioData[channel,i] = wav[i,channel]/(2**normFactor)
-    
-    return sampleRate, audioData
-    
-    
-def writeWav(file: str, data: np.ndarray, sampleRate):
-    amplitude = np.iinfo(np.int16).max
-    writeData = amplitude * data
-    print("Peaks: " + str(np.min(writeData)) + "," + str(np.max(writeData)))
-    writeData = np.clip(writeData, -amplitude, amplitude).T   
-    scipy.io.wavfile.write(file, sampleRate, writeData.astype(np.int16))
+class WaveFile:        
+    @staticmethod    
+    def load(file: str):
+        sampleRate, wav = scipy.io.wavfile.read(file)
+        audioData = np.ndarray((2, len(wav)),  np.float32)
+        
+        if (wav.dtype == 'int16'):
+            normFactor = 15
+        elif(wav.dtype == 'int32'):
+            normFactor = 31
+        else:
+            raise ValueError("Bit-depth not supported. Load a 16 or 32 bit int wav file.")
+        
+        for channel in range(0,2):
+            for i in range(0,len(wav)):
+                audioData[channel,i] = wav[i,channel]/(2**normFactor)
+        
+        return sampleRate, audioData
+        
+    @staticmethod   
+    def write(filename: str, data: np.ndarray, sampleRate: int, bitDepth: str):
+        if (bitDepth == 'int16'):
+            dtype = np.int16
+        elif(bitDepth == 'int32'):
+            dtype = np.int32
+        else:
+            raise ValueError("Bit-depth not supported.")
+            
+        amplitude = np.iinfo(dtype).max
+        writeData = amplitude * data
+        print("Peaks: " + str(np.min(writeData)) + "," + str(np.max(writeData)))
+        writeData = np.clip(writeData, -amplitude, amplitude).T   
+        scipy.io.wavfile.write(filename, sampleRate, writeData.astype(dtype))
     
     
 def processBuffer(buff: np.ndarray, proc: Items):
@@ -285,7 +293,7 @@ def processBuffer(buff: np.ndarray, proc: Items):
 
    
 #=============================================================================================================
-sampleRate, aud = loadWav(r"untitledpiano.wav")
+sampleRate, aud = WaveFile.load(r"untitledpiano.wav")
 
 stream = Stream(audioData=aud, sampleRate=sampleRate, bufferSize=512, streamTime=5)
 
@@ -337,7 +345,7 @@ while(flag):
     stream.output()   
     print("ExecTime: " + str(endtime-starttime))
 
-writeWav(r"output.wav", stream.out, sampleRate)
+WaveFile.write(r"output.wav", stream.out, sampleRate, 'int32')
 
 plt.plot(range(0,len(aud[0,:])),aud[0,:],'-',label='WaveFile')
 ##plt.plot(range(0,len(stream.data[0,:])),stream.data[0,:],'-',label='Stream')
