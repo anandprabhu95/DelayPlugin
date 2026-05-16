@@ -1,9 +1,8 @@
 import numpy as np
-import random
-import math
 import matplotlib.pyplot as plt
 import scipy
 import time
+import yaml
 
 #=============================================================================================================   
 class Stream():
@@ -220,11 +219,12 @@ class Diffuse8():
                     
 
 class ReverbStage():
-    def __init__(self, bufferSize: int, sampleRate: int, nChannels: int, name: str):
+    def __init__(self, bufferSize: int, sampleRate: int, nChannels: int, params, name: str):
         self.bufferSize = bufferSize
         self.sampleRate = sampleRate
         self.nChannels = nChannels
         self.name = name
+        self.params = params
         
         self.bufferForDiffusion = Items()
         for i in range(0,8):
@@ -234,26 +234,26 @@ class ReverbStage():
         for i in range(0,8):
             exec(f"self.bufferForFdBkDelay.buffer{str(i)} = np.zeros((self.nChannels, self.bufferSize))")
             
-        self.delayLine0 = DelayLine(0.06,self.sampleRate, self.nChannels)
-        self.delayLine1 = DelayLine(0.05,self.sampleRate, self.nChannels)
-        self.delayLine2 = DelayLine(0.09,self.sampleRate, self.nChannels)
-        self.delayLine3 = DelayLine(0.07,self.sampleRate, self.nChannels)
-        self.delayLine4 = DelayLine(0.08,self.sampleRate, self.nChannels)
-        self.delayLine5 = DelayLine(0.10,self.sampleRate, self.nChannels)
-        self.delayLine6 = DelayLine(0.12,self.sampleRate, self.nChannels)
-        self.delayLine7 = DelayLine(0.14,self.sampleRate, self.nChannels)
+        self.delayLine0 = DelayLine(self.params['delayLine0']['time'],self.sampleRate, self.nChannels)
+        self.delayLine1 = DelayLine(self.params['delayLine1']['time'],self.sampleRate, self.nChannels)
+        self.delayLine2 = DelayLine(self.params['delayLine2']['time'],self.sampleRate, self.nChannels)
+        self.delayLine3 = DelayLine(self.params['delayLine3']['time'],self.sampleRate, self.nChannels)
+        self.delayLine4 = DelayLine(self.params['delayLine4']['time'],self.sampleRate, self.nChannels)
+        self.delayLine5 = DelayLine(self.params['delayLine5']['time'],self.sampleRate, self.nChannels)
+        self.delayLine6 = DelayLine(self.params['delayLine6']['time'],self.sampleRate, self.nChannels)
+        self.delayLine7 = DelayLine(self.params['delayLine7']['time'],self.sampleRate, self.nChannels)
         
         
         self.diffuser = Diffuse8(self.bufferSize)
         
-        self.delayLineFdBk0 = DelayLine(0.02,self.sampleRate, self.nChannels)
-        self.delayLineFdBk1 = DelayLine(0.03,self.sampleRate, self.nChannels)
-        self.delayLineFdBk2 = DelayLine(0.04,self.sampleRate, self.nChannels)
-        self.delayLineFdBk3 = DelayLine(0.05,self.sampleRate, self.nChannels)
-        self.delayLineFdBk4 = DelayLine(0.06,self.sampleRate, self.nChannels)
-        self.delayLineFdBk5 = DelayLine(0.07,self.sampleRate, self.nChannels)
-        self.delayLineFdBk6 = DelayLine(0.09,self.sampleRate, self.nChannels)
-        self.delayLineFdBk7 = DelayLine(0.12,self.sampleRate, self.nChannels)
+        self.delayLineFdBk0 = DelayLine(self.params['delayLineFdBk0']['time'],self.sampleRate, self.nChannels)
+        self.delayLineFdBk1 = DelayLine(self.params['delayLineFdBk1']['time'],self.sampleRate, self.nChannels)
+        self.delayLineFdBk2 = DelayLine(self.params['delayLineFdBk2']['time'],self.sampleRate, self.nChannels)
+        self.delayLineFdBk3 = DelayLine(self.params['delayLineFdBk3']['time'],self.sampleRate, self.nChannels)
+        self.delayLineFdBk4 = DelayLine(self.params['delayLineFdBk4']['time'],self.sampleRate, self.nChannels)
+        self.delayLineFdBk5 = DelayLine(self.params['delayLineFdBk5']['time'],self.sampleRate, self.nChannels)
+        self.delayLineFdBk6 = DelayLine(self.params['delayLineFdBk6']['time'],self.sampleRate, self.nChannels)
+        self.delayLineFdBk7 = DelayLine(self.params['delayLineFdBk7']['time'],self.sampleRate, self.nChannels)
         
             
     def process(self, buffer: np.ndarray):
@@ -265,7 +265,7 @@ class ReverbStage():
     
         print("INFO:",self.name,"Populating delay buffers")   
         
-        splitGain = 0.0125
+        splitGain = self.params['splitGain']
         
         self.delayLine0.delay(buffer)
         self.delayLine0.copyToBuffer(self.bufferForDiffusion.buffer0,splitGain)
@@ -297,7 +297,7 @@ class ReverbStage():
         np.add(self.bufferForDiffusion.buffer6,self.bufferForFdBkDelay.buffer6,out=self.bufferForFdBkDelay.buffer6)
         np.add(self.bufferForDiffusion.buffer7,self.bufferForFdBkDelay.buffer7,out=self.bufferForFdBkDelay.buffer7)
         
-        gain = 0.8
+        gain = self.params['feedbackGain']
         
         self.delayLineFdBk0.addToBuffer(self.bufferForFdBkDelay.buffer0,gain)
         self.delayLineFdBk0.delay(self.bufferForFdBkDelay.buffer0)
@@ -325,18 +325,43 @@ class ReverbStage():
             
             
         for k in range(0,8):
-            exec(f"np.add(buffer,self.bufferForFdBkDelay.buffer{k},out=buffer)",locals(),globals())
+            exec(f"np.add(buffer,self.params['mixGain']*self.bufferForFdBkDelay.buffer{k},out=buffer)",locals(),globals())
         return 0
 
-   
+
+class Reverb:
+    def __init__(self, configFile: str, bufferSize: int, sampleRate: int, nChannels: int):
+        self.bufferSize = bufferSize
+        self.sampleRate = sampleRate
+        self.nChannels = nChannels
+        
+        with open(configFile, 'r') as file:
+            self.data = dict(yaml.safe_load(file))
+        
+        for i in range(0, self.data['Reverb']['stages']):
+            config = Items()
+            exec(f"self.params = self.data['Reverb']['Stage{i+1}']", locals())
+            rvb = ReverbStage(self.bufferSize, self.sampleRate, self.nChannels, self.params, name='Stage'+str(i+1))
+            exec(f"self.reverb{i+1} = rvb", locals())
+            
+    def process(self, buffer: np.ndarray):
+        for i in range(0, self.data['Reverb']['stages']):
+            exec(f"self.reverb{i+1}.process(buffer)", locals())
+            
+        
 #=============================================================================================================
 sampleRate, aud = WaveFile.load(r"untitledpiano.wav")
 
 stream = Stream(audioData=aud, sampleRate=sampleRate, bufferSize=512, streamTime=5)
 
-reverb = ReverbStage(bufferSize=stream.bufferSize, sampleRate=stream.sampleRate, nChannels=stream.nChannels, name='Stage 1') 
+#reverb1 = ReverbStage(bufferSize=stream.bufferSize, sampleRate=stream.sampleRate, nChannels=stream.nChannels, name='Stage 1') 
+#reverb2 = ReverbStage(bufferSize=stream.bufferSize, sampleRate=stream.sampleRate, nChannels=stream.nChannels, name='Stage 2') 
+#reverb3 = ReverbStage(bufferSize=stream.bufferSize, sampleRate=stream.sampleRate, nChannels=stream.nChannels, name='Stage 3') 
+#reverb4 = ReverbStage(bufferSize=stream.bufferSize, sampleRate=stream.sampleRate, nChannels=stream.nChannels, name='Stage 4') 
 
 flag = True
+
+reverb = Reverb('settings.yaml', stream.bufferSize, stream.sampleRate, stream.nChannels)
 
 while(flag):    
     flag = stream.startStream()
