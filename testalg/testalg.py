@@ -339,7 +339,6 @@ class Reverb:
             self.data = dict(yaml.safe_load(file))
         
         for i in range(0, self.data['Reverb']['stages']):
-            config = Items()
             exec(f"self.params = self.data['Reverb']['Stage{i+1}']", locals())
             rvb = ReverbStage(self.bufferSize, self.sampleRate, self.nChannels, self.params, name='Stage'+str(i+1))
             exec(f"self.reverb{i+1} = rvb", locals())
@@ -354,14 +353,9 @@ sampleRate, aud = WaveFile.load(r"untitledpiano.wav")
 
 stream = Stream(audioData=aud, sampleRate=sampleRate, bufferSize=512, streamTime=5)
 
-#reverb1 = ReverbStage(bufferSize=stream.bufferSize, sampleRate=stream.sampleRate, nChannels=stream.nChannels, name='Stage 1') 
-#reverb2 = ReverbStage(bufferSize=stream.bufferSize, sampleRate=stream.sampleRate, nChannels=stream.nChannels, name='Stage 2') 
-#reverb3 = ReverbStage(bufferSize=stream.bufferSize, sampleRate=stream.sampleRate, nChannels=stream.nChannels, name='Stage 3') 
-#reverb4 = ReverbStage(bufferSize=stream.bufferSize, sampleRate=stream.sampleRate, nChannels=stream.nChannels, name='Stage 4') 
+reverb = Reverb('settings.yaml', stream.bufferSize, stream.sampleRate, stream.nChannels)
 
 flag = True
-
-reverb = Reverb('settings.yaml', stream.bufferSize, stream.sampleRate, stream.nChannels)
 
 while(flag):    
     flag = stream.startStream()
@@ -375,10 +369,6 @@ while(flag):
 WaveFile.write(r"output.wav", stream.out, sampleRate, 'int32')
 
 plt.plot(range(0,len(aud[0,:])),aud[0,:],'-',label='WaveFile')
-##plt.plot(range(0,len(stream.data[0,:])),stream.data[0,:],'-',label='Stream')
 plt.plot(range(0,len(stream.out[0,:])),stream.out[0,:],'--',label='Output',linewidth=0.5)
-##plt.plot(range(0,len(c.delayLine1.delayBuffer[0,:])),c.delayLine1.delayBuffer[0,:],'--',label='DelayLine1')
-##plt.plot(range(0,len(c.delayLine2.delayBuffer[0,:])),c.delayLine2.delayBuffer[0,:],'--',label='DelayLine2')
 plt.legend(loc='upper right')
-#plt.plot(range(0,len(d.channel1[0,:])),d.channel1[0,:],'-',label='Stream')
 plt.show()
