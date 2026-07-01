@@ -347,36 +347,28 @@ class Reverb:
         for i in range(0, self.data['Reverb']['stages']):
             exec(f"self.reverb{i+1}.process(buffer)", locals())
             
-def pitchup(buffer: np.ndarray):
-    bufferSize = len(buffer[0,:])
-    
-
-    
+        
 #=============================================================================================================
-def main():
-    sampleRate, aud = WaveFile.load(r"untitledpiano.wav")
-    
-    stream = Stream(audioData=aud, sampleRate=sampleRate, bufferSize=512, streamTime=5)
-    
-    reverb = Reverb('settings.yaml', stream.bufferSize, stream.sampleRate, stream.nChannels)
-    
-    flag = True
-    
-    while(flag):    
-        flag = stream.startStream()
-        print("Time:",str(round(stream.time,4)),"s")
-        starttime = time.process_time()
-        reverb.process(stream.buffer)
-        endtime = time.process_time()
-        stream.output()   
-        print("ExecTime:",str(endtime-starttime))
-    
-    WaveFile.write(r"output.wav", stream.out, sampleRate, 'int32')
-    
-    plt.plot(range(0,len(aud[0,:])),aud[0,:],'-',label='WaveFile')
-    plt.plot(range(0,len(stream.out[0,:])),stream.out[0,:],'--',label='Output',linewidth=0.5)
-    plt.legend(loc='upper right')
-    plt.show()
-    
-if __name__ == "__main__":
-    main()
+sampleRate, aud = WaveFile.load(r"untitledpiano.wav")
+
+stream = Stream(audioData=aud, sampleRate=sampleRate, bufferSize=512, streamTime=5)
+
+reverb = Reverb('settings.yaml', stream.bufferSize, stream.sampleRate, stream.nChannels)
+
+flag = True
+
+while(flag):    
+    flag = stream.startStream()
+    print("Time:",str(round(stream.time,4)),"s")
+    starttime = time.process_time()
+    reverb.process(stream.buffer)
+    endtime = time.process_time()
+    stream.output()   
+    print("ExecTime:",str(endtime-starttime))
+
+WaveFile.write(r"output.wav", stream.out, sampleRate, 'int32')
+
+plt.plot(range(0,len(aud[0,:])),aud[0,:],'-',label='WaveFile')
+plt.plot(range(0,len(stream.out[0,:])),stream.out[0,:],'--',label='Output',linewidth=0.5)
+plt.legend(loc='upper right')
+plt.show()
