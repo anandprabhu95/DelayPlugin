@@ -1,0 +1,81 @@
+Reverb:    
+  # Number of reverb stages.
+  stages: 2
+  
+  # Reverb params: delayLine[0-7], delayLineFdBk[0-7], splitGain, feedbackGain, mixGain
+  
+  # Parameter values for stage 1.
+  Stage1:
+    delayLine0:
+      time: 0.05
+    delayLine1:
+      time: 0.06
+    delayLine2:
+      time: 0.07
+    delayLine3:
+      time: 0.08
+    delayLine4:
+      time: 0.09
+    delayLine5:
+      time: 0.10
+    delayLine6:
+      time: 0.12
+    delayLine7:
+      time: 0.14
+    delayLineFdBk0:
+      time: 0.05
+    delayLineFdBk1:
+      time: 0.06
+    delayLineFdBk2:
+      time: 0.07
+    delayLineFdBk3:
+      time: 0.08
+    delayLineFdBk4:
+      time: 0.09
+    delayLineFdBk5:
+      time: 0.10
+    delayLineFdBk6:
+      time: 0.12
+    delayLineFdBk7:
+      time: 0.14 
+    splitGain: 0.125
+    feedbackGain: 0.8
+    mixGain: 0.1
+  
+  # Parameter values for stage 2.
+  Stage2:
+    delayLine0:
+      time: 0.05
+    delayLine1:
+      time: 0.06
+    delayLine2:
+      time: 0.07
+    delayLine3:
+      time: 0.08
+    delayLine4:
+      time: 0.09
+    delayLine5:
+      time: 0.10
+    delayLine6:
+      time: 0.12
+    delayLine7:
+      time: 0.14
+    delayLineFdBk0:
+      time: 0.05
+    delayLineFdBk1:
+      time: 0.06
+    delayLineFdBk2:
+      time: 0.07
+    delayLineFdBk3:
+      time: 0.08
+    delayLineFdBk4:
+      time: 0.09
+    delayLineFdBk5:
+      time: 0.10
+    delayLineFdBk6:
+      time: 0.12
+    delayLineFdBk7:
+      time: 0.14 
+    splitGain: 0.125
+    feedbackGain: 0.8
+    mixGain: 0.1
