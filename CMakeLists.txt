@@ -1,3 +1,10 @@
+
+# ===========================================================
+set(CURR_BUILD "Delay")
+
+message("Building ${CURR_BUILD} plugin")
+# ===========================================================
+
 cmake_minimum_required(VERSION 3.5)
 
 project(AudioPlugins)

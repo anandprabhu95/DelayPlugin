@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 3.5)
 
 project(AudioPlugin VERSION 1.4.0)
 
-set(INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/Delay")
+set(INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/${CURR_BUILD}")
+set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/source/${CURR_BUILD}")
+
 
 juce_add_plugin(${PROJECT_NAME}
     COMPANY_NAME AudioPlugin
@@ -12,13 +14,13 @@ juce_add_plugin(${PROJECT_NAME}
     PLUGIN_MANUFACTURER_CODE Aupl
     PLUGIN_CODE Aupl
     FORMATS VST3 Standalone
-    PRODUCT_NAME "Frecurse"
+    PRODUCT_NAME ${CURR_BUILD}
 )
 
 # Sets the source files of the plugin project.
 set(SOURCE_FILES 
-    source/PluginEditor.cpp 
-    source/PluginProcessor.cpp
+    ${SRC_DIR}/PluginEditor.cpp 
+    ${SRC_DIR}/PluginProcessor.cpp
 )
 
 # Optional; includes header files in the project file tree in Visual Studio
@@ -27,10 +29,12 @@ set(HEADER_FILES
     ${INCLUDE_DIR}/PluginEditor.h 
     ${INCLUDE_DIR}/PluginProcessor.h)
 
-target_sources(${PROJECT_NAME} PRIVATE ${SOURCE_FILES} ${HEADER_FILES})
+
 
 # Sets the include directories of the plugin project.
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/${CURR_BUILD})
+
+target_sources(${PROJECT_NAME} PRIVATE ${SOURCE_FILES} ${HEADER_FILES})
 
 #juce_generate_juce_header(${PROJECT_NAME})
 

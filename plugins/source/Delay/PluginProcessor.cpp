@@ -1,5 +1,5 @@
-#include "Delay/PluginProcessor.h"
-#include "Delay/PluginEditor.h"
+#include "PluginProcessor.h"
+#include "PluginEditor.h"
 
 //==============================================================================
 DelayAudioProcessor::DelayAudioProcessor()
@@ -315,7 +315,7 @@ void DelayAudioProcessor::fillBuffer(juce::AudioBuffer<float>& wetBuffer, int ch
         // Check how much space is left in the delay buffer.
         int numSamplesToEnd = delayBufferSize - m_writePosition;
         int numSamplesAtStart = bufferSize - numSamplesToEnd;
-
+        DBG("Size:" << numSamplesToEnd + numSamplesAtStart);
         // Copy the samples to the end
         m_delayBuffer.copyFrom(channel, m_writePosition, wetBuffer.getReadPointer(channel), numSamplesToEnd);
 
