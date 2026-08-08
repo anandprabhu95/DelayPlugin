@@ -1,12 +1,31 @@
 #! /usr/bin/bash
+PLUGIN=$1
+PLUGINS=("Delay" "Reverb")
+F=0
+
+for i in "${PLUGINS[@]}"
+do
+  if [[ "$PLUGIN" == $i ]]
+  then
+	F=1
+    echo "Copying $PLUGIN executables to output folder."
+	break
+  fi
+done
+
+if [[ "$F" -eq 0 ]];
+then
+	echo "ERROR: Enter a valid plugin name."
+	exit 1
+fi
 
 rm -rf output
-mkdir -p output/{VST3,Standalone}
+mkdir -p output/$PLUGIN/{VST3,Standalone}
 
-res_vst3="./build/plugins/AudioPlugin_artefacts/Debug/VST3/Frecurse.vst3/Contents/x86_64-win/Frecurse.vst3"
-res_sa="./build/plugins/AudioPlugin_artefacts/Debug/Standalone/Frecurse.exe"
+res_vst3="./build/plugins/AudioPlugin_artefacts/Debug/VST3/$PLUGIN.vst3/Contents/x86_64-win/$PLUGIN.vst3"
+res_sa="./build/plugins/AudioPlugin_artefacts/Debug/Standalone/$PLUGIN.exe"
 
-cp "$res_vst3" ./output/VST3
-cp "$res_sa" ./output/Standalone
+cp "$res_vst3" ./output/$PLUGIN/VST3
+cp "$res_sa" ./output/$PLUGIN/Standalone
 
-echo "Copying contents to output folder"
+echo "Done"
