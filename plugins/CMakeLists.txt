@@ -18,16 +18,33 @@ juce_add_plugin(${PROJECT_NAME}
 )
 
 # Sets the source files of the plugin project.
-set(SOURCE_FILES 
-    ${SRC_DIR}/PluginEditor.cpp 
-    ${SRC_DIR}/PluginProcessor.cpp
-)
+if (${CURR_BUILD} STREQUAL "Delay")
+	set(SOURCE_FILES 
+		${SRC_DIR}/PluginEditor.cpp 
+		${SRC_DIR}/PluginProcessor.cpp)
+elseif (${CURR_BUILD} STREQUAL "Reverb")
+	set(SOURCE_FILES 
+		${SRC_DIR}/PluginEditor.cpp 
+		${SRC_DIR}/PluginProcessor.cpp
+		${SRC_DIR}/Reverb.cpp)
+endif()
+	
 
 # Optional; includes header files in the project file tree in Visual Studio
-set(HEADER_FILES 
-    ${INCLUDE_DIR}/Headers.h
-    ${INCLUDE_DIR}/PluginEditor.h 
-    ${INCLUDE_DIR}/PluginProcessor.h)
+if (${CURR_BUILD} STREQUAL "Delay")
+	set(HEADER_FILES 
+		${INCLUDE_DIR}/Headers.h
+		${INCLUDE_DIR}/Constants.h
+		${INCLUDE_DIR}/PluginEditor.h 
+		${INCLUDE_DIR}/PluginProcessor.h)
+elseif (${CURR_BUILD} STREQUAL "Reverb")
+	set(HEADER_FILES 
+		${INCLUDE_DIR}/Headers.h
+		${INCLUDE_DIR}/Constants.h
+		${INCLUDE_DIR}/PluginEditor.h 
+		${INCLUDE_DIR}/PluginProcessor.h
+		${INCLUDE_DIR}/Reverb.h)
+endif()
 
 
 
