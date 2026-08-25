@@ -1,11 +1,18 @@
+set(DEFAULT_BUILD "Reverb")
 
 # ===========================================================
-set(PLUGIN=${PLUGIN})
-option(ACTIONS "Github Actions" FALSE)
-set(NODWNLD TRUE)
+set(PLUGIN "${PLUGIN}" CACHE STRING "Plugin to build.")
+if(DEFINED PLUGIN AND PLUGIN STREQUAL "")
+	message("No plugin name provided. Setting var PLUGIN to default value.")
+	set(PLUGIN ${DEFAULT_BUILD})
+endif()
 message("Building ${PLUGIN} plugin")
-# ===========================================================
 
+option(ACTIONS "Github Actions" FALSE)
+message("Actions: ${ACTIONS}")
+set(NODWNLD TRUE)
+
+# ===========================================================
 cmake_minimum_required(VERSION 3.5)
 
 project(AudioPlugins)
@@ -33,9 +40,6 @@ else()
 endif()
 
 #set(CPM_USE_LOCAL_PACKAGES TRUE CACHE BOOL "Use already present CPM sources")
-
-
-
 
 if(MSVC)
     add_compile_options(/Wall)
