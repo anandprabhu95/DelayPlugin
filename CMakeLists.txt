@@ -1,7 +1,7 @@
 
 # ===========================================================
 set(CURR_BUILD "Reverb")
-
+set(NODWNLD 1)
 message("Building ${CURR_BUILD} plugin")
 # ===========================================================
 
@@ -20,7 +20,8 @@ execute_process(
     COMMAND ping www.google.com -n 2 -w 1000
     RESULT_VARIABLE NO_CONNECTION
 )
-if(NO_CONNECTION GREATER 0)
+
+if(NO_CONNECTION GREATER 0 OR NODWNLD EQUAL 1)
 	CPMAddPackage(
 		NAME mylocal
 		SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/local/juce-8.0.8-windows/juce

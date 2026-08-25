@@ -1,14 +1,8 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include "Headers.h"
+#include "Constants.h"
+#include "Reverb.h"
 
 //==============================================================================
 /**
@@ -53,7 +47,20 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+
+    juce::AudioProcessorValueTreeState params;
+
 private:
     //==============================================================================
+    juce::AudioProcessorValueTreeState::ParameterLayout ReverbAudioProcessor::createParameters();
+    void ReverbAudioProcessor::mixDryWet(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& wetBuffer, int channel);
+    float ReverbAudioProcessor::scaleValues(float paramToScale, float guiSclMin, float guiSclMax, float desiredSclMin, float desiredSclMax);
+
+    juce::AudioBuffer<float> m_wetBuffer;
+
+    juce::LinearSmoothedValue<float> m_drywetInterpolator{ 0.0f };
+
+    std::unique_ptr<Reverb> m_reverbProcessor;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ReverbAudioProcessor)
 };
