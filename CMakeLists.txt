@@ -1,8 +1,9 @@
 
 # ===========================================================
-set(CURR_BUILD "Reverb")
-set(NODWNLD 1)
-message("Building ${CURR_BUILD} plugin")
+set(PLUGIN=${PLUGIN})
+option(ACTIONS "Github Actions" FALSE)
+set(NODWNLD TRUE)
+message("Building ${PLUGIN} plugin")
 # ===========================================================
 
 cmake_minimum_required(VERSION 3.5)
@@ -16,12 +17,7 @@ message("Compiler: ${CMAKE_CXX_COMPILER_ID}")
 set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs)
 include(cmake/CPM.cmake)
 
-execute_process(
-    COMMAND ping www.google.com -n 2 -w 1000
-    RESULT_VARIABLE NO_CONNECTION
-)
-
-if(NO_CONNECTION GREATER 0 OR NODWNLD EQUAL 1)
+if(NOT ACTIONS AND NODWNLD)
 	CPMAddPackage(
 		NAME mylocal
 		SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/local/juce-8.0.8-windows/juce

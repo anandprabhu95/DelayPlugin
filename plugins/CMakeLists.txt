@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.5)
 
 project(AudioPlugin VERSION 1.4.0)
 
-set(INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/${CURR_BUILD}")
-set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/source/${CURR_BUILD}")
+set(INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/${PLUGIN}")
+set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/source/${PLUGIN}")
 
 
 juce_add_plugin(${PROJECT_NAME}
@@ -14,15 +14,15 @@ juce_add_plugin(${PROJECT_NAME}
     PLUGIN_MANUFACTURER_CODE Aupl
     PLUGIN_CODE Aupl
     FORMATS VST3 Standalone
-    PRODUCT_NAME ${CURR_BUILD}
+    PRODUCT_NAME ${PLUGIN}
 )
 
 # Sets the source files of the plugin project.
-if (${CURR_BUILD} STREQUAL "Delay")
+if (${PLUGIN} STREQUAL "Delay")
 	set(SOURCE_FILES 
 		${SRC_DIR}/PluginEditor.cpp 
 		${SRC_DIR}/PluginProcessor.cpp)
-elseif (${CURR_BUILD} STREQUAL "Reverb")
+elseif (${PLUGIN} STREQUAL "Reverb")
 	set(SOURCE_FILES 
 		${SRC_DIR}/PluginEditor.cpp 
 		${SRC_DIR}/PluginProcessor.cpp
@@ -31,13 +31,13 @@ endif()
 	
 
 # Optional; includes header files in the project file tree in Visual Studio
-if (${CURR_BUILD} STREQUAL "Delay")
+if (${PLUGIN} STREQUAL "Delay")
 	set(HEADER_FILES 
 		${INCLUDE_DIR}/Headers.h
 		${INCLUDE_DIR}/Constants.h
 		${INCLUDE_DIR}/PluginEditor.h 
 		${INCLUDE_DIR}/PluginProcessor.h)
-elseif (${CURR_BUILD} STREQUAL "Reverb")
+elseif (${PLUGIN} STREQUAL "Reverb")
 	set(HEADER_FILES 
 		${INCLUDE_DIR}/Headers.h
 		${INCLUDE_DIR}/Constants.h
@@ -49,7 +49,7 @@ endif()
 
 
 # Sets the include directories of the plugin project.
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/${CURR_BUILD})
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/${PLUGIN})
 
 target_sources(${PROJECT_NAME} PRIVATE ${SOURCE_FILES} ${HEADER_FILES})
 
