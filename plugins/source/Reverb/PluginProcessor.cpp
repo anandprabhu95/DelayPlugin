@@ -139,7 +139,7 @@ void ReverbAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce:
         m_wetBuffer.clear(i, 0, m_wetBuffer.getNumSamples());
     }
 
-    for (int channel = totalNumInputChannels; channel < totalNumOutputChannels; ++channel)
+    for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
         // Copy main buffer to wet buffer. All processing will be done on wet buffer.
         m_wetBuffer.copyFrom(channel, 0, buffer.getWritePointer(channel), buffer.getNumSamples());
@@ -215,7 +215,7 @@ void ReverbAudioProcessor::mixDryWet(juce::AudioBuffer<float>& buffer, juce::Aud
     float scaledDryWetGain = scaleValues(drywetGain, 0.0f, 100.0f, 0.0f, 1.0f);
 
     // Reduce gain on the main buffer when as the wet gain increases.
-    buffer.applyGain(1.0f - 0.5f * scaledDryWetGain);
+    buffer.applyGain(1.0f - MIN_DRY_LIMIT * scaledDryWetGain);
     buffer.addFromWithRamp(channel, 0, wetBuffer.getReadPointer(channel, 0), wetBuffer.getNumSamples(), scaledDryWetGain, scaledDryWetGain);
 }
 

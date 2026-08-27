@@ -9,6 +9,8 @@ ReverbAudioProcessorEditor::ReverbAudioProcessorEditor(ReverbAudioProcessor& p)
     setSize(WIDTH, HEIGHT); // Plugin Window Size
 
     createSlider(m_drywetSlider, juce::Slider::Rotary, "drywetSlider", "DRYWET");
+    createSlider(m_drywetSlider, juce::Slider::Rotary, "spaceSlider", "SPACE");
+    createSlider(m_drywetSlider, juce::Slider::Rotary, "decaySlider", "DECAY");
     paramAttacher();
 
     createLabel(m_drywetLabel, "drywetlabel", "Mix", juce::Justification::centred);

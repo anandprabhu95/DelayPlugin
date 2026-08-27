@@ -1,28 +1,13 @@
 #define NUM_DELAY_LINES					8
 #define N_CH_REV_BUFF					NUM_DELAY_LINES * 2
+#define DELAY_BUF_SIZE					3 * 48000
 
 #define NUM_REV_STAGES					4
 
-#define MIX_MAT_00						[1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1]
-#define MIX_MAT_01						[1, -1,  1, -1,  1, -1,  1, -1,  1, -1,  1, -1,  1, -1,  1, -1]
-#define MIX_MAT_02						[1,  1, -1, -1,  1,  1, -1, -1,  1,  1, -1, -1,  1,  1, -1, -1]
-#define MIX_MAT_03						[1, -1, -1,  1,  1, -1, -1,  1,  1, -1, -1,  1,  1, -1, -1,  1]
-#define MIX_MAT_04						[1,  1,  1,  1, -1, -1, -1, -1,  1,  1,  1,  1, -1, -1, -1, -1]
-#define MIX_MAT_05						[1, -1,  1, -1, -1,  1, -1,  1,  1, -1,  1, -1, -1,  1, -1,  1]
-#define MIX_MAT_06						[1,  1, -1, -1, -1, -1,  1,  1,  1,  1, -1, -1, -1, -1,  1,  1]
-#define MIX_MAT_07						[1, -1, -1,  1, -1,  1,  1, -1,  1, -1, -1,  1, -1,  1,  1, -1]
-#define MIX_MAT_08						[1,  1,  1,  1,  1,  1,  1,  1, -1, -1, -1, -1, -1, -1, -1, -1]
-#define MIX_MAT_09						[1, -1,  1, -1,  1, -1,  1, -1, -1,  1, -1,  1, -1,  1, -1,  1]
-#define MIX_MAT_10						[1,  1, -1, -1,  1,  1, -1, -1, -1, -1,  1,  1, -1, -1,  1,  1]
-#define MIX_MAT_11						[1, -1, -1,  1,  1, -1, -1,  1, -1,  1,  1, -1, -1,  1,  1, -1]
-#define MIX_MAT_12						[1,  1,  1,  1, -1, -1, -1, -1, -1, -1, -1, -1,  1,  1,  1,  1]
-#define MIX_MAT_13						[1, -1,  1, -1, -1,  1, -1,  1, -1,  1, -1,  1,  1, -1,  1, -1]
-#define MIX_MAT_14						[1,  1, -1, -1, -1, -1,  1,  1, -1, -1,  1,  1,  1,  1, -1, -1]
-#define MIX_MAT_15						[1, -1, -1,  1, -1,  1,  1, -1, -1,  1,  1, -1,  1, -1, -1,  1]
-
-#define MAX_DELAYLINE_TIME				0.2f
+#define MAX_DELAYLINE_TIME				0.1f
 #define MIN_DELAYLINE_TIME				0.03f
 
+#define MIN_DRY_LIMIT					0.0f
 
 #define BG_RED							0.24f
 #define BG_GREEN						0.18f

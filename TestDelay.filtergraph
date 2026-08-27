@@ -19,7 +19,7 @@
   <FILTER uid="13" x="0.53625" y="0.8709677419354839" useARA="0">
     <PLUGIN name="Audio Output" descriptiveName="" format="Internal" category="I/O devices"
             manufacturer="JUCE" version="1.0" file="" uniqueId="724248cb"
-            isInstrument="0" fileTime="0" infoUpdateTime="0" numInputs="8"
+            isInstrument="0" fileTime="0" infoUpdateTime="0" numInputs="2"
             numOutputs="0" isShell="0" hasARAExtension="0" uid="724248cb"/>
     <STATE>0.</STATE>
     <LAYOUT>
@@ -44,13 +44,14 @@
       </OUTPUTS>
     </LAYOUT>
   </FILTER>
-  <FILTER uid="19" x="0.49875" y="0.5866935483870968" useARA="0" uiLastX_Normal="1013"
-          uiLastY_Normal="214" uiopen_Normal="0">
-    <PLUGIN name="Delay" format="VST3" category="Fx" manufacturer="yourcompany"
-            version="1.0.0" file="C:\Users\anand\repos\DelayPlugin\Delay\output\VST3\Delay.vst3"
-            uniqueId="fca1e8ed" isInstrument="0" fileTime="192ca4b78ce" infoUpdateTime="192ca5411f6"
+  <FILTER uid="19" x="0.4840055632823366" y="0.5479833101529903" useARA="0"
+          uiLastX_Normal="367" uiLastY_Normal="119" uiopen_Normal="1" uiLastX_IO="441"
+          uiLastY_IO="47" uiopen_IO="0">
+    <PLUGIN name="Reverb" format="VST3" category="Fx" manufacturer="AudioPlugin"
+            version="1.4.0" file="C:\Users\anand\repos\DelayPlugin\Delay\output\Reverb\VST3\Reverb.vst3"
+            uniqueId="7d161f0a" isInstrument="0" fileTime="1a044fe4e0d" infoUpdateTime="1a04507dd63"
             numInputs="2" numOutputs="2" isShell="0" hasARAExtension="0"
-            uid="e9580a24"/>
+            uid="2fab2eaa"/>
     <STATE>191.VMjLgXK....O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9XCLt3hKt3hKt3hKt3hYRUUSTEETIckVwTjQisVTTgkdEYjKAQjYPQSPWgUdMcjKAQjct3hdA4hKt3hKt3hKtnTUv.UQAslXuk0UXoWUFE0YQcEV77RRC8Vav8lak4Fc9vyKVMEUy.Ea0cVZtMEcgQWY9..</STATE>
     <LAYOUT>
       <INPUTS>

@@ -15,7 +15,7 @@ public:
 	juce::String name;
 	juce::AudioBuffer<float> m_delayBuffer;	
 	int m_sampleRate;
-	float m_delayTime{ 0 };
+	float m_delayTime{ 0.1f };
 
 private:
 	void DelayLine::updateWritePosition(juce::AudioBuffer<float>& buffer);
@@ -48,8 +48,8 @@ private:
 	static juce::Array<float> ReverbStage::createMixMatrix();
 	void ReverbStage::fillRevBuffer(juce::AudioBuffer<float>& buffer);
 	void ReverbStage::updateSpace(float perc);
-	void ReverbStage::matMul();
-	void ReverbStage::sumRevBufferAndAddTo(juce::AudioBuffer<float>& buffer, float perc);
+	void ReverbStage::mixRevBuffer();
+	void ReverbStage::sumRevBufferAndAddTo(juce::AudioBuffer<float>& destBuffer, float perc);
 
 	juce::AudioProcessor& audioProcessor;
 	juce::AudioProcessorValueTreeState& m_params;
@@ -83,9 +83,6 @@ private:
 	void Reverb::createProcessor(juce::AudioProcessor& p, juce::AudioProcessorValueTreeState& params);
 
 	std::shared_ptr<ReverbStage> m_reverbStage00;
-	std::shared_ptr<ReverbStage> m_reverbStage01;
-	std::shared_ptr<ReverbStage> m_reverbStage02;
-	std::shared_ptr<ReverbStage> m_reverbStage03;
 
 	std::vector<std::shared_ptr<ReverbStage>> m_reverbStages;
 
