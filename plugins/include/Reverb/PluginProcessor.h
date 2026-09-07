@@ -53,8 +53,8 @@ public:
 private:
     //==============================================================================
     juce::AudioProcessorValueTreeState::ParameterLayout ReverbAudioProcessor::createParameters();
-    void ReverbAudioProcessor::mixDryWet(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& wetBuffer, int channel);
-    float ReverbAudioProcessor::scaleValues(float paramToScale, float guiSclMin, float guiSclMax, float desiredSclMin, float desiredSclMax);
+    void ReverbAudioProcessor::mixDryWet(juce::AudioBuffer<float>& dryBuffer, juce::AudioBuffer<float>& wetBuffer, int channel);
+    float ReverbAudioProcessor::scaleValues(float inVal, float inMin, float inMax, float outMin, float outMax);
 
     juce::AudioBuffer<float> m_wetBuffer;
 

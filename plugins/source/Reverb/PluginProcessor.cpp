@@ -205,22 +205,18 @@ juce::AudioProcessorValueTreeState::ParameterLayout ReverbAudioProcessor::create
 }
 
 
-void ReverbAudioProcessor::mixDryWet(juce::AudioBuffer<float>& buffer, juce::AudioBuffer<float>& wetBuffer, int channel)
+void ReverbAudioProcessor::mixDryWet(juce::AudioBuffer<float>& dryBuffer, juce::AudioBuffer<float>& wetBuffer, int channel)
 {
-    std::atomic<float>* drywetPointer = params.getRawParameterValue("DRYWET");
-    m_drywetInterpolator.setTargetValue(drywetPointer->load());
+    m_drywetInterpolator.setTargetValue(params.getRawParameterValue("DRYWET")->load());
     float drywetGain = m_drywetInterpolator.getNextValue();
 
-    // Scale dry wet gain from [-1,+1] to [0,+1]
     float scaledDryWetGain = scaleValues(drywetGain, 0.0f, 100.0f, 0.0f, 1.0f);
-
-    // Reduce gain on the main buffer when as the wet gain increases.
-    buffer.applyGain(1.0f - MIN_DRY_LIMIT * scaledDryWetGain);
-    buffer.addFromWithRamp(channel, 0, wetBuffer.getReadPointer(channel, 0), wetBuffer.getNumSamples(), scaledDryWetGain, scaledDryWetGain);
+    float dryGain = MIN_DRY_LIMIT + (1 - scaledDryWetGain) * (1 - MIN_DRY_LIMIT);
+    dryBuffer.applyGain(dryGain);
+    dryBuffer.addFromWithRamp(channel, 0, wetBuffer.getReadPointer(channel, 0), wetBuffer.getNumSamples(), 1-dryGain, 1-dryGain);
 }
 
-float ReverbAudioProcessor::scaleValues(float paramToScale, float guiSclMin, float guiSclMax, float desiredSclMin, float desiredSclMax)
+float ReverbAudioProcessor::scaleValues(float inVal, float inMin, float inMax, float outMin, float outMax)
 {
-    float scaledParam = (desiredSclMax - desiredSclMin) * (paramToScale - guiSclMin) / (guiSclMax - guiSclMin) + desiredSclMin;
-    return scaledParam;
+    return (outMax - outMin) * (inVal - inMin) / (inMax - inMin) + outMax;
 }

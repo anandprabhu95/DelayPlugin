@@ -8,17 +8,19 @@ public:
 	explicit DelayLine(juce::AudioProcessor& p, juce::String name);
 	~DelayLine();
 	
-	void DelayLine::addToDelayLine(juce::AudioBuffer<float>& buffer);
-	void DelayLine::addToBuffer(juce::AudioBuffer<float>& buffer, int srcChannel, int destChannel);
+	void DelayLine::addToDelayBuffer(juce::AudioBuffer<float>& buffer);
+	void DelayLine::addToBuffer(juce::AudioBuffer<float>& buffer, int srcChannel, int destChannel, float gain);
 	void DelayLine::copyToBuffer(juce::AudioBuffer<float>& buffer, int srcChannel, int destChannel);
-	
+	void DelayLine::updateWritePositions(juce::AudioBuffer<float>& srcBuffer);
+
 	juce::String name;
 	juce::AudioBuffer<float> m_delayBuffer;	
 	int m_sampleRate;
 	float m_delayTime{ 0.1f };
+	float m_addToBufferGain{ 1.0f };
 
 private:
-	void DelayLine::updateWritePosition(juce::AudioBuffer<float>& buffer);
+
 	
 	juce::AudioProcessor& audioProcessor;
 
@@ -49,11 +51,12 @@ private:
 	void ReverbStage::fillRevBuffer(juce::AudioBuffer<float>& buffer);
 	void ReverbStage::updateSpace(float perc);
 	void ReverbStage::mixRevBuffer();
-	void ReverbStage::sumRevBufferAndAddTo(juce::AudioBuffer<float>& destBuffer, float perc);
+	void ReverbStage::sumRevBufferAndAddTo(juce::AudioBuffer<float>& destBuffer);
 
 	juce::AudioProcessor& audioProcessor;
 	juce::AudioProcessorValueTreeState& m_params;
 	juce::AudioBuffer<float> m_revBuffer;
+	juce::AudioBuffer<float> m_summedBuffer;
 
 	std::shared_ptr<DelayLine> m_delayline00;
 	std::shared_ptr<DelayLine> m_delayline01;
@@ -63,6 +66,8 @@ private:
 	std::shared_ptr<DelayLine> m_delayline05;
 	std::shared_ptr<DelayLine> m_delayline06;
 	std::shared_ptr<DelayLine> m_delayline07;
+
+	std::unique_ptr<DelayLine> m_feedBackDelay;
 
 	const juce::Array<float> m_mixMat = createMixMatrix();
 

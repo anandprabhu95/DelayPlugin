@@ -1,4 +1,5 @@
 set(DEFAULT_BUILD "Reverb")
+include(cmake/CPM.cmake/cmake/CPM.cmake)
 
 # ===========================================================
 set(PLUGIN "${PLUGIN}" CACHE STRING "Plugin to build.")
@@ -10,7 +11,7 @@ message("Building ${PLUGIN} plugin")
 
 option(ACTIONS "Github Actions" FALSE)
 message("Actions: ${ACTIONS}")
-set(NODWNLD TRUE)
+set(NODWNLD FALSE)
 
 # ===========================================================
 cmake_minimum_required(VERSION 3.5)
@@ -22,7 +23,7 @@ set(CMAKE_CXX_STANDARD 17)
 message("Compiler: ${CMAKE_CXX_COMPILER_ID}")
 
 set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs)
-include(cmake/CPM.cmake)
+
 
 if(NOT ACTIONS AND NODWNLD)
 	CPMAddPackage(
