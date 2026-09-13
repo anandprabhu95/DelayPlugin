@@ -211,12 +211,14 @@ void ReverbAudioProcessor::mixDryWet(juce::AudioBuffer<float>& dryBuffer, juce::
     float drywetGain = m_drywetInterpolator.getNextValue();
 
     float scaledDryWetGain = scaleValues(drywetGain, 0.0f, 100.0f, 0.0f, 1.0f);
+    DBG("Scale" << scaledDryWetGain);
     float dryGain = MIN_DRY_LIMIT + (1 - scaledDryWetGain) * (1 - MIN_DRY_LIMIT);
     dryBuffer.applyGain(dryGain);
+    DBG("DRY" << dryGain);
     dryBuffer.addFromWithRamp(channel, 0, wetBuffer.getReadPointer(channel, 0), wetBuffer.getNumSamples(), 1-dryGain, 1-dryGain);
 }
 
 float ReverbAudioProcessor::scaleValues(float inVal, float inMin, float inMax, float outMin, float outMax)
 {
-    return (outMax - outMin) * (inVal - inMin) / (inMax - inMin) + outMax;
+    return (outMax - outMin) * (inVal - inMin) / (inMax - inMin) + outMin;
 }

@@ -8,10 +8,10 @@ public:
 	explicit DelayLine(juce::AudioProcessor& p, juce::String name);
 	~DelayLine();
 	
-	void DelayLine::addToDelayBuffer(juce::AudioBuffer<float>& buffer);
+	void DelayLine::addToDelayBuffer(const juce::AudioBuffer<float>& buffer);
 	void DelayLine::addToBuffer(juce::AudioBuffer<float>& buffer, int srcChannel, int destChannel, float gain);
 	void DelayLine::copyToBuffer(juce::AudioBuffer<float>& buffer, int srcChannel, int destChannel);
-	void DelayLine::updateWritePositions(juce::AudioBuffer<float>& srcBuffer);
+	void DelayLine::updateWritePositions(const juce::AudioBuffer<float>& srcBuffer);
 
 	juce::String name;
 	juce::AudioBuffer<float> m_delayBuffer;	
@@ -19,9 +19,7 @@ public:
 	float m_delayTime{ 0.1f };
 	float m_addToBufferGain{ 1.0f };
 
-private:
-
-	
+private:	
 	juce::AudioProcessor& audioProcessor;
 
 	int m_writePosition{ 0 };
@@ -39,7 +37,7 @@ public:
 	~ReverbStage();
 
 	std::shared_ptr<DelayLine> ReverbStage::getLine(juce::String name);
-	void ReverbStage::setup(juce::AudioProcessor& p, juce::AudioBuffer<float>& srcBuffer);
+	void ReverbStage::setup(const juce::AudioProcessor& p, const juce::AudioBuffer<float>& srcBuffer);
 	void ReverbStage::process(juce::AudioBuffer<float>& srcBuffer, float perc);
 
 	std::vector<std::shared_ptr<DelayLine>> m_delayLines;
@@ -48,7 +46,7 @@ public:
 private:
 	void ReverbStage::createDelayLines(juce::AudioProcessor& p);
 	static juce::Array<float> ReverbStage::createMixMatrix();
-	void ReverbStage::fillRevBuffer(juce::AudioBuffer<float>& buffer);
+	void ReverbStage::fillRevBuffer(const juce::AudioBuffer<float>& buffer);
 	void ReverbStage::updateSpace(float perc);
 	void ReverbStage::mixRevBuffer();
 	void ReverbStage::sumRevBufferAndAddTo(juce::AudioBuffer<float>& destBuffer);
@@ -81,13 +79,16 @@ public:
 	Reverb(juce::AudioProcessor& p, juce::AudioProcessorValueTreeState& params);
 	~Reverb();
 
-	void Reverb::setup(juce::AudioProcessor& p, juce::AudioBuffer<float>& srcBuffer);
+	void Reverb::setup(const juce::AudioProcessor& p, const juce::AudioBuffer<float>& srcBuffer);
 	void Reverb::process(juce::AudioBuffer<float>& srcBuffer);
 
 private:
 	void Reverb::createProcessor(juce::AudioProcessor& p, juce::AudioProcessorValueTreeState& params);
 
 	std::shared_ptr<ReverbStage> m_reverbStage00;
+	std::shared_ptr<ReverbStage> m_reverbStage01;
+	std::shared_ptr<ReverbStage> m_reverbStage02;
+	std::shared_ptr<ReverbStage> m_reverbStage03;
 
 	std::vector<std::shared_ptr<ReverbStage>> m_reverbStages;
 

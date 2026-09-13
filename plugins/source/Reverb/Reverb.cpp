@@ -22,7 +22,7 @@ DelayLine::~DelayLine()
 }
 
 
-void DelayLine::addToDelayBuffer(juce::AudioBuffer<float>& buffer)
+void DelayLine::addToDelayBuffer(const juce::AudioBuffer<float>& buffer)
 {
 	int bufferSize = buffer.getNumSamples();
 	int delayBufferSize = m_delayBuffer.getNumSamples();
@@ -44,7 +44,7 @@ void DelayLine::addToDelayBuffer(juce::AudioBuffer<float>& buffer)
 }
 
 
-void DelayLine::updateWritePositions(juce::AudioBuffer<float>& srcBuffer)
+void DelayLine::updateWritePositions(const juce::AudioBuffer<float>& srcBuffer)
 {
     // Loop the write position from 0 to delay buffer size.
     int bufferSize = srcBuffer.getNumSamples();
@@ -205,7 +205,7 @@ void ReverbStage::createDelayLines(juce::AudioProcessor& p)
 }
 
 
-void ReverbStage::setup(juce::AudioProcessor& p, juce::AudioBuffer<float>& srcBuffer)
+void ReverbStage::setup(const juce::AudioProcessor& p, const juce::AudioBuffer<float>& srcBuffer)
 {
     int sampleRate = static_cast<int>(p.getSampleRate());
     
@@ -235,7 +235,7 @@ void ReverbStage::updateSpace(float perc)
 }
 
 
-void ReverbStage::fillRevBuffer(juce::AudioBuffer<float>& srcBuffer)
+void ReverbStage::fillRevBuffer(const juce::AudioBuffer<float>& srcBuffer)
 {
     jassert(srcBuffer.getNumSamples() == m_revBuffer.getNumSamples());
 
@@ -288,11 +288,12 @@ void ReverbStage::sumRevBufferAndAddTo(juce::AudioBuffer<float>& destBuffer)
     {
         for (int i = 0; i < m_delayLines.size(); ++i)
         {
-            temp_buffer.copyFromWithRamp(channel, 0, m_revBuffer.getReadPointer(channel + nInputChannels * i), destBufferSize,
+            temp_buffer.addFromWithRamp(channel, 0, m_revBuffer.getReadPointer(channel + nInputChannels * i), destBufferSize,
                 1.0f, 1.0f);
         }
     }
     
+
     temp_buffer.applyGain(1.00f / m_delayLines.size());
     
     for (int channel = 0; channel < nInputChannels; ++channel)
@@ -315,15 +316,16 @@ void ReverbStage::process(juce::AudioBuffer<float>& srcBuffer, float perc)
     updateSpace(perc);
     fillRevBuffer(srcBuffer);
     mixRevBuffer();
+    m_summedBuffer.clear();
     sumRevBufferAndAddTo(m_summedBuffer);
-    
+    DBG("SUMMMMMMMMMMMMMMMM"<<m_summedBuffer.getSample(0,0));
     for (int i = 0; i < m_delayLines.size(); ++i)
     {
         m_delayLines[i]->updateWritePositions(srcBuffer);
     }
 
 
-    m_feedBackDelay->m_delayTime = 1.0f;
+    m_feedBackDelay->m_delayTime = 0.2f;
 
     m_feedBackDelay->addToDelayBuffer(m_summedBuffer);
     
@@ -364,24 +366,36 @@ Reverb::~Reverb()
 
 void Reverb::createProcessor(juce::AudioProcessor& p, juce::AudioProcessorValueTreeState& params)
 {
-    m_reverbStage00 = std::make_shared<ReverbStage>(p,"Stage0", params);
+    m_reverbStage00 = std::make_shared<ReverbStage>(p, "Stage0", params);
+    m_reverbStage01 = std::make_shared<ReverbStage>(p, "Stage1", params);
+    m_reverbStage02 = std::make_shared<ReverbStage>(p, "Stage2", params);
+    m_reverbStage03 = std::make_shared<ReverbStage>(p, "Stage3", params);
 
 
     m_reverbStages.reserve(NUM_REV_STAGES);
     
     m_reverbStages.push_back(m_reverbStage00);
+    m_reverbStages.push_back(m_reverbStage01);
+    m_reverbStages.push_back(m_reverbStage02);
+    m_reverbStages.push_back(m_reverbStage03);
 
     jassert(m_reverbStages.size() <= NUM_REV_STAGES);
 }
 
 
-void Reverb::setup(juce::AudioProcessor& p, juce::AudioBuffer<float>& srcBuffer)
+void Reverb::setup(const juce::AudioProcessor& p, const juce::AudioBuffer<float>& srcBuffer)
 {
     m_reverbStage00->setup(p, srcBuffer);
+    m_reverbStage01->setup(p, srcBuffer);
+    m_reverbStage02->setup(p, srcBuffer);
+    m_reverbStage03->setup(p, srcBuffer);
 }
 
 
 void Reverb::process(juce::AudioBuffer<float>& srcBuffer)
 {
     m_reverbStage00->process(srcBuffer, 1.00f);
+    m_reverbStage01->process(srcBuffer, 1.00f);
+    m_reverbStage02->process(srcBuffer, 1.00f);
+    m_reverbStage03->process(srcBuffer, 1.00f);
 }
