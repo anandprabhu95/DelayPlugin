@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.5)
 
 project(AudioPlugin VERSION 1.4.0)
 
-set(INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/${PLUGIN}")
-set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/source/${PLUGIN}")
+set(INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${PLUGIN}/include")
+set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${PLUGIN}/src")
 
 
 juce_add_plugin(${PROJECT_NAME}
@@ -49,7 +49,7 @@ endif()
 
 
 # Sets the include directories of the plugin project.
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/${PLUGIN})
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/${PLUGIN}/include)
 
 target_sources(${PROJECT_NAME} PRIVATE ${SOURCE_FILES} ${HEADER_FILES})
 
