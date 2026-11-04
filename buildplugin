@@ -1,0 +1,23 @@
+#!/usr/bin/bash
+
+plugin=$1
+if [ -z "$plugin" ]; 
+then 
+	echo "Error: Missing arguments. Provide a valid plugin name and try again.";
+	exit 1
+fi
+
+rm -rf build
+cmake -S . -B build -DPLUGIN=$plugin
+cmake --build build --parallel
+
+exit_code=$?
+
+if [ "$exit_code" -ne 0 ]; 
+then    
+	echo "Error: Compilation failed."    
+	exit "$exit_code"
+else
+	./getBuild $plugin
+fi
+	

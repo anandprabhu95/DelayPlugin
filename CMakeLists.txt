@@ -11,7 +11,7 @@ message("Building ${PLUGIN} plugin")
 
 option(ACTIONS "Github Actions" FALSE)
 message("Actions: ${ACTIONS}")
-set(NODWNLD FALSE)
+set(NODWNLD TRUE)
 
 # ===========================================================
 cmake_minimum_required(VERSION 3.5)
