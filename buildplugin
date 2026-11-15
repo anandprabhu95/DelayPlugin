@@ -1,23 +1,44 @@
 #!/usr/bin/bash
 
-plugin=$1
-if [ -z "$plugin" ]; 
+# run $ ./buildplugin "plugin name" to build the plugin. 
+# options for "plugin name" are stated in the variable PLUGINS .
+PLUGINS=("Delay" "Reverb")    
+
+PLUGIN=$1
+
+if [ -z "$PLUGIN" ]; 
 then 
-	echo "Error: Missing arguments. Provide a valid plugin name and try again.";
+	echo "ERROR: Missing arguments. Provide a valid plugin name and try again.";
+	exit 1
+fi
+
+for i in "${PLUGINS[@]}"
+do
+  if [[ "$PLUGIN" == $i ]]
+  then
+	F=1
+    echo "INFO: Plugin selected: $PLUGIN."
+	break
+  fi
+done
+
+if [[ "$F" -eq 0 ]];
+then
+	echo "ERROR: $PLUGIN is not a valid option. Provide a valid plugin name."
 	exit 1
 fi
 
 rm -rf build
-cmake -S . -B build -DPLUGIN=$plugin
+cmake -S . -B build -DPLUGIN=$PLUGIN
 cmake --build build --parallel
 
 exit_code=$?
 
 if [ "$exit_code" -ne 0 ]; 
 then    
-	echo "Error: Compilation failed."    
+	echo "ERROR: Compilation failed."    
 	exit "$exit_code"
 else
-	./getBuild $plugin
+	./getBuild $PLUGIN
 fi
 	
