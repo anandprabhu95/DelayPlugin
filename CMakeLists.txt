@@ -11,8 +11,11 @@ message("Building ${PLUGIN} plugin")
 
 option(ACTIONS "Github Actions" FALSE)
 message("Actions: ${ACTIONS}")
-set(NODWNLD TRUE)  # set TRUE if building from local copy of JUCE framework source.
-                   # if NODWNLD is set to FALSE cmake will download the JUCE version specified below.
+
+set(IS_LOCAL_JUCE_SOURCE TRUE)  # set TRUE if building from local copy of JUCE framework source.
+                                 # if IS_LOCAL_JUCE_SOURCE is set to FALSE, cmake will download 
+								 # the JUCE_VERSION specified below.
+set(JUCE_VERSION 8.0.8)
 
 # ===========================================================
 cmake_minimum_required(VERSION 3.5)
@@ -26,17 +29,17 @@ message("Compiler: ${CMAKE_CXX_COMPILER_ID}")
 set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs)
 
 
-if(NOT ACTIONS AND NODWNLD)
+if(NOT ACTIONS AND IS_LOCAL_JUCE_SOURCE)
 	CPMAddPackage(
 		NAME mylocal
-		SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/local/juce-8.0.8-windows/juce # local Juce Framework source 
+		SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/local/juce-8.0.8-windows/juce # Path to local Juce Framework source 
 		)
 else()
 	CPMAddPackage(
 		NAME JUCE
 		GITHUB_REPOSITORY juce-framework/JUCE
-		GIT_TAG 8.0.8
-		VERSION 8.0.8
+		GIT_TAG ${JUCE_VERSION}
+		VERSION ${JUCE_VERSION}
 		SOURCE_DIR ${LIB_DIR}/juce
 		)
 endif()
