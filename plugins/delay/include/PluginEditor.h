@@ -76,10 +76,10 @@ private:
                                   m_drywetSlider, m_lfoFreqSlider, m_lfoAmtSlider,
                                   m_filtCutoffSliderLeft, m_filtCutoffSliderRight;
 
-    std::unique_ptr<juce::ToggleButton> m_lfoButton, m_testReverbButton, m_stereoDelayButton, m_bpmSyncButtonLeft, m_bpmSyncButtonRight;
+    std::unique_ptr<juce::ToggleButton> m_lfoButton, m_stereoDelayButton, m_bpmSyncButtonLeft, m_bpmSyncButtonRight;
 
     std::unique_ptr<juce::Label> m_gainLabelLeft, m_delayMsLabelLeft, m_gainLabelRight, m_delayMsLabelRight, m_stereoDelayLabel,
-                                 m_drywetLabel, m_lfoButtonLabel, m_lfoFreqLabel, m_lfoAmtLabel, m_testRvrbLabel,
+                                 m_drywetLabel, m_lfoButtonLabel, m_lfoFreqLabel, m_lfoAmtLabel,
                                  m_bpmSyncButtonLabelLeft, m_bpmSyncButtonLabelRight,
                                  m_toneLabelLeft, m_toneLabelRight;
 
@@ -93,7 +93,7 @@ private:
                                                                           m_drywetParamAttach, m_lfoFreqParamAttach, m_lfoAmtParamAttach,
                                                                           m_filterCutoffParamAttachLeft, m_filterCutoffParamAttachRight;
 
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> m_lfoButtonParamAttach, m_testRvrbButParamAttach, m_stereoDelayButParamAttach,
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> m_lfoButtonParamAttach, m_stereoDelayButParamAttach,
                                                                           m_bpmSyncButParamAttachLeft, m_bpmSyncButParamAttachRight;
 
     

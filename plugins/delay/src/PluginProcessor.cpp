@@ -15,7 +15,6 @@ DelayAudioProcessor::DelayAudioProcessor()
                         params (*this, nullptr, "Parameters", createParameters()),
                         m_lowPassFilterLeft(juce::dsp::IIR::Coefficients<float>::makeLowPass(44100.0f, 20000.f, 0.1f)),
                         m_lowPassFilterRight(juce::dsp::IIR::Coefficients<float>::makeLowPass(44100.0f, 20000.f, 0.1f))
-                        //reverb(new Reverb())
 #endif
 {
     params.state = juce::ValueTree("savedParams");
@@ -23,7 +22,6 @@ DelayAudioProcessor::DelayAudioProcessor()
 
 DelayAudioProcessor::~DelayAudioProcessor()
 {
-    //delete reverb;
 }
 
 //==============================================================================
@@ -187,7 +185,7 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
     
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
-        // Feedback the main buffer containing the contents of the delay buffer [ y(k) = x(k) + G*x(k-1) ]
+        // Feedback the main buffer containing the contents of the delay buffer [ y(k) = x(k) + G*y(k-N) ]
         fillBuffer(m_wetBuffer, channel);     
     }
 
@@ -202,14 +200,6 @@ void DelayAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::
 
     // Loop the write position from 0 to delay buffer size.
     updateWritePositions(buffer, m_delayBuffer);
-
-
-
-    std::atomic<float>* isTestRvrbOn = params.getRawParameterValue("TESTRVRB");
-    if (isTestRvrbOn->load())
-    {
-        //reverb->reverb(buffer, getNumInputChannels());
-    }
 }
 
 void DelayAudioProcessor::lowPass(juce::AudioBuffer<float>& buffer)
@@ -468,7 +458,6 @@ juce::AudioProcessorValueTreeState::ParameterLayout DelayAudioProcessor::createP
     
     // Buttons
     parameters.push_back(std::make_unique<juce::AudioParameterBool>("LFOENA", "Enable LFO", defaultButtonStatus));
-    parameters.push_back(std::make_unique<juce::AudioParameterBool>("TESTRVRB", "Test Reverb", defaultButtonStatus));
     parameters.push_back(std::make_unique<juce::AudioParameterBool>("STRODEL", "Stereo Delay", defaultButtonStatus));
     parameters.push_back(std::make_unique<juce::AudioParameterBool>("BPMSYNC_LEFT", "BPM Sync Left", defaultButtonStatus));
     parameters.push_back(std::make_unique<juce::AudioParameterBool>("BPMSYNC_RIGHT", "BPM Sync Right", defaultButtonStatus));

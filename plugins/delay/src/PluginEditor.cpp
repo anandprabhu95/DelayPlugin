@@ -94,9 +94,6 @@ void DelayAudioProcessorEditor::createGUI()
     createToggleButton(m_stereoDelayButton, "stereoDelayButton");
     createLabel(m_stereoDelayLabel, "stereodelaybuttonlabel", "Stereo", juce::Justification::left);
 
-    createToggleButton(m_testReverbButton, "testReverbButton");
-    createLabel(m_testRvrbLabel, "testreverbbuttonlabel", "Test Reverb", juce::Justification::centred);
-
     createToggleButton(m_lfoButton, "lfoButton");
     createLabel(m_lfoButtonLabel, "lfobuttonlabel", "ENA", juce::Justification::centred);
 
@@ -158,10 +155,6 @@ void DelayAudioProcessorEditor::destroyGUI()
     m_lfoAmtLabel = nullptr;
     m_lfoAmtParamAttach = nullptr;
     m_lfoAmtSlider = nullptr;
-
-    m_testRvrbLabel = nullptr;
-    m_testRvrbButParamAttach = nullptr;
-    m_testReverbButton = nullptr;
 
     m_stereoDelayLabel = nullptr;
     m_stereoDelayButParamAttach = nullptr;
@@ -233,9 +226,6 @@ void DelayAudioProcessorEditor::resizeGUI()
     m_filtCutoffSliderRight->setBounds(GLOBAL_X + COLUMN3_X, GLOBAL_Y + ROW2_Y, SLIDER_WIDTH, SLIDER_HEIGHT);
     m_toneLabelRight->setBounds(GLOBAL_X + COLUMN3_LABEL_X, GLOBAL_Y + ROW2_LABEL_Y , SLIDER_LABEL_WIDTH, SLIDER_LABEL_HEIGHT);
 
-    m_testReverbButton->setBounds(GLOBAL_X + TESTRVRB_BUT_X, GLOBAL_Y + TESTRVRB_BUT_Y, TESTRVRB_BUT_WIDTH, TESTRVRB_BUT_HEIGHT);
-    m_testRvrbLabel->setBounds(GLOBAL_X + TESTRVRB_LABEL_X, GLOBAL_Y + TESTRVRB_LABEL_Y, TESTRVRB_BUT_LAB_WIDTH, TESTRVRB_BUT_LAB_HEIGHT);
-
     m_stereoDelayButton->setBounds(GLOBAL_X + STRODEL_BUT_X, GLOBAL_Y + STRODEL_BUT_Y, STRODEL_BUT_WIDTH, STRODEL_BUT_HEIGHT);
     m_stereoDelayLabel->setBounds(GLOBAL_X + STRODEL_LABEL_X, GLOBAL_Y + STRODEL_LABEL_Y, STRODEL_BUT_LAB_WIDTH, STRODEL_BUT_LAB_HEIGHT);
 
@@ -272,7 +262,6 @@ void DelayAudioProcessorEditor::paramAttacher()
     m_lfoButtonParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "LFOENA", *m_lfoButton);
     m_lfoFreqParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "LFOFREQ", *m_lfoFreqSlider);
     m_lfoAmtParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.params, "LFOAMT", *m_lfoAmtSlider);
-    m_testRvrbButParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "TESTRVRB", *m_testReverbButton);
     m_stereoDelayButParamAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "STRODEL", *m_stereoDelayButton);
     m_bpmSyncButParamAttachLeft = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "BPMSYNC_LEFT", *m_bpmSyncButtonLeft);
     m_bpmSyncButParamAttachRight = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.params, "BPMSYNC_RIGHT", *m_bpmSyncButtonRight);
